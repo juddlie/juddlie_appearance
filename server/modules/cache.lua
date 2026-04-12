@@ -1,4 +1,5 @@
-local bridge <const> = require("bridge")
+local bridge <const> = require("bridge").get("framework")
+local logger <const> = require("shared.logger")
 
 local players = {}
 local cache = {}
@@ -9,20 +10,30 @@ function cache.load(src)
   if players[src] then return players[src] end
 
   local identifier <const> = bridge.getIdentifier(src)
-  if not identifier then return end
+  if not identifier then
+    logger.warn("Failed to get identifier for player:", src)
+    return
+  end
+
+  logger.debug("Loading player data:", src, identifier)
 
   local skin <const> = MySQL.scalar.await(
     "SELECT skin FROM juddlie_appearance WHERE identifier = ?",
     { identifier }
   )
 
-  local rows <const> = MySQL.query.await(
+  local presetRows <const> = MySQL.query.await(
     "SELECT * FROM juddlie_appearance_presets WHERE identifier = ? ORDER BY created_at DESC",
     { identifier }
   )
 
+  local outfitRows <const> = MySQL.query.await(
+    "SELECT * FROM juddlie_appearance_outfits WHERE identifier = ? ORDER BY created_at DESC",
+    { identifier }
+  )
+
   local presets = {}
-  for _, row in ipairs(rows or {}) do
+  for _, row in ipairs(presetRows or {}) do
     presets[row.preset_id] = {
       id = row.preset_id,
       name = row.name,
@@ -33,12 +44,27 @@ function cache.load(src)
     }
   end
 
+  local outfits = {}
+  for _, row in ipairs(outfitRows or {}) do
+    outfits[row.outfit_id] = {
+      id = row.outfit_id,
+      name = row.name,
+      category = row.category or "custom",
+      data = json.decode(row.data),
+      shareCode = row.share_code,
+      favorite = row.favorite == 1,
+      createdAt = row.created_at,
+    }
+  end
+
   players[src] = {
     identifier = identifier,
     appearance = skin and json.decode(skin) or nil,
     presets = presets,
+    outfits = outfits,
   }
 
+  logger.info("Player data loaded:", src, identifier)
   return players[src]
 end
 
@@ -46,6 +72,8 @@ end
 function cache.unload(src)
   local player <const> = players[src]
   if not player then return end
+
+  logger.debug("Unloading player data:", src, player.identifier)
 
   if player.appearance then
     MySQL.insert.await(
@@ -133,10 +161,92 @@ function cache.removePreset(src, presetId)
   )
 end
 
+---@param src number
+---@return table
+function cache.getOutfits(src)
+  local player <const> = cache.load(src)
+  if not player then return {} end
+
+  local list = {}
+  for _, outfit in pairs(player.outfits) do
+    list[#list + 1] = outfit
+  end
+
+  table.sort(list, function(a, b) return (a.createdAt or 0) > (b.createdAt or 0) end)
+  return list
+end
+
+---@param src number
+---@param outfit table
+function cache.addOutfit(src, outfit)
+  local player <const> = cache.load(src)
+  if not player then return end
+
+  player.outfits[outfit.id] = {
+    id = outfit.id,
+    name = outfit.name,
+    category = outfit.category or "custom",
+    data = outfit.data,
+    shareCode = outfit.shareCode,
+    favorite = outfit.favorite or false,
+    createdAt = outfit.createdAt or os.time() * 1000,
+  }
+
+  MySQL.insert(
+    "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, share_code, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    {
+      player.identifier,
+      outfit.id,
+      outfit.name,
+      outfit.category or "custom",
+      json.encode(outfit.data),
+      outfit.shareCode,
+      outfit.favorite and 1 or 0,
+      outfit.createdAt or os.time() * 1000,
+    }
+  )
+end
+
+---@param src number
+---@param outfitId string
+function cache.removeOutfit(src, outfitId)
+  local player <const> = cache.load(src)
+  if not player then return end
+
+  player.outfits[outfitId] = nil
+
+  MySQL.query(
+    "DELETE FROM juddlie_appearance_outfits WHERE identifier = ? AND outfit_id = ?",
+    { player.identifier, outfitId }
+  )
+end
+
+---@param src number
+---@param outfitId string
+---@param updates table
+function cache.updateOutfit(src, outfitId, updates)
+  local player <const> = cache.load(src)
+  if not player or not player.outfits[outfitId] then return end
+
+  local outfit <const> = player.outfits[outfitId]
+
+  if updates.name then outfit.name = updates.name end
+  if updates.category then outfit.category = updates.category end
+  if updates.favorite ~= nil then outfit.favorite = updates.favorite end
+
+  MySQL.query(
+    "UPDATE juddlie_appearance_outfits SET name = ?, category = ?, favorite = ? WHERE identifier = ? AND outfit_id = ?",
+    { outfit.name, outfit.category, outfit.favorite and 1 or 0, player.identifier, outfitId }
+  )
+end
+
 function cache.saveAll()
+  local count = 0
   for src in pairs(players) do
     cache.unload(src)
+    count = count + 1
   end
+  logger.info("Saved all player data:", count, "players")
 end
 
 return cache
