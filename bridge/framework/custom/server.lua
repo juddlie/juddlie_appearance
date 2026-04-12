@@ -9,8 +9,21 @@ function bridge.getIdentifier(src)
   if not identifier then return end
   
   local cleaned <const> = identifier:gsub("^.-:", "")
-  
+
   return cleaned
+end
+
+---@param src number|string
+---@return table
+function bridge.getPlayerData(src)
+  local identifier <const> = bridge.getIdentifier(tostring(src))
+
+  return {
+    identifier = identifier,
+    job = nil,
+    jobGrade = 0,
+    gang = nil,
+  }
 end
 
 return bridge
