@@ -1,0 +1,198 @@
+{
+  "ui": {
+    "sidebar": {
+      "face": "Rosto",
+      "hair": "Cabelo",
+      "clothing": "Roupas",
+      "props": "Acessórios",
+      "tattoos": "Tatuagens",
+      "colors": "Cores",
+      "presets": "Predefinições",
+      "outfits": "Trajes",
+      "camera": "Câmera",
+      "randomizer": "Aleatório",
+      "animations": "Animações",
+      "appearance": "Aparência",
+      "library": "Biblioteca",
+      "tools": "Ferramentas"
+    },
+    "actions": {
+      "apply": "Aplicar",
+      "revert": "Reverter",
+      "save": "Salvar",
+      "delete": "Excluir",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "search": "Pesquisar...",
+      "close": "Fechar",
+      "export": "Exportar",
+      "import": "Importar"
+    },
+    "face": {
+      "title": "Traços Faciais",
+      "heritage": "Herança",
+      "mother": "Mãe",
+      "father": "Pai",
+      "shape_mix": "Mistura de Forma",
+      "skin_mix": "Mistura de Pele",
+      "features": "Características",
+      "eyes": "Olhos",
+      "nose": "Nariz",
+      "cheeks": "Bochechas",
+      "jaw": "Mandíbula",
+      "chin": "Queixo",
+      "lips": "Lábios",
+      "neck": "Pescoço"
+    },
+    "hair": {
+      "title": "Cabelo",
+      "style": "Estilo",
+      "color": "Cor",
+      "highlight": "Mechas",
+      "facial_hair": "Barba",
+      "eyebrows": "Sobrancelhas",
+      "chest_hair": "Pelos do Peito",
+      "opacity": "Opacidade"
+    },
+    "clothing": {
+      "title": "Roupas",
+      "layers": "Camadas",
+      "drawable": "Modelo",
+      "texture": "Textura",
+      "search_placeholder": "Pesquisar roupas...",
+      "no_results": "Nenhuma roupa encontrada",
+      "component": "Componente",
+      "head": "Cabeça",
+      "beard": "Barba",
+      "upper_body": "Parte Superior",
+      "lower_body": "Parte Inferior",
+      "bags": "Bolsas",
+      "shoes": "Sapatos",
+      "accessories": "Acessórios",
+      "undershirt": "Camiseta",
+      "armor": "Colete",
+      "decals": "Adesivos",
+      "tops": "Jaqueta"
+    },
+    "props": {
+      "title": "Acessórios",
+      "hat": "Chapéu",
+      "glasses": "Óculos",
+      "ears": "Orelhas",
+      "watch": "Relógio",
+      "bracelet": "Pulseira"
+    },
+    "tattoos": {
+      "title": "Tatuagens",
+      "browse": "Navegar",
+      "applied": "Aplicadas",
+      "zone": "Zona",
+      "add": "Adicionar",
+      "remove": "Remover",
+      "clear_all": "Limpar Tudo",
+      "no_tattoos": "Nenhuma tatuagem aplicada",
+      "head": "Cabeça",
+      "torso": "Torso",
+      "left_arm": "Braço Esquerdo",
+      "right_arm": "Braço Direito",
+      "left_leg": "Perna Esquerda",
+      "right_leg": "Perna Direita"
+    },
+    "colors": {
+      "title": "Cores",
+      "eye_color": "Cor dos Olhos",
+      "hair_color": "Cor do Cabelo",
+      "hair_highlight": "Mechas do Cabelo",
+      "overlay_color": "Cor do Overlay",
+      "primary": "Primário",
+      "secondary": "Secundário"
+    },
+    "presets": {
+      "title": "Predefinições",
+      "save_preset": "Salvar Predefinição",
+      "name": "Nome",
+      "tags": "Tags",
+      "share_code": "Código de Compartilhamento",
+      "no_presets": "Nenhuma predefinição salva",
+      "import_preset": "Importar Predefinição",
+      "export_preset": "Exportar Predefinição",
+      "preset_applied": "Predefinição aplicada",
+      "preset_saved": "Predefinição salva",
+      "preset_deleted": "Predefinição excluída"
+    },
+    "outfits": {
+      "title": "Trajes",
+      "save_outfit": "Salvar Traje",
+      "name": "Nome",
+      "category": "Categoria",
+      "favorite": "Favorito",
+      "no_outfits": "Nenhum traje salvo",
+      "casual": "Casual",
+      "work": "Trabalho",
+      "formal": "Formal",
+      "custom": "Personalizado",
+      "outfit_applied": "Traje aplicado",
+      "outfit_saved": "Traje salvo",
+      "outfit_deleted": "Traje excluído"
+    },
+    "camera": {
+      "title": "Câmera",
+      "preset": "Predefinição",
+      "lighting": "Iluminação",
+      "fov": "Campo de Visão",
+      "zoom": "Zoom",
+      "rotation": "Rotação",
+      "compare": "Comparar",
+      "face": "Rosto",
+      "three_quarter": "Vista 3/4",
+      "full_body": "Corpo Inteiro",
+      "studio": "Estúdio",
+      "day": "Dia",
+      "night": "Noite"
+    },
+    "randomizer": {
+      "title": "Aleatório",
+      "randomize": "Aleatorizar",
+      "auto_cycle": "Ciclo Auto",
+      "speed": "Velocidade",
+      "lock": "Bloquear",
+      "unlock": "Desbloquear"
+    },
+    "animations": {
+      "title": "Animações",
+      "idle": "Parado",
+      "walk": "Andar",
+      "run": "Correr",
+      "crouch": "Agachar",
+      "sit": "Sentar"
+    },
+    "outfit_wheel": {
+      "title": "Trajes Rápidos",
+      "no_outfits": "Nenhum traje salvo. Abra o menu de aparência para criar trajes.",
+      "applied": "Traje '%s' aplicado"
+    },
+    "admin": {
+      "title": "Aparência Admin",
+      "editing": "Editando aparência do jogador %s",
+      "saved": "Aparência salva para o jogador %s",
+      "not_found": "Jogador não encontrado",
+      "no_permission": "Você não tem permissão para usar este comando"
+    },
+    "migrate": {
+      "starting": "Iniciando migração do illenium-appearance...",
+      "success": "Migração concluída: %d skins, %d trajes migrados.",
+      "no_table": "Tabela 'playerskins' não encontrada. O illenium-appearance está instalado?",
+      "failed": "Migração falhou: %s"
+    }
+  },
+  "notify": {
+    "appearance_saved": "Aparência salva",
+    "appearance_loaded": "Aparência carregada",
+    "skin_reloaded": "Skin recarregado do banco de dados",
+    "restricted": "Item restrito detectado",
+    "no_access": "Você não tem acesso a este vestiário",
+    "rank_too_low": "Seu cargo é muito baixo",
+    "job_outfit_saved": "Traje de trabalho salvo",
+    "job_outfit_loaded": "Traje de trabalho carregado"
+  }
+}

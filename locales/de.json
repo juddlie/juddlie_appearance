@@ -1,0 +1,198 @@
+{
+  "ui": {
+    "sidebar": {
+      "face": "Gesicht",
+      "hair": "Haare",
+      "clothing": "Kleidung",
+      "props": "Requisiten",
+      "tattoos": "Tattoos",
+      "colors": "Farben",
+      "presets": "Vorlagen",
+      "outfits": "Outfits",
+      "camera": "Kamera",
+      "randomizer": "Zufallsgenerator",
+      "animations": "Animationen",
+      "appearance": "Aussehen",
+      "library": "Bibliothek",
+      "tools": "Werkzeuge"
+    },
+    "actions": {
+      "apply": "Anwenden",
+      "revert": "Zurücksetzen",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen",
+      "search": "Suchen...",
+      "close": "Schließen",
+      "export": "Exportieren",
+      "import": "Importieren"
+    },
+    "face": {
+      "title": "Gesichtszüge",
+      "heritage": "Abstammung",
+      "mother": "Mutter",
+      "father": "Vater",
+      "shape_mix": "Formmischung",
+      "skin_mix": "Hautmischung",
+      "features": "Merkmale",
+      "eyes": "Augen",
+      "nose": "Nase",
+      "cheeks": "Wangen",
+      "jaw": "Kiefer",
+      "chin": "Kinn",
+      "lips": "Lippen",
+      "neck": "Hals"
+    },
+    "hair": {
+      "title": "Haare",
+      "style": "Stil",
+      "color": "Farbe",
+      "highlight": "Strähnchen",
+      "facial_hair": "Gesichtsbehaarung",
+      "eyebrows": "Augenbrauen",
+      "chest_hair": "Brustbehaarung",
+      "opacity": "Deckkraft"
+    },
+    "clothing": {
+      "title": "Kleidung",
+      "layers": "Ebenen",
+      "drawable": "Modell",
+      "texture": "Textur",
+      "search_placeholder": "Kleidung suchen...",
+      "no_results": "Keine passende Kleidung gefunden",
+      "component": "Komponente",
+      "head": "Kopf",
+      "beard": "Bart",
+      "upper_body": "Oberkörper",
+      "lower_body": "Unterkörper",
+      "bags": "Taschen",
+      "shoes": "Schuhe",
+      "accessories": "Zubehör",
+      "undershirt": "Unterhemd",
+      "armor": "Schutzweste",
+      "decals": "Aufkleber",
+      "tops": "Jacke"
+    },
+    "props": {
+      "title": "Requisiten",
+      "hat": "Hut",
+      "glasses": "Brille",
+      "ears": "Ohren",
+      "watch": "Uhr",
+      "bracelet": "Armband"
+    },
+    "tattoos": {
+      "title": "Tattoos",
+      "browse": "Durchsuchen",
+      "applied": "Angewendet",
+      "zone": "Zone",
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "clear_all": "Alle Löschen",
+      "no_tattoos": "Keine Tattoos angewendet",
+      "head": "Kopf",
+      "torso": "Oberkörper",
+      "left_arm": "Linker Arm",
+      "right_arm": "Rechter Arm",
+      "left_leg": "Linkes Bein",
+      "right_leg": "Rechtes Bein"
+    },
+    "colors": {
+      "title": "Farben",
+      "eye_color": "Augenfarbe",
+      "hair_color": "Haarfarbe",
+      "hair_highlight": "Haar-Strähnchen",
+      "overlay_color": "Overlay-Farbe",
+      "primary": "Primär",
+      "secondary": "Sekundär"
+    },
+    "presets": {
+      "title": "Vorlagen",
+      "save_preset": "Vorlage Speichern",
+      "name": "Name",
+      "tags": "Tags",
+      "share_code": "Freigabecode",
+      "no_presets": "Keine Vorlagen gespeichert",
+      "import_preset": "Vorlage Importieren",
+      "export_preset": "Vorlage Exportieren",
+      "preset_applied": "Vorlage angewendet",
+      "preset_saved": "Vorlage gespeichert",
+      "preset_deleted": "Vorlage gelöscht"
+    },
+    "outfits": {
+      "title": "Outfits",
+      "save_outfit": "Outfit Speichern",
+      "name": "Name",
+      "category": "Kategorie",
+      "favorite": "Favorit",
+      "no_outfits": "Keine Outfits gespeichert",
+      "casual": "Alltag",
+      "work": "Arbeit",
+      "formal": "Formell",
+      "custom": "Benutzerdefiniert",
+      "outfit_applied": "Outfit angewendet",
+      "outfit_saved": "Outfit gespeichert",
+      "outfit_deleted": "Outfit gelöscht"
+    },
+    "camera": {
+      "title": "Kamera",
+      "preset": "Vorlage",
+      "lighting": "Beleuchtung",
+      "fov": "Sichtfeld",
+      "zoom": "Zoom",
+      "rotation": "Drehung",
+      "compare": "Vergleichen",
+      "face": "Gesicht",
+      "three_quarter": "3/4 Ansicht",
+      "full_body": "Ganzkörper",
+      "studio": "Studio",
+      "day": "Tag",
+      "night": "Nacht"
+    },
+    "randomizer": {
+      "title": "Zufallsgenerator",
+      "randomize": "Zufällig",
+      "auto_cycle": "Auto-Zyklus",
+      "speed": "Geschwindigkeit",
+      "lock": "Sperren",
+      "unlock": "Entsperren"
+    },
+    "animations": {
+      "title": "Animationen",
+      "idle": "Stehen",
+      "walk": "Gehen",
+      "run": "Laufen",
+      "crouch": "Hocken",
+      "sit": "Sitzen"
+    },
+    "outfit_wheel": {
+      "title": "Schnelle Outfits",
+      "no_outfits": "Keine Outfits gespeichert. Öffne das Aussehen-Menü um Outfits zu erstellen.",
+      "applied": "Outfit '%s' angewendet"
+    },
+    "admin": {
+      "title": "Admin Aussehen",
+      "editing": "Bearbeite Aussehen von Spieler %s",
+      "saved": "Aussehen für Spieler %s gespeichert",
+      "not_found": "Spieler nicht gefunden",
+      "no_permission": "Du hast keine Berechtigung diesen Befehl zu verwenden"
+    },
+    "migrate": {
+      "starting": "Starte Migration von illenium-appearance...",
+      "success": "Migration abgeschlossen: %d Skins, %d Outfits migriert.",
+      "no_table": "Tabelle 'playerskins' nicht gefunden. Ist illenium-appearance installiert?",
+      "failed": "Migration fehlgeschlagen: %s"
+    }
+  },
+  "notify": {
+    "appearance_saved": "Aussehen gespeichert",
+    "appearance_loaded": "Aussehen geladen",
+    "skin_reloaded": "Skin aus Datenbank neu geladen",
+    "restricted": "Eingeschränkter Gegenstand erkannt",
+    "no_access": "Du hast keinen Zugang zu diesem Umkleideraum",
+    "rank_too_low": "Dein Rang ist zu niedrig",
+    "job_outfit_saved": "Arbeitsoutfit gespeichert",
+    "job_outfit_loaded": "Arbeitsoutfit geladen"
+  }
+}

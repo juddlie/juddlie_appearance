@@ -1,0 +1,198 @@
+{
+  "ui": {
+    "sidebar": {
+      "face": "Face",
+      "hair": "Hair",
+      "clothing": "Clothing",
+      "props": "Props",
+      "tattoos": "Tattoos",
+      "colors": "Colors",
+      "presets": "Presets",
+      "outfits": "Outfits",
+      "camera": "Camera",
+      "randomizer": "Randomizer",
+      "animations": "Animations",
+      "appearance": "Appearance",
+      "library": "Library",
+      "tools": "Tools"
+    },
+    "actions": {
+      "apply": "Apply",
+      "revert": "Revert",
+      "save": "Save",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "search": "Search...",
+      "close": "Close",
+      "export": "Export",
+      "import": "Import"
+    },
+    "face": {
+      "title": "Face Features",
+      "heritage": "Heritage",
+      "mother": "Mother",
+      "father": "Father",
+      "shape_mix": "Shape Mix",
+      "skin_mix": "Skin Mix",
+      "features": "Features",
+      "eyes": "Eyes",
+      "nose": "Nose",
+      "cheeks": "Cheeks",
+      "jaw": "Jaw",
+      "chin": "Chin",
+      "lips": "Lips",
+      "neck": "Neck"
+    },
+    "hair": {
+      "title": "Hair",
+      "style": "Style",
+      "color": "Color",
+      "highlight": "Highlight",
+      "facial_hair": "Facial Hair",
+      "eyebrows": "Eyebrows",
+      "chest_hair": "Chest Hair",
+      "opacity": "Opacity"
+    },
+    "clothing": {
+      "title": "Clothing",
+      "layers": "Layers",
+      "drawable": "Drawable",
+      "texture": "Texture",
+      "search_placeholder": "Search clothing...",
+      "no_results": "No matching clothing found",
+      "component": "Component",
+      "head": "Head",
+      "beard": "Beard",
+      "upper_body": "Upper Body",
+      "lower_body": "Lower Body",
+      "bags": "Bags",
+      "shoes": "Shoes",
+      "accessories": "Accessories",
+      "undershirt": "Undershirt",
+      "armor": "Armor",
+      "decals": "Decals",
+      "tops": "Tops"
+    },
+    "props": {
+      "title": "Props",
+      "hat": "Hat",
+      "glasses": "Glasses",
+      "ears": "Ears",
+      "watch": "Watch",
+      "bracelet": "Bracelet"
+    },
+    "tattoos": {
+      "title": "Tattoos",
+      "browse": "Browse",
+      "applied": "Applied",
+      "zone": "Zone",
+      "add": "Add",
+      "remove": "Remove",
+      "clear_all": "Clear All",
+      "no_tattoos": "No tattoos applied",
+      "head": "Head",
+      "torso": "Torso",
+      "left_arm": "Left Arm",
+      "right_arm": "Right Arm",
+      "left_leg": "Left Leg",
+      "right_leg": "Right Leg"
+    },
+    "colors": {
+      "title": "Colors",
+      "eye_color": "Eye Color",
+      "hair_color": "Hair Color",
+      "hair_highlight": "Hair Highlight",
+      "overlay_color": "Overlay Color",
+      "primary": "Primary",
+      "secondary": "Secondary"
+    },
+    "presets": {
+      "title": "Presets",
+      "save_preset": "Save Preset",
+      "name": "Name",
+      "tags": "Tags",
+      "share_code": "Share Code",
+      "no_presets": "No presets saved yet",
+      "import_preset": "Import Preset",
+      "export_preset": "Export Preset",
+      "preset_applied": "Preset applied",
+      "preset_saved": "Preset saved",
+      "preset_deleted": "Preset deleted"
+    },
+    "outfits": {
+      "title": "Outfits",
+      "save_outfit": "Save Outfit",
+      "name": "Name",
+      "category": "Category",
+      "favorite": "Favorite",
+      "no_outfits": "No outfits saved yet",
+      "casual": "Casual",
+      "work": "Work",
+      "formal": "Formal",
+      "custom": "Custom",
+      "outfit_applied": "Outfit applied",
+      "outfit_saved": "Outfit saved",
+      "outfit_deleted": "Outfit deleted"
+    },
+    "camera": {
+      "title": "Camera",
+      "preset": "Preset",
+      "lighting": "Lighting",
+      "fov": "Field of View",
+      "zoom": "Zoom",
+      "rotation": "Rotation",
+      "compare": "Compare",
+      "face": "Face",
+      "three_quarter": "3/4 View",
+      "full_body": "Full Body",
+      "studio": "Studio",
+      "day": "Day",
+      "night": "Night"
+    },
+    "randomizer": {
+      "title": "Randomizer",
+      "randomize": "Randomize",
+      "auto_cycle": "Auto Cycle",
+      "speed": "Speed",
+      "lock": "Lock",
+      "unlock": "Unlock"
+    },
+    "animations": {
+      "title": "Animations",
+      "idle": "Idle",
+      "walk": "Walk",
+      "run": "Run",
+      "crouch": "Crouch",
+      "sit": "Sit"
+    },
+    "outfit_wheel": {
+      "title": "Quick Outfits",
+      "no_outfits": "No outfits saved. Open the appearance menu to create outfits.",
+      "applied": "Outfit '%s' applied"
+    },
+    "admin": {
+      "title": "Admin Appearance",
+      "editing": "Editing appearance for player %s",
+      "saved": "Appearance saved for player %s",
+      "not_found": "Player not found",
+      "no_permission": "You don't have permission to use this command"
+    },
+    "migrate": {
+      "starting": "Starting migration from illenium-appearance...",
+      "success": "Migration complete: %d skins, %d outfits migrated.",
+      "no_table": "Table 'playerskins' not found. Is illenium-appearance installed?",
+      "failed": "Migration failed: %s"
+    }
+  },
+  "notify": {
+    "appearance_saved": "Appearance saved",
+    "appearance_loaded": "Appearance loaded",
+    "skin_reloaded": "Skin reloaded from database",
+    "restricted": "Restricted item detected",
+    "no_access": "You don't have access to this locker room",
+    "rank_too_low": "Your rank is too low",
+    "job_outfit_saved": "Job outfit saved",
+    "job_outfit_loaded": "Job outfit loaded"
+  }
+}
