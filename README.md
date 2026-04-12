@@ -588,17 +588,6 @@ config.locale = "en"  -- change to "es", "fr", "de", "pt", etc.
 2. Translate all strings in the JSON file
 3. Set `config.locale = "xx"` in `config.lua`
 
-Locale strings are automatically sent to the NUI and can be accessed in the React UI via the `useLocale` store:
-
-```tsx
-import { useLocale } from "../store/locale";
-
-const MyComponent = () => {
-  const t = useLocale((s) => s.t);
-  return <Text>{t("ui.sidebar.clothing")}</Text>;
-};
-```
-
 ---
 
 ## Clothing Search
