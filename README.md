@@ -1,0 +1,502 @@
+# juddlie_appearance
+
+A fully-featured character appearance menu for FiveM. Supports ESX, QBX, and standalone frameworks with ox_target or qb-target interaction.
+
+---
+
+## Dependencies
+
+These resources **must** be installed and started before `juddlie_appearance`:
+
+| Resource | Required | Purpose |
+|----------|----------|---------|
+| [ox_lib](https://github.com/overextended/ox_lib) | Yes | UI notifications, points, utilities |
+| [oxmysql](https://github.com/overextended/oxmysql) | Yes | Database queries |
+| [es_extended](https://github.com/esx-framework/esx_core) | If using ESX | ESX framework bridge |
+| [qbx_core](https://github.com/Qbox-project/qbx_core) | If using QBX | QBX framework bridge |
+| [ox_target](https://github.com/overextended/ox_target) | If using ox interaction | Target zones |
+| [qb-target](https://github.com/qbcore-framework/qb-target) | If using qb interaction | Target zones |
+
+---
+
+## Installation
+
+1. Place the `juddlie_appearance` folder into your server's `resources` directory.
+2. Add `ensure juddlie_appearance` to your `server.cfg` (**after** your framework and the dependencies above).
+3. Open `config.lua` and set your framework + interaction method (see below).
+4. Restart your server — the database tables are created automatically on first start.
+
+> **Database tables created automatically:**
+> - `juddlie_appearance` — player skins
+> - `juddlie_appearance_presets` — saved presets
+> - `juddlie_appearance_outfits` — saved outfits
+> - `juddlie_appearance_job_outfits` — job outfits
+
+---
+
+## Configuration
+
+Everything is configured in **`config.lua`**. Below is a walkthrough of every section.
+
+### Framework
+
+```lua
+config.framework = "esx"
+```
+
+| Value | Framework |
+|-------|-----------|
+| `"esx"` | ESX / es_extended |
+| `"qbx"` | QBX / qbx_core |
+| `"custom"` | Standalone — no framework, uses license identifier only |
+
+### Interaction Method
+
+```lua
+config.interaction = "ox"
+config.interactionType = "point"
+```
+
+**`config.interaction`** — which target resource to use:
+
+| Value | Description |
+|-------|-------------|
+| `"ox"` | Use ox_target |
+| `"qb"` | Use qb-target |
+
+**`config.interactionType`** — how players interact at locations:
+
+| Value | Description |
+|-------|-------------|
+| `"point"` | Proximity-based — shows a TextUI prompt and the player presses **E** when nearby (ox only) |
+| `"target"` | Target-based — player aims with the target eye and clicks the option |
+
+> **Note:** `"point"` mode is only available with `config.interaction = "ox"`. If you use `"qb"`, set `interactionType` to `"target"`.
+
+### Identifier Type
+
+```lua
+config.licenseType = "license"
+```
+
+Only used when `config.framework = "custom"`. Determines which FiveM identifier is used to save player data.
+
+| Value | Identifier |
+|-------|------------|
+| `"license"` | Rockstar license |
+| `"license2"` | Rockstar license (alt) |
+| `"fivem"` | FiveM account ID |
+| `"discord"` | Discord ID |
+
+When using ESX or QBX, the identifier comes from the framework automatically — this setting is ignored.
+
+### General Settings
+
+```lua
+config.debug = true                        -- enables /appearance command for testing
+config.locale = "en"                       -- language
+config.defaultFov = 50                     -- camera field of view
+config.invincibleDuringCustomization = true -- god mode while menu is open
+config.hideRadar = false                   -- hide minimap while menu is open
+```
+
+### Disabled Components / Props
+
+Use this if you have a clothing-as-items system and want to prevent players from changing certain components through the appearance menu.
+
+```lua
+config.disabledComponents = {}   -- e.g., { 9 } to disable body armor
+config.disabledProps = {}        -- e.g., { 6, 7 } to disable watch and bracelet
+```
+
+**Component IDs reference:**
+
+| ID | Component |
+|----|-----------|
+| 0 | Head |
+| 1 | Beard / Mask |
+| 2 | Hair |
+| 3 | Upper Body / Torso |
+| 4 | Legs / Pants |
+| 5 | Bags / Parachute |
+| 6 | Shoes |
+| 7 | Accessories |
+| 8 | Undershirt |
+| 9 | Body Armor |
+| 10 | Decals / Badges |
+| 11 | Jacket / Outer |
+
+**Prop IDs reference:**
+
+| ID | Prop |
+|----|------|
+| 0 | Hats |
+| 1 | Glasses |
+| 2 | Ears |
+| 6 | Watches |
+| 7 | Bracelets |
+
+---
+
+## Locations
+
+Locations are the zones where the appearance menu can be opened. Each location gets a map blip and an interaction point/target.
+
+```lua
+config.locations = {
+    {
+        type = "clothing_store",     -- type label (for your reference only)
+        label = "Clothing Store",    -- name shown to the player
+        coords = vector3(72.3, -1399.1, 29.4),  -- world position
+        radius = 2.0,               -- interaction radius (in meters)
+        tabs = { "clothing", "props", "outfits" },  -- which menu tabs are available here
+        blip = {
+            sprite = 73,            -- blip icon (see https://docs.fivem.net/docs/game-references/blips/)
+            color = 47,             -- blip color
+            scale = 0.7,            -- blip size
+            label = "Clothing Store" -- text on the map
+        },
+    },
+}
+```
+
+### Available Tab Names
+
+| Tab Name | What It Opens |
+|----------|---------------|
+| `"clothing"` | Shirts, pants, shoes, etc. |
+| `"props"` | Hats, glasses, watches, etc. |
+| `"outfits"` | Saved outfits |
+| `"hair"` | Hair style and color |
+| `"face"` | Face shape / features |
+| `"colors"` | Eye color, makeup, overlays |
+| `"tattoos"` | Tattoo parlor |
+| `"presets"` | Saved presets (full appearance) |
+| `"animations"` | Pose / animation browser |
+| `"randomizer"` | Randomize appearance |
+| `"camera"` | Camera controls |
+
+### Location Types (Examples)
+
+You can use any combination of tabs to create different shop types:
+
+| Store Type | Suggested Tabs |
+|------------|----------------|
+| Clothing Store | `{ "clothing", "props", "outfits" }` |
+| Barber Shop | `{ "hair", "face", "colors" }` |
+| Tattoo Parlor | `{ "tattoos" }` |
+| Plastic Surgeon | `{ "face", "colors" }` |
+| Full Customization | All tabs |
+
+---
+
+## Job / Gang Clothing Rooms
+
+Clothing rooms are restricted locations that only specific jobs or gangs can access. They work the same as regular locations but with access control.
+
+```lua
+config.clothingRooms = {
+    {
+        label = "LSPD Locker Room",
+        coords = vector3(461.8, -1000.4, 30.7),
+        radius = 1.5,
+        job = "police",          -- required job name (must match your framework)
+        -- gang = "ballas",      -- OR use gang instead of job (not both)
+        minRank = 0,             -- minimum job/gang grade (0 = all ranks)
+        tabs = { "clothing", "props", "outfits" },
+        blip = { sprite = 366, color = 29, scale = 0.6, label = "LSPD Locker Room" },
+    },
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | string | Name shown to the player |
+| `coords` | vector3 | World position |
+| `radius` | number | Interaction radius in meters |
+| `job` | string | Required job name — player must have this job |
+| `gang` | string | Required gang name (use one or the other, not both) |
+| `minRank` | number | Minimum grade/rank required. `0` means any rank |
+| `tabs` | table | Which menu tabs are available |
+| `blip` | table | Optional — map blip config (same fields as locations) |
+
+> **Tip:** If `minRank` is set to `2`, only players with grade 2 or higher can access the room.
+
+---
+
+## Blacklist / Whitelist
+
+Block (or exclusively allow) specific clothing drawables and props based on job, gang, identifier, or ACE permissions.
+
+```lua
+config.blacklist = {
+    enabled = false,              -- set to true to activate
+    mode = "blacklist",           -- "blacklist" or "whitelist"
+
+    clothing = {
+        {
+            component = 11,           -- component ID (see table above)
+            drawables = { 55, 56 },   -- drawable IDs to restrict
+            jobs = { "police" },      -- only police are affected
+            invert = true,            -- invert = block everyone EXCEPT police
+        },
+    },
+
+    props = {
+        {
+            prop = 0,                 -- prop ID
+            drawables = { 120 },      -- drawable IDs to restrict
+            aces = { "appearance.vip" }, -- only players with this ACE
+            invert = true,            -- block everyone EXCEPT those with the ACE
+        },
+    },
+}
+```
+
+### How Rules Work
+
+Each rule in `clothing` or `props` can use any combination of these filters:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `component` / `prop` | number | Which component or prop this rule applies to |
+| `drawables` | table | List of drawable IDs to restrict |
+| `jobs` | table | Job names that match this rule |
+| `gangs` | table | Gang names that match this rule |
+| `identifiers` | table | Specific player identifiers |
+| `aces` | table | ACE permission strings (e.g., `"appearance.vip"`) |
+| `invert` | boolean | Flip the logic (see below) |
+
+### Understanding `invert`
+
+| `invert` | Behavior |
+|----------|----------|
+| `false` (default) | The drawable is blocked **for matching players** (e.g., police can't wear it) |
+| `true` | The drawable is blocked **for everyone EXCEPT matching players** (e.g., only police can wear it) |
+
+### Granting ACE Permissions
+
+Add ACE permissions in your `server.cfg`:
+
+```cfg
+add_ace identifier.license:abc123 appearance.vip allow
+add_ace group.admin appearance.vip allow
+```
+
+---
+
+## Outfit Categories
+
+Customize the categories players can organize their outfits into:
+
+```lua
+config.outfitCategories = {
+    { value = "casual", label = "Casual" },
+    { value = "work", label = "Work" },
+    { value = "formal", label = "Formal" },
+    { value = "custom", label = "Custom" },
+}
+```
+
+Add or remove categories as needed. The `value` is stored in the database, the `label` is what players see.
+
+---
+
+## Camera Settings
+
+### Presets
+
+```lua
+config.cameraPresets = {
+    { value = "face", label = "Face" },
+    { value = "three_quarter", label = "3/4" },
+    { value = "full_body", label = "Full Body" },
+}
+```
+
+### Camera Offsets
+
+Control where each camera preset is positioned relative to the player:
+
+```lua
+config.cameraOffsets = {
+    face = {
+        offset = vector3(0.0, 0.7, 0.65),      -- x, y, z offset from ped
+        rotation = vector3(-5.0, 0.0, 0.0)      -- pitch, roll, yaw
+    },
+    threeQuarter = {
+        offset = vector3(0.5, 1.2, 0.3),
+        rotation = vector3(-5.0, 0.0, 0.0)
+    },
+    fullBody = {
+        offset = vector3(0.0, 2.5, 0.2),
+        rotation = vector3(-5.0, 0.0, 0.0)
+    },
+}
+```
+
+### Defaults and Ranges
+
+```lua
+config.cameraDefaults = {
+    preset = "full_body",   -- starting camera angle
+    lighting = "studio",    -- starting lighting
+    fov = 50,
+    zoom = 1,
+    rotation = 0,
+}
+
+config.cameraRanges = {
+    fov = { min = 20, max = 90, step = 1 },
+    zoom = { min = 0.5, max = 3, step = 0.1 },
+    rotation = { min = -180, max = 180, step = 1 },
+}
+```
+
+### Lighting Presets
+
+```lua
+config.lightingPresets = {
+    { value = "studio", label = "Studio" },
+    { value = "day", label = "Day" },
+    { value = "night", label = "Night" },
+}
+```
+
+---
+
+## Ped Menu
+
+A separate command to change your ped model (useful for admin/testing):
+
+```lua
+config.pedMenu = {
+    enabled = true,
+    command = "pedmenu",           -- chat command to open it
+    acePermission = false,         -- false = everyone can use it
+                                   -- "admin.pedmenu" = only players with this ACE
+}
+```
+
+To restrict it, set `acePermission` to an ACE string and grant it in your `server.cfg`:
+
+```cfg
+add_ace group.admin admin.pedmenu allow
+```
+
+---
+
+## Commands
+
+```lua
+config.commands = {
+    reloadSkin = "reloadskin",   -- reloads your saved skin from the database
+}
+```
+
+| Command | Description |
+|---------|-------------|
+| `/reloadskin` | Re-applies your saved appearance from the database |
+| `/appearance` | Opens the full menu (only available when `config.debug = true`) |
+
+---
+
+## Exports
+
+### Client Exports
+
+Use these from other client-side resources:
+
+```lua
+-- Open the appearance menu
+exports.juddlie_appearance:open()
+
+-- Open with restricted tabs only
+exports.juddlie_appearance:open({ tabs = { "clothing", "props" } })
+
+-- Close the menu
+exports.juddlie_appearance:close()
+
+-- Get the player's current appearance data
+local appearance = exports.juddlie_appearance:getAppearance()
+
+-- Apply appearance data to the player's ped
+exports.juddlie_appearance:setAppearance(appearanceData)
+```
+
+### Server Exports
+
+Use these from other server-side resources:
+
+```lua
+-- Get a player's saved appearance
+local appearance = exports.juddlie_appearance:getPlayerAppearance(source)
+
+-- Set a player's appearance (saves to DB + applies on client)
+exports.juddlie_appearance:setPlayerAppearance(source, appearanceData)
+
+-- Get all outfits for a player
+local outfits = exports.juddlie_appearance:getPlayerOutfits(source)
+
+-- Get a specific outfit by ID
+local outfit = exports.juddlie_appearance:getPlayerOutfit(source, "outfit_id_here")
+```
+
+---
+
+## Custom Framework Bridge
+
+If you set `config.framework = "custom"`, the resource runs without ESX or QBX. The custom bridge uses FiveM native identifiers.
+
+To add your own framework support, edit the files in:
+- `bridge/framework/custom/client.lua`
+- `bridge/framework/custom/server.lua`
+
+Each bridge must return a table with these functions:
+
+**Client:**
+```lua
+bridge.onPlayerLoaded(handler)   -- call handler() when the player is ready
+bridge.getPlayerJob()            -- return jobName, jobGrade
+bridge.getPlayerGang()           -- return gangName
+```
+
+**Server:**
+```lua
+bridge.getIdentifier(src)        -- return the player's unique identifier string
+bridge.getPlayerData(src)        -- return { identifier, job, jobGrade, gang }
+```
+
+---
+
+## Troubleshooting
+
+### Menu won't open
+- Make sure you're standing inside a location's radius
+- Check that the `tabs` array on the location isn't empty
+- With `config.debug = true`, try `/appearance` to test without a location
+
+### "Failed to load framework bridge" error
+- Make sure `config.framework` matches your installed framework (`"esx"`, `"qbx"`, or `"custom"`)
+- Ensure your framework resource is started **before** `juddlie_appearance`
+
+### "Failed to load interaction bridge" error
+- Make sure `config.interaction` matches your installed target resource (`"ox"` or `"qb"`)
+- Ensure `ox_target` or `qb-target` is started before this resource
+
+### Blips show but interaction doesn't work
+- Check `config.interactionType` — if set to `"point"`, you need `config.interaction = "ox"`
+- If using qb-target, set `config.interactionType = "target"`
+
+### Clothing rooms say "You don't have access"
+- The `job` or `gang` value must match your framework exactly (case-sensitive)
+- Check `minRank` — the player's grade must be >= this value
+
+### Blacklist not working
+- Set `config.blacklist.enabled = true`
+- Make sure `component` / `prop` and `drawables` IDs are correct
+- Test with a simple rule first, then add complexity
+
+### Database tables not created
+- Make sure `oxmysql` is started and connected before this resource
+- Check your server console for SQL errors
