@@ -285,10 +285,6 @@ if config.debug then
   end, false)
 end
 
--- ═══════════════════════════════════════════════
--- Reload Skin Command
--- ═══════════════════════════════════════════════
-
 RegisterCommand(config.commands and config.commands.reloadSkin or "reloadskin", function()
   logger.info("Reloading skin from database")
   initAppearance()
@@ -311,19 +307,11 @@ AddEventHandler("onResourceStop", function(resource)
   menu.close(false)
 end)
 
--- ═══════════════════════════════════════════════
--- Server-side apply event (for export API)
--- ═══════════════════════════════════════════════
-
 RegisterNetEvent("juddlie_appearance:client:applyAppearance", function(data)
   if type(data) ~= "table" then return end
 
   ped.applyAppearance(cache.ped, data)
 end)
-
--- ═══════════════════════════════════════════════
--- Enhanced Client Exports
--- ═══════════════════════════════════════════════
 
 exports("open", function(options)
   if type(options) == "table" and options.tabs then
