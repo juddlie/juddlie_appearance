@@ -9,7 +9,9 @@ local lastJobOutfit = nil
 
 function outfitwheel.refreshOutfits()
   local outfits <const> = lib.callback.await("juddlie_appearance:server:getOutfits", false)
+  
   cachedOutfits = outfits or {}
+
   logger.debug("Outfit wheel refreshed:", #cachedOutfits, "outfits")
 end
 

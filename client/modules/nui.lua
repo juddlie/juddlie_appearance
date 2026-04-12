@@ -1,6 +1,6 @@
 local config <const> = require("config")
-local localeModule = nil
 
+local localeModule = nil
 pcall(function()
   localeModule = require("shared.locale")
 end)
@@ -61,6 +61,7 @@ nui.handleMessage("ready", function()
     faceRegions = config.faceRegions,
     quickSlots = config.quickSlots,
     randomizerCategories = config.randomizerCategories,
+    pedModels = config.pedModels,
     outfitCategories = config.outfitCategories,
     locale = config.locale or "en",
     localeStrings = localeModule and localeModule.getAll() or {},

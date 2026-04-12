@@ -9,6 +9,11 @@ local menu <const> = require("client.modules.menu")
 local randomizer <const> = require("client.modules.randomizer")
 local animation <const> = require("client.modules.animation")
 local zones <const> = require("client.modules.zones")
+local outfitwheel <const> = require("client.modules.outfitwheel")
+local admin <const> = require("client.modules.admin")
+
+outfitwheel.init()
+admin.init()
 
 local initialSpawn = true
 
@@ -24,6 +29,44 @@ local function initAppearance()
   logger.debug("Applying initial appearance")
   ped.applyAppearance(cache.ped, appearance)
 end
+
+RegisterNetEvent("juddlie_appearance:client:applyAppearance", function(data)
+  if type(data) ~= "table" then return end
+
+  ped.applyAppearance(cache.ped, data)
+end)
+
+RegisterNetEvent("juddlie_appearance:client:adminOpenEditor", function(targetSrc, targetAppearance)
+  admin.openForPlayer(targetSrc, targetAppearance)
+end)
+
+nui.handleMessage("appearance:setModel", function(data)
+  if type(data) ~= "table" or type(data.model) ~= "string" then return end
+
+  local modelHash <const> = joaat(data.model)
+  if not IsModelInCdimage(modelHash) then
+    logger.warn("Invalid ped model: " .. data.model)
+    return
+  end
+
+  RequestModel(modelHash)
+  while not HasModelLoaded(modelHash) do
+    Wait(0)
+  end
+
+  SetPlayerModel(PlayerId(), modelHash)
+  SetModelAsNoLongerNeeded(modelHash)
+
+  cache.ped = PlayerPedId()
+
+  if ped.isFreemode(cache.ped) then
+    SetPedDefaultComponentVariation(cache.ped)
+    SetPedHeadBlendData(cache.ped, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0, false)
+  end
+
+  local appearance <const> = ped.getAppearance(cache.ped)
+  nui.sendMessage("setAppearance", appearance)
+end)
 
 nui.handleMessage("appearance:exit", function()
   logger.debug("NUI exit requested")
@@ -117,10 +160,6 @@ nui.handleMessage("appearance:addTattoo", function(data)
   if type(data) ~= "table" or type(data.collection) ~= "string" or type(data.overlay) ~= "string" then return end
 
   AddPedDecorationFromHashes(cache.ped, joaat(data.collection), joaat(data.overlay))
-end)
-
-nui.handleMessage("appearance:removeTattoo", function(data)
-  
 end)
 
 nui.handleMessage("appearance:reapplyTattoos", function(data)
@@ -270,11 +309,21 @@ nui.handleMessage("appearance:playAnimation", function(data)
   animation.play(data.animation)
 end)
 
+nui.handleMessage("appearance:adminApply", function(data)
+  if admin.isAdminEdit then
+    admin.saveForPlayer(data)
+    admin.close()
+    menu.close(false)
+  end
+end)
+
+
 bridge.onPlayerLoaded(function()
   if not initialSpawn then return end
 
   initialSpawn = false
   logger.info("Player loaded — initializing appearance")
+
   initAppearance()
   zones.init()
 end)
@@ -307,12 +356,6 @@ AddEventHandler("onResourceStop", function(resource)
   menu.close(false)
 end)
 
-RegisterNetEvent("juddlie_appearance:client:applyAppearance", function(data)
-  if type(data) ~= "table" then return end
-
-  ped.applyAppearance(cache.ped, data)
-end)
-
 exports("open", function(options)
   if type(options) == "table" and options.tabs then
     menu.allowedTabs = options.tabs
@@ -333,22 +376,4 @@ end)
 exports("setAppearance", function(data)
   if type(data) ~= "table" then return end
   ped.applyAppearance(cache.ped, data)
-end)
-
-local outfitwheel <const> = require("client.modules.outfitwheel")
-outfitwheel.init()
-
-local admin <const> = require("client.modules.admin")
-admin.init()
-
-RegisterNetEvent("juddlie_appearance:client:adminOpenEditor", function(targetSrc, targetAppearance)
-  admin.openForPlayer(targetSrc, targetAppearance)
-end)
-
-nui.handleMessage("appearance:adminApply", function(data)
-  if admin.isAdminEdit then
-    admin.saveForPlayer(data)
-    admin.close()
-    menu.close(false)
-  end
 end)

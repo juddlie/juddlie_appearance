@@ -44,7 +44,6 @@ local function matchesRule(playerData, rule)
     end
   end
 
-  -- invert: if true, the rule applies to everyone EXCEPT matched players
   if rule.invert then
     return not matched
   end

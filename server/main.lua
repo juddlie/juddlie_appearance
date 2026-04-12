@@ -70,87 +70,6 @@ RegisterNetEvent("juddlie_appearance:server:updateOutfit", function(data)
   cache.updateOutfit(source, data.id, data)
 end)
 
-AddEventHandler("playerDropped", function()
-  local source <const> = source
-  if not source then return end
-
-  logger.debug("Player dropped, unloading cache:", source)
-  cache.unload(source)
-end)
-
-AddEventHandler("txAdmin:events:serverShuttingDown", function()
-  logger.info("Server shutting down — saving all player data")
-  cache.saveAll()
-end)
-
-AddEventHandler("onResourceStop", function(resource)
-  if resource ~= GetCurrentResourceName() then return end
-
-  logger.info("Resource stopping — saving all player data")
-  cache.saveAll()
-end)
-
----@param source number
----@return table?
-lib.callback.register("juddlie_appearance:server:getAppearance", function(source)
-  local source <const> = source
-  if not source then return end
-
-  logger.debug("Callback: getAppearance for player:", source)
-  return cache.getAppearance(source)
-end)
-
----@param source number
----@return table?
-lib.callback.register("juddlie_appearance:server:getPresets", function(source)
-  local source <const> = source
-  if not source then return end
-
-  return cache.getPresets(source)
-end)
-
----@param source number
----@return table
-lib.callback.register("juddlie_appearance:server:getOutfits", function(source)
-  local source <const> = source
-  if not source then return {} end
-
-  return cache.getOutfits(source)
-end)
-
----@param src number
----@return table?
-exports("getPlayerAppearance", function(src)
-  return cache.getAppearance(src)
-end)
-
----@param src number
----@param data table
-exports("setPlayerAppearance", function(src, data)
-  if type(data) ~= "table" then return end
-
-  cache.setAppearance(src, data)
-  TriggerClientEvent("juddlie_appearance:client:applyAppearance", src, data)
-end)
-
----@param src number
----@return table
-exports("getPlayerOutfits", function(src)
-  return cache.getOutfits(src)
-end)
-
----@param src number
----@param outfitId string
----@return table?
-exports("getPlayerOutfit", function(src, outfitId)
-  local outfits <const> = cache.getOutfits(src)
-  for _, outfit in ipairs(outfits) do
-    if outfit.id == outfitId then return outfit end
-  end
-
-  return nil
-end)
-
 ---@param jobName string
 ---@param data table
 RegisterNetEvent("juddlie_appearance:server:saveJobOutfit", function(jobName, data)
@@ -166,27 +85,6 @@ RegisterNetEvent("juddlie_appearance:server:saveJobOutfit", function(jobName, da
     "INSERT INTO juddlie_appearance_job_outfits (identifier, job, data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)",
     { identifier, jobName, json.encode(data) }
   )
-end)
-
----@param source number
----@param jobName string
----@return table?
-lib.callback.register("juddlie_appearance:server:getJobOutfit", function(source, jobName)
-  if not source or not jobName then return end
-
-  local identifier <const> = bridge.getIdentifier(source)
-  if not identifier then return end
-
-  local data <const> = MySQL.scalar.await(
-    "SELECT data FROM juddlie_appearance_job_outfits WHERE identifier = ? AND job = ?",
-    { identifier, jobName }
-  )
-
-  if data then
-    return json.decode(data)
-  end
-
-  return nil
 end)
 
 ---@param targetSrc number
@@ -239,6 +137,109 @@ RegisterNetEvent("juddlie_appearance:server:adminSaveAppearance", function(targe
 
   TriggerClientEvent("juddlie_appearance:client:applyAppearance", targetId, appearance)
 end)
+
+AddEventHandler("playerDropped", function()
+  local source <const> = source
+  if not source then return end
+
+  logger.debug("Player dropped, unloading cache:", source)
+  cache.unload(source)
+end)
+
+AddEventHandler("txAdmin:events:serverShuttingDown", function()
+  logger.info("Server shutting down — saving all player data")
+  cache.saveAll()
+end)
+
+AddEventHandler("onResourceStop", function(resource)
+  if resource ~= GetCurrentResourceName() then return end
+
+  logger.info("Resource stopping — saving all player data")
+  cache.saveAll()
+end)
+
+---@param source number
+---@return table?
+lib.callback.register("juddlie_appearance:server:getAppearance", function(source)
+  local source <const> = source
+  if not source then return end
+
+  logger.debug("Callback: getAppearance for player:", source)
+  return cache.getAppearance(source)
+end)
+
+---@param source number
+---@return table?
+lib.callback.register("juddlie_appearance:server:getPresets", function(source)
+  local source <const> = source
+  if not source then return end
+
+  return cache.getPresets(source)
+end)
+
+---@param source number
+---@return table
+lib.callback.register("juddlie_appearance:server:getOutfits", function(source)
+  local source <const> = source
+  if not source then return {} end
+
+  return cache.getOutfits(source)
+end)
+
+---@param source number
+---@param jobName string
+---@return table?
+lib.callback.register("juddlie_appearance:server:getJobOutfit", function(source, jobName)
+  if not source or not jobName then return end
+
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  local data <const> = MySQL.scalar.await(
+    "SELECT data FROM juddlie_appearance_job_outfits WHERE identifier = ? AND job = ?",
+    { identifier, jobName }
+  )
+
+  if data then
+    return json.decode(data)
+  end
+
+  return nil
+end)
+
+---@param src number
+---@return table?
+exports("getPlayerAppearance", function(src)
+  return cache.getAppearance(src)
+end)
+
+---@param src number
+---@param data table
+exports("setPlayerAppearance", function(src, data)
+  if type(data) ~= "table" then return end
+
+  cache.setAppearance(src, data)
+  TriggerClientEvent("juddlie_appearance:client:applyAppearance", src, data)
+end)
+
+---@param src number
+---@return table
+exports("getPlayerOutfits", function(src)
+  return cache.getOutfits(src)
+end)
+
+---@param src number
+---@param outfitId string
+---@return table?
+exports("getPlayerOutfit", function(src, outfitId)
+  local outfits <const> = cache.getOutfits(src)
+  for _, outfit in ipairs(outfits) do
+    if outfit.id == outfitId then return outfit end
+  end
+
+  return nil
+end)
+
 
 if config.migration and config.migration.enabled then
   local migrate <const> = require("server.modules.migrate")

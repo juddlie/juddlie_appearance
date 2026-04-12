@@ -49,22 +49,6 @@ config.invincibleDuringCustomization = true
 -- hide the minimap/radar while the appearance menu is open
 config.hideRadar = false
 
--- shared data (don't change unless you know what you're doing)
--- these are loaded from shared/tattoos.lua and shared/data.lua
-config.tattoos = tattooData.list
-config.tattooZones = tattooData.zones
-
-config.componentIds = sharedData.componentIds
-config.propIds = sharedData.propIds
-config.componentLabels = sharedData.componentLabels
-config.propLabels = sharedData.propLabels
-config.overlayLabels = sharedData.overlayLabels
-config.faceFeatures = sharedData.faceFeatures
-config.faceRegions = sharedData.faceRegions
-config.animations = sharedData.animations
-config.quickSlots = sharedData.quickSlots
-config.randomizerCategories = sharedData.randomizerCategories
-
 -- disabled components / props
 -- use these if you have a clothing-as-items system and want to prevent
 -- players from changing certain slots through the appearance menu
@@ -78,6 +62,13 @@ config.randomizerCategories = sharedData.randomizerCategories
 --   0 = hats, 1 = glasses, 2 = ears, 6 = watches, 7 = bracelets
 config.disabledComponents = {} -- e.g. { 9 } to disable body armor
 config.disabledProps = {}      -- e.g. { 6, 7 } to disable watch and bracelet
+
+-- ped models available in the ped model selector page
+-- value = the model name (hash), label = display name
+config.pedModels = {
+	{ value = "mp_m_freemode_01", label = "Freemode Male" },
+	{ value = "mp_f_freemode_01", label = "Freemode Female" },
+}
 
 -- camera position offsets for each preset
 -- offset = vector3(x, y, z) relative to the ped
@@ -395,5 +386,21 @@ config.migration = {
 	-- ace permission required (set to false to allow console-only)
 	acePermission = false,
 }
+
+-- shared data (don't change unless you know what you're doing)
+-- these are loaded from shared/tattoos.lua and shared/data.lua
+config.tattoos = tattooData.list
+config.tattooZones = tattooData.zones
+
+config.componentIds = sharedData.componentIds
+config.propIds = sharedData.propIds
+config.componentLabels = sharedData.componentLabels
+config.propLabels = sharedData.propLabels
+config.overlayLabels = sharedData.overlayLabels
+config.faceFeatures = sharedData.faceFeatures
+config.faceRegions = sharedData.faceRegions
+config.animations = sharedData.animations
+config.quickSlots = sharedData.quickSlots
+config.randomizerCategories = sharedData.randomizerCategories
 
 return config
