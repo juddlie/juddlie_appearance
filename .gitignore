@@ -1,0 +1,13 @@
+# Dependencies
+web/node_modules/
+
+# Build tools
+web/.vite/
+
+# IDE
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
