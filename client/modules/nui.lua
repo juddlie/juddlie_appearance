@@ -56,6 +56,10 @@ nui.handleMessage("ready", function()
     faceRegions = config.faceRegions,
     quickSlots = config.quickSlots,
     randomizerCategories = config.randomizerCategories,
+    outfitCategories = config.outfitCategories,
+    locale = config.locale or "en",
+    disabledComponents = config.disabledComponents or {},
+    disabledProps = config.disabledProps or {},
   })
 end)
 
