@@ -1,4 +1,4 @@
-local bridge <const> = require("bridge")
+local bridge <const> = require("bridge").get("framework")
 
 local presets = {}
 
