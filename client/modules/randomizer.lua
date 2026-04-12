@@ -16,6 +16,7 @@ function randomizer.randomize(categories)
         math.random(0, 45), math.random(0, 45), 0,
         math.random() * 1.0, math.random() * 1.0, 0.0, false
       )
+      
       for i = 0, 19 do
         SetPedFaceFeature(cache.ped, i, ped.tofloat(math.random() * 2.0 - 1.0))
       end
