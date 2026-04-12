@@ -4,13 +4,13 @@ data.componentIds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
 data.propIds = { 0, 1, 2, 6, 7 }
 
 data.componentLabels = {
-	[0] = "Head", [1] = "Beard", [2] = "Hair", [3] = "Upper Body", [4] = "Lower Body",
-	[5] = "Bags", [6] = "Shoes", [7] = "Accessories", [8] = "Undershirt",
-	[9] = "Armor", [10] = "Decals", [11] = "Tops",
+	["0"] = "Head", ["1"] = "Beard", ["2"] = "Hair", ["3"] = "Upper Body", ["4"] = "Lower Body",
+	["5"] = "Bags", ["6"] = "Shoes", ["7"] = "Accessories", ["8"] = "Undershirt",
+	["9"] = "Armor", ["10"] = "Decals", ["11"] = "Tops",
 }
 
 data.propLabels = {
-	[0] = "Hat", [1] = "Glasses", [2] = "Ears", [6] = "Watch", [7] = "Bracelet",
+	["0"] = "Hat", ["1"] = "Glasses", ["2"] = "Ears", ["6"] = "Watch", ["7"] = "Bracelet",
 }
 
 data.overlayLabels = {

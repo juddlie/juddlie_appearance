@@ -76,7 +76,7 @@ function cache.unload(src)
   logger.debug("Unloading player data:", src, player.identifier)
 
   if player.appearance then
-    MySQL.insert.await(
+    MySQL.insert(
       "INSERT INTO juddlie_appearance (identifier, skin) VALUES (?, ?) ON DUPLICATE KEY UPDATE skin = VALUES(skin)",
       { player.identifier, json.encode(player.appearance) }
     )

@@ -16,13 +16,14 @@ function animation.play(value)
 
   RequestAnimDict(anim.dict)
   local timeout = 0
-  while not HasAnimDictLoaded(anim.dict) and timeout < 5000 do
+  local maxTimeout <const> = config.animationLoadTimeout or 5000
+  while not HasAnimDictLoaded(anim.dict) and timeout < maxTimeout do
     Wait(10)
     timeout = timeout + 10
   end
 
   if HasAnimDictLoaded(anim.dict) then
-    TaskPlayAnim(cache.ped, anim.dict, anim.name, 8.0, -8.0, -1, 1, 0.0, false, false, false)
+    TaskPlayAnim(cache.ped, anim.dict, anim.name, config.animationBlendIn or 8.0, config.animationBlendOut or -8.0, -1, 1, 0.0, false, false, false)
   end
 end
 

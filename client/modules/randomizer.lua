@@ -74,7 +74,7 @@ function randomizer.startAuto(data)
         randomizer.randomize(unlocked)
       end
 
-      Wait(math.floor((data.speed or 2) * 1000))
+      Wait(math.floor((data.speed or config.randomizerDefaultSpeed or 2) * 1000))
     end
   end)
 end

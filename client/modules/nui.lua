@@ -3,6 +3,7 @@ local config <const> = require("config")
 local localeModule = nil
 pcall(function()
   localeModule = require("shared.locale")
+  localeModule.init()
 end)
 
 local nui = {}

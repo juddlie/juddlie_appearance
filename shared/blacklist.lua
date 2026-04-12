@@ -58,17 +58,26 @@ end
 function blacklist.isClothingBlocked(component, drawable, playerData)
   if not config.blacklist or not config.blacklist.enabled then return false end
 
+  local isWhitelist <const> = config.blacklist.mode == "whitelist"
+  local foundRule = false
+
   for _, rule in ipairs(config.blacklist.clothing or {}) do
     if rule.component == component then
       for _, d in ipairs(rule.drawables or {}) do
         if d == drawable then
-          return matchesRule(playerData, rule)
+          foundRule = true
+          local matched <const> = matchesRule(playerData, rule)
+          if isWhitelist then
+            return not matched
+          else
+            return matched
+          end
         end
       end
     end
   end
 
-  return false
+  return isWhitelist and not foundRule
 end
 
 ---@param prop number
@@ -78,17 +87,26 @@ end
 function blacklist.isPropBlocked(prop, drawable, playerData)
   if not config.blacklist or not config.blacklist.enabled then return false end
 
+  local isWhitelist <const> = config.blacklist.mode == "whitelist"
+  local foundRule = false
+
   for _, rule in ipairs(config.blacklist.props or {}) do
     if rule.prop == prop then
       for _, d in ipairs(rule.drawables or {}) do
         if d == drawable then
-          return matchesRule(playerData, rule)
+          foundRule = true
+          local matched <const> = matchesRule(playerData, rule)
+          if isWhitelist then
+            return not matched
+          else
+            return matched
+          end
         end
       end
     end
   end
 
-  return false
+  return isWhitelist and not foundRule
 end
 
 ---@param appearance table

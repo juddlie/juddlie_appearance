@@ -125,7 +125,7 @@ function ped.applyAppearance(p, data)
     SetPedHeadBlendData(p,
       hb.shapeFirst, hb.shapeSecond, 0,
       hb.skinFirst, hb.skinSecond, 0,
-      ped.tofloat(hb.shapeMix or 0.5), ped.tofloat(hb.skinMix or 0.5), 0.0, false
+      ped.tofloat(hb.shapeMix or config.defaultShapeMix or 0.5), ped.tofloat(hb.skinMix or config.defaultSkinMix or 0.5), 0.0, false
     )
   end
 
@@ -237,8 +237,8 @@ function ped.setHeadBlend(data)
     data.skinFirst or skinFirst,
     data.skinSecond or skinSecond,
     0,
-    ped.tofloat(data.shapeMix or shapeMix or 0.5),
-    ped.tofloat(data.skinMix or skinMix or 0.5),
+    ped.tofloat(data.shapeMix or shapeMix or config.defaultShapeMix or 0.5),
+    ped.tofloat(data.skinMix or skinMix or config.defaultSkinMix or 0.5),
     0.0, false
   )
 end

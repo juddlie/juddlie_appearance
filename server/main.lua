@@ -4,10 +4,36 @@ local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
 local config <const> = require("config")
 
+local locale <const> = require("shared.locale")
+locale.init()
+
+local limits <const> = config.limits or {}
+local maxPresets <const> = limits.maxPresets or 50
+local maxOutfits <const> = limits.maxOutfits or 50
+local maxJsonSize <const> = limits.maxPayloadSize or 100000
+
+---@param value any
+---@param expectedType string
+---@return boolean
+local function validateType(value, expectedType)
+  return type(value) == expectedType
+end
+
+---@param data table
+---@return boolean
+local function validatePayloadSize(data)
+  local encoded = json.encode(data)
+  return encoded and #encoded <= maxJsonSize
+end
+
 ---@param appearance table
 RegisterNetEvent("juddlie_appearance:server:saveAppearance", function(appearance)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(appearance, "table") then return end
+  if not validatePayloadSize(appearance) then
+    logger.warn("Oversized appearance payload rejected from player:", source)
+    return
+  end
 
   logger.debug("Saving appearance for player:", source)
 
@@ -16,7 +42,7 @@ RegisterNetEvent("juddlie_appearance:server:saveAppearance", function(appearance
     local valid, reason = blacklist.validateAppearance(appearance, playerData)
     if not valid then
       logger.warn("Blacklist blocked appearance save for player:", source, reason)
-      lib.notify(source, { title = "Appearance", description = reason or "Restricted item detected.", type = "error" })
+      lib.notify(source, { title = locale.t("ui.sidebar.appearance"), description = reason or locale.t("notify.restricted"), type = "error" })
       return
     end
   end
@@ -28,7 +54,15 @@ end)
 ---@param preset table
 RegisterNetEvent("juddlie_appearance:server:savePreset", function(preset)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(preset, "table") then return end
+  if not validateType(preset.id, "string") or not validateType(preset.name, "string") then return end
+  if not validatePayloadSize(preset) then return end
+
+  local existing <const> = cache.getPresets(source)
+  if #existing >= maxPresets then
+    lib.notify(source, { title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.max_presets"), type = "error" })
+    return
+  end
 
   logger.debug("Saving preset for player:", source, preset.name or preset.id)
   cache.addPreset(source, preset)
@@ -37,7 +71,7 @@ end)
 ---@param presetId string
 RegisterNetEvent("juddlie_appearance:server:deletePreset", function(presetId)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(presetId, "string") then return end
 
   logger.debug("Deleting preset for player:", source, presetId)
   cache.removePreset(source, presetId)
@@ -46,7 +80,15 @@ end)
 ---@param outfit table
 RegisterNetEvent("juddlie_appearance:server:saveOutfit", function(outfit)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(outfit, "table") then return end
+  if not validateType(outfit.id, "string") or not validateType(outfit.name, "string") then return end
+  if not validatePayloadSize(outfit) then return end
+
+  local existing <const> = cache.getOutfits(source)
+  if #existing >= maxOutfits then
+    lib.notify(source, { title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.max_outfits"), type = "error" })
+    return
+  end
 
   logger.debug("Saving outfit for player:", source, outfit.name or outfit.id)
   cache.addOutfit(source, outfit)
@@ -55,7 +97,7 @@ end)
 ---@param outfitId string
 RegisterNetEvent("juddlie_appearance:server:deleteOutfit", function(outfitId)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(outfitId, "string") then return end
 
   logger.debug("Deleting outfit for player:", source, outfitId)
   cache.removeOutfit(source, outfitId)
@@ -74,7 +116,8 @@ end)
 ---@param data table
 RegisterNetEvent("juddlie_appearance:server:saveJobOutfit", function(jobName, data)
   local source <const> = source
-  if not source or not jobName or type(data) ~= "table" then return end
+  if not source or not validateType(jobName, "string") or not validateType(data, "table") then return end
+  if not validatePayloadSize(data) then return end
 
   local identifier <const> = bridge.getIdentifier(source)
   if not identifier then return end
@@ -95,20 +138,20 @@ RegisterNetEvent("juddlie_appearance:server:adminRequestAppearance", function(ta
   if config.admin and config.admin.acePermission then
     if not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
       logger.warn("Unauthorized admin command attempt from player:", source)
-      lib.notify(source, { title = "Admin", description = "You don't have permission to use this command.", type = "error" })
+      lib.notify(source, { title = locale.t("ui.admin.title"), description = locale.t("notify.admin_no_permission"), type = "error" })
       return
     end
   end
 
   local targetId <const> = tonumber(targetSrc)
   if not targetId or not GetPlayerName(targetId) then
-    lib.notify(source, { title = "Admin", description = "Player not found.", type = "error" })
+    lib.notify(source, { title = locale.t("ui.admin.title"), description = locale.t("notify.admin_player_not_found"), type = "error" })
     return
   end
 
   local targetAppearance <const> = cache.getAppearance(targetId)
   if not targetAppearance then
-    lib.notify(source, { title = "Admin", description = "Could not load target player's appearance.", type = "error" })
+    lib.notify(source, { title = locale.t("ui.admin.title"), description = locale.t("notify.admin_load_failed"), type = "error" })
     return
   end
 
@@ -120,7 +163,8 @@ end)
 ---@param appearance table
 RegisterNetEvent("juddlie_appearance:server:adminSaveAppearance", function(targetSrc, appearance)
   local source <const> = source
-  if not source then return end
+  if not source or not validateType(appearance, "table") then return end
+  if not validatePayloadSize(appearance) then return end
 
   if config.admin and config.admin.acePermission then
     if not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
@@ -248,11 +292,11 @@ if config.migration and config.migration.enabled then
     if source ~= 0 then
       if config.migration.acePermission then
         if not IsPlayerAceAllowed(tostring(source), config.migration.acePermission) then
-          lib.notify(source, { title = "Migration", description = "You don't have permission to use this command.", type = "error" })
+          lib.notify(source, { title = locale.t("ui.migrate.title"), description = locale.t("notify.admin_no_permission"), type = "error" })
           return
         end
       else
-        lib.notify(source, { title = "Migration", description = "This command can only be used from the server console.", type = "error" })
+        lib.notify(source, { title = locale.t("ui.migrate.title"), description = locale.t("ui.migrate.console_only"), type = "error" })
         return
       end
     end

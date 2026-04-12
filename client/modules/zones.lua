@@ -1,5 +1,6 @@
 local config <const> = require("config")
 local logger <const> = require("shared.logger")
+local locale <const> = require("shared.locale")
 
 local menu <const> = require("client.modules.menu")
 local nui <const> = require("client.modules.nui")
@@ -9,7 +10,6 @@ local interaction = require("bridge").get("interaction")
 
 local zones = {}
 
-local activeZones = {}
 local blips = {}
 
 ---@param location table
@@ -26,13 +26,13 @@ local function openAtLocation(location)
     local playerJob, playerGrade = framework.getPlayerJob()
     if playerJob ~= location.job then
       logger.debug("Access denied to location:", location.label, "- job mismatch:", playerJob, "!=", location.job)
-      lib.notify({ title = "Appearance", description = "You don't have access to this locker room.", type = "error" })
+      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.no_access"), type = "error" })
       return
     end
 
     if location.minRank and playerGrade and playerGrade < location.minRank then
       logger.debug("Access denied to location:", location.label, "- rank too low:", playerGrade, "<", location.minRank)
-      lib.notify({ title = "Appearance", description = "Your rank is too low.", type = "error" })
+      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.rank_too_low"), type = "error" })
       return
     end
   end
@@ -41,7 +41,7 @@ local function openAtLocation(location)
     local playerGang = framework.getPlayerGang()
     if playerGang ~= location.gang then
       logger.debug("Access denied to location:", location.label, "- gang mismatch:", playerGang, "!=", location.gang)
-      lib.notify({ title = "Appearance", description = "You don't have access to this locker room.", type = "error" })
+      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.no_access"), type = "error" })
       return
     end
   end
@@ -61,10 +61,10 @@ function zones.setupBlips()
     if not loc.blip then goto continue end
 
     local blip <const> = AddBlipForCoord(loc.coords.x, loc.coords.y, loc.coords.z)
-    SetBlipSprite(blip, loc.blip.sprite or 1)
+    SetBlipSprite(blip, loc.blip.sprite or config.defaultBlip.sprite or 1)
     SetBlipDisplay(blip, 4)
-    SetBlipScale(blip, loc.blip.scale or 0.7)
-    SetBlipColour(blip, loc.blip.color or 0)
+    SetBlipScale(blip, loc.blip.scale or config.defaultBlip.scale or 0.7)
+    SetBlipColour(blip, loc.blip.color or config.defaultBlip.color or 0)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentSubstringPlayerName(loc.blip.label or loc.label or "Appearance")
@@ -80,10 +80,10 @@ function zones.setupBlips()
     if not room.blip then goto continue end
 
     local blip <const> = AddBlipForCoord(room.coords.x, room.coords.y, room.coords.z)
-    SetBlipSprite(blip, room.blip.sprite or 1)
+    SetBlipSprite(blip, room.blip.sprite or config.defaultBlip.sprite or 1)
     SetBlipDisplay(blip, 4)
-    SetBlipScale(blip, room.blip.scale or 0.7)
-    SetBlipColour(blip, room.blip.color or 0)
+    SetBlipScale(blip, room.blip.scale or config.defaultBlip.scale or 0.7)
+    SetBlipColour(blip, room.blip.color or config.defaultBlip.color or 0)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentSubstringPlayerName(room.blip.label or room.label or "Locker Room")
@@ -105,7 +105,7 @@ function zones.setupPoints()
 
     interaction.addPoint(
       loc.coords,
-      loc.radius or 2.0,
+      loc.radius or config.defaultLocationRadius or 2.0,
       38,
       getInteractLabel(loc),
       function()
@@ -123,7 +123,7 @@ function zones.setupPoints()
 
     interaction.addPoint(
       room.coords,
-      room.radius or 1.5,
+      room.radius or config.defaultClothingRoomRadius or 1.5,
       38,
       getInteractLabel(room),
       function()
@@ -147,9 +147,9 @@ function zones.setupTarget()
     interaction.addZone(
       id,
       loc.coords,
-      loc.radius or 2.0,
+      loc.radius or config.defaultLocationRadius or 2.0,
       getInteractLabel(loc),
-      "fas fa-tshirt",
+      config.targetIcons.location or "fas fa-tshirt",
       function() openAtLocation(loc) end
     )
 
@@ -165,9 +165,9 @@ function zones.setupTarget()
     interaction.addZone(
       id,
       room.coords,
-      room.radius or 1.5,
+      room.radius or config.defaultClothingRoomRadius or 1.5,
       getInteractLabel(room),
-      "fas fa-door-open",
+      config.targetIcons.clothingRoom or "fas fa-door-open",
       function() openAtLocation(room) end
     )
 
@@ -194,16 +194,6 @@ function zones.destroy()
   end
 
   blips = {}
-  activeZones = {}
-end
-
----@return table?
-function zones.getActiveZone()
-  for _, zone in pairs(activeZones) do
-    return zone
-  end
-
-  return nil
 end
 
 return zones

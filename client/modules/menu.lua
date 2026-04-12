@@ -19,7 +19,7 @@ function menu.open()
   menu.active = true
   menu.originalAppearance = ped.getAppearance(cache.ped)
 
-  FreezeEntityPosition(cache.ped, true)
+  if config.freezeDuringCustomization ~= false then FreezeEntityPosition(cache.ped, true) end
 
   if config.invincibleDuringCustomization then SetEntityInvincible(cache.ped, true) end
   if config.hideRadar then DisplayRadar(false) end
@@ -50,7 +50,7 @@ function menu.close(save)
   menu.allowedTabs = nil
   camera.destroy()
 
-  FreezeEntityPosition(cache.ped, false)
+  if config.freezeDuringCustomization ~= false then FreezeEntityPosition(cache.ped, false) end
 
   if config.invincibleDuringCustomization then SetEntityInvincible(cache.ped, false) end
   if config.hideRadar then DisplayRadar(true) end

@@ -6,11 +6,12 @@ camera.handle = nil
 camera.preset = "fullBody"
 camera.rotation = 0.0
 camera.fov = config.defaultFov
+camera.zoom = 1.0
 
 function camera.destroy()
   if not camera.handle then return end
 
-  RenderScriptCams(false, true, 500, true, false)
+  RenderScriptCams(false, true, config.cameraTransitionTime or 500, true, false)
   DestroyCam(camera.handle, false)
 
   camera.handle = nil
@@ -26,9 +27,11 @@ function camera.create()
   local presetData <const> = config.cameraOffsets[camera.preset] or config.cameraOffsets.fullBody
   local offset <const> = presetData.offset
 
+  local zoomedY <const> = offset.y * camera.zoom
+
   local camPos <const> = vector3(
-    pedCoords.x + offset.x * math.cos(headingRad) - offset.y * math.sin(headingRad),
-    pedCoords.y + offset.x * math.sin(headingRad) + offset.y * math.cos(headingRad),
+    pedCoords.x + offset.x * math.cos(headingRad) - zoomedY * math.sin(headingRad),
+    pedCoords.y + offset.x * math.sin(headingRad) + zoomedY * math.cos(headingRad),
     pedCoords.z + offset.z
   )
 
@@ -37,7 +40,7 @@ function camera.create()
   SetCamCoord(camera.handle, camPos.x, camPos.y, camPos.z)
   PointCamAtPedBone(camera.handle, cache.ped, camera.preset == "face" and 31086 or 0, 0.0, 0.0, 0.0, true)
   SetCamFov(camera.handle, camera.fov + 0.0)
-  RenderScriptCams(true, true, 500, true, false)
+  RenderScriptCams(true, true, config.cameraTransitionTime or 500, true, false)
 end
 
 ---@param preset string
@@ -57,16 +60,7 @@ end
 
 ---@param zoom number
 function camera.setZoom(zoom)
-  local presetData <const> = config.cameraOffsets[camera.preset] or
-    config.cameraOffsets.fullBody
-
-  local baseY <const> = presetData.offset.y
-
-  config.cameraOffsets[camera.preset] = {
-    offset = vector3(presetData.offset.x, baseY * zoom, presetData.offset.z),
-    rotation = presetData.rotation,
-  }
-
+  camera.zoom = zoom
   camera.create()
 end
 
@@ -79,13 +73,9 @@ end
 
 ---@param lighting string
 function camera.setLighting(lighting)
-  if lighting == "night" then
-    NetworkOverrideClockTime(0, 0, 0)
-  elseif lighting == "day" then
-    NetworkOverrideClockTime(12, 0, 0)
-  else
-    NetworkOverrideClockTime(18, 0, 0)
-  end
+  local times <const> = config.lightingTimes or {}
+  local preset <const> = times[lighting] or times.studio or { 18, 0, 0 }
+  NetworkOverrideClockTime(preset[1], preset[2], preset[3])
 end
 
 return camera

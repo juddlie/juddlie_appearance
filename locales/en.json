@@ -179,10 +179,12 @@
       "no_permission": "You don't have permission to use this command"
     },
     "migrate": {
+      "title": "Migration",
       "starting": "Starting migration from illenium-appearance...",
       "success": "Migration complete: %d skins, %d outfits migrated.",
       "no_table": "Table 'playerskins' not found. Is illenium-appearance installed?",
-      "failed": "Migration failed: %s"
+      "failed": "Migration failed: %s",
+      "console_only": "This command can only be used from the server console."
     }
   },
   "notify": {
@@ -193,6 +195,12 @@
     "no_access": "You don't have access to this locker room",
     "rank_too_low": "Your rank is too low",
     "job_outfit_saved": "Job outfit saved",
-    "job_outfit_loaded": "Job outfit loaded"
+    "job_outfit_loaded": "Job outfit loaded",
+    "max_presets": "Maximum preset limit reached",
+    "max_outfits": "Maximum outfit limit reached",
+    "admin_no_permission": "You don't have permission to use this command",
+    "admin_player_not_found": "Player not found",
+    "admin_load_failed": "Could not load target player's appearance",
+    "admin_usage": "Usage: /setappearance [player id]"
   }
 }

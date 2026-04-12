@@ -1,5 +1,6 @@
 local config <const> = require("config")
 local logger <const> = require("shared.logger")
+local locale <const> = require("shared.locale")
 
 local nui <const> = require("client.modules.nui")
 local ped <const> = require("client.modules.ped")
@@ -14,7 +15,7 @@ admin.isAdminEdit = false
 ---@param targetAppearance table
 function admin.openForPlayer(targetSrc, targetAppearance)
   if not targetAppearance then
-    lib.notify({ title = "Admin", description = "Could not load target player's appearance.", type = "error" })
+    lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("notify.admin_load_failed"), type = "error" })
     return
   end
 
@@ -22,7 +23,7 @@ function admin.openForPlayer(targetSrc, targetAppearance)
   admin.isAdminEdit = true
 
   logger.info("Admin editing appearance for player:", targetSrc)
-  lib.notify({ title = "Admin", description = ("Editing appearance for player %d"):format(targetSrc), type = "info" })
+  lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("ui.admin.editing", targetSrc), type = "info" })
 
   ped.applyAppearance(cache.ped, targetAppearance)
 
@@ -39,7 +40,7 @@ function admin.saveForPlayer(appearance)
   logger.info("Admin saving appearance for player:", admin.targetSource)
   TriggerServerEvent("juddlie_appearance:server:adminSaveAppearance", admin.targetSource, appearance)
 
-  lib.notify({ title = "Admin", description = ("Appearance saved for player %d"):format(admin.targetSource), type = "success" })
+  lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("ui.admin.saved", admin.targetSource), type = "success" })
 end
 
 function admin.close()
@@ -64,7 +65,7 @@ function admin.init()
   RegisterCommand(config.admin.command or "setappearance", function(_, args)
     local targetId = tonumber(args[1])
     if not targetId then
-      lib.notify({ title = "Admin", description = "Usage: /setappearance [player id]", type = "error" })
+      lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("notify.admin_usage"), type = "error" })
       return
     end
 

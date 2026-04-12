@@ -5,7 +5,7 @@ local config = {}
 
 -- enables debug logging and the /appearance command for testing
 -- set to false in production
-config.debug = true
+config.debug = false
 
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
@@ -46,8 +46,64 @@ config.defaultFov = 50
 -- prevents them from being killed during customization
 config.invincibleDuringCustomization = true
 
+-- freeze the player in place while the appearance menu is open
+config.freezeDuringCustomization = true
+
 -- hide the minimap/radar while the appearance menu is open
 config.hideRadar = false
+
+-- default head blend shape/skin mix when creating a new freemode ped
+-- or when no mix value is provided (range: 0.0 to 1.0)
+config.defaultShapeMix = 0.5
+config.defaultSkinMix = 0.5
+
+-- timeout in milliseconds for loading ped models and animation dicts
+-- if loading takes longer than this, the request is cancelled
+config.modelLoadTimeout = 5000
+config.animationLoadTimeout = 5000
+
+-- animation blend in/out speeds for the animation preview
+config.animationBlendIn = 8.0
+config.animationBlendOut = -8.0
+
+-- camera transition duration in milliseconds (used when creating/destroying the camera)
+config.cameraTransitionTime = 500
+
+-- lighting clock times for each lighting preset (hour, minute, second)
+config.lightingTimes = {
+	studio = { 18, 0, 0 },
+	day    = { 12, 0, 0 },
+	night  = { 0, 0, 0 },
+}
+
+-- default auto-randomizer speed in seconds (used when player doesn't specify)
+config.randomizerDefaultSpeed = 2
+
+-- server-side limits to prevent abuse
+-- max number of presets and outfits a player can save
+-- max json payload size in bytes accepted from clients
+config.limits = {
+	maxPresets = 50,
+	maxOutfits = 50,
+	maxPayloadSize = 100000,
+}
+
+-- default blip settings used when a location doesn't specify its own
+config.defaultBlip = {
+	sprite = 1,
+	color = 0,
+	scale = 0.7,
+}
+
+-- default interaction radius for locations and clothing rooms (in meters)
+config.defaultLocationRadius = 2.0
+config.defaultClothingRoomRadius = 1.5
+
+-- icons used for ox_target / qb-target interaction zones
+config.targetIcons = {
+	location = "fas fa-tshirt",
+	clothingRoom = "fas fa-door-open",
+}
 
 -- disabled components / props
 -- use these if you have a clothing-as-items system and want to prevent
@@ -128,7 +184,6 @@ config.outfitCategories = {
 	{ value = "formal", label = "Formal" },
 	{ value = "custom", label = "Custom" },
 }
-
 
 -- these are the zones where the appearance menu can be opened
 -- each location creates a map blip and an interaction point/target
@@ -363,6 +418,17 @@ config.outfitWheel = {
 	key = "F7",
 	-- the command name (used internally for RegisterKeyMapping)
 	command = "+outfitwheel",
+	-- icon shown for favorite outfits in the context menu
+	favoriteIcon = "star",
+	-- icon shown for regular outfits in the context menu
+	defaultIcon = "shirt",
+	-- color mapping for outfit categories in the context menu
+	categoryColors = {
+		casual = "blue",
+		work = "orange",
+		formal = "purple",
+		custom = "gray",
+	},
 }
 
 -- allows admins/staff to edit another player's appearance

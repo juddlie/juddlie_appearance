@@ -2,8 +2,6 @@ if GetResourceState("qbx_core") ~= "started" then
 	error("qbx_core is not started. Please start qbx_core before starting juddlie_appearance.")
 end
 
-local QBX <const> = exports["qbx_core"]:GetPlayerData()
-
 local bridge <const> = {}
 
 ---@param handler function
@@ -13,22 +11,18 @@ end
 
 ---@return string?, number?
 function bridge.getPlayerJob()
-	local player <const> = QBX:GetPlayerData()
-	if player and player.job then
-		return player.job.name, player.job.grade and player.job.grade.level or 0
-	end
+	local player <const> = exports["qbx_core"]:GetPlayerData()
+	if not player or not player.job then return nil, nil end
 
-	return nil, nil
+	return player.job.name, player.job.grade and player.job.grade.level or 0
 end
 
 ---@return string?
 function bridge.getPlayerGang()
-	local player <const> = QBX:GetPlayerData()
-	if player and player.gang then
-		return player.gang.name
-	end
+	local player <const> = exports["qbx_core"]:GetPlayerData()
+	if not player or not player.gang then return nil end
 
-	return nil
+	return player.gang.name
 end
 
 return bridge

@@ -1,6 +1,7 @@
 local bridge <const> = require("bridge").get("framework")
 local config <const> = require("config")
 local logger <const> = require("shared.logger")
+local locale <const> = require("shared.locale")
 
 local nui <const> = require("client.modules.nui")
 local ped <const> = require("client.modules.ped")
@@ -50,7 +51,13 @@ nui.handleMessage("appearance:setModel", function(data)
   end
 
   RequestModel(modelHash)
+
+  local timeout <const> = GetGameTimer() + (config.modelLoadTimeout or 5000)
   while not HasModelLoaded(modelHash) do
+    if GetGameTimer() > timeout then
+      logger.warn("Timed out loading model: " .. data.model)
+      return
+    end
     Wait(0)
   end
 
@@ -61,7 +68,7 @@ nui.handleMessage("appearance:setModel", function(data)
 
   if ped.isFreemode(cache.ped) then
     SetPedDefaultComponentVariation(cache.ped)
-    SetPedHeadBlendData(cache.ped, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0, false)
+    SetPedHeadBlendData(cache.ped, 0, 0, 0, 0, 0, 0, config.defaultShapeMix or 0.5, config.defaultSkinMix or 0.5, 0, false)
   end
 
   local appearance <const> = ped.getAppearance(cache.ped)
@@ -337,7 +344,7 @@ end
 RegisterCommand(config.commands and config.commands.reloadSkin or "reloadskin", function()
   logger.info("Reloading skin from database")
   initAppearance()
-  lib.notify({ title = "Appearance", description = "Skin reloaded from database.", type = "success" })
+  lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.skin_reloaded"), type = "success" })
 end, false)
 
 AddEventHandler("onResourceStart", function(resource)

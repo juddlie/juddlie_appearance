@@ -1,11 +1,11 @@
 local config <const> = require("config")
 local logger <const> = require("shared.logger")
+local locale <const> = require("shared.locale")
 local ped <const> = require("client.modules.ped")
 
 local outfitwheel = {}
 
 local cachedOutfits = {}
-local lastJobOutfit = nil
 
 function outfitwheel.refreshOutfits()
   local outfits <const> = lib.callback.await("juddlie_appearance:server:getOutfits", false)
@@ -21,7 +21,7 @@ function outfitwheel.open()
   outfitwheel.refreshOutfits()
 
   if #cachedOutfits == 0 then
-    lib.notify({ title = "Outfits", description = "No outfits saved. Open the appearance menu to create outfits.", type = "info" })
+    lib.notify({ title = locale.t("ui.outfits.title"), description = locale.t("ui.outfit_wheel.no_outfits"), type = "info" })
     return
   end
 
@@ -43,7 +43,7 @@ function outfitwheel.open()
       options[#options + 1] = {
         title = ("⭐ %s"):format(outfit.name),
         description = outfit.category and outfit.category:sub(1, 1):upper() .. outfit.category:sub(2) or "Custom",
-        icon = "star",
+        icon = config.outfitWheel.favoriteIcon or "star",
         onSelect = function()
           outfitwheel.applyOutfit(outfit)
         end,
@@ -52,7 +52,7 @@ function outfitwheel.open()
   end
 
   for _, outfit in ipairs(regular) do
-    local categoryColors = {
+    local categoryColors <const> = config.outfitWheel.categoryColors or {
       casual = "blue",
       work = "orange",
       formal = "purple",
@@ -62,7 +62,7 @@ function outfitwheel.open()
     options[#options + 1] = {
       title = outfit.name,
       description = outfit.category and outfit.category:sub(1, 1):upper() .. outfit.category:sub(2) or "Custom",
-      icon = "shirt",
+      icon = config.outfitWheel.defaultIcon or "shirt",
       iconColor = categoryColors[outfit.category] or "gray",
       onSelect = function()
         outfitwheel.applyOutfit(outfit)
@@ -72,7 +72,7 @@ function outfitwheel.open()
 
   lib.registerContext({
     id = "juddlie_outfit_wheel",
-    title = "Quick Outfits",
+    title = locale.t("ui.outfit_wheel.title"),
     options = options,
   })
 
@@ -108,7 +108,7 @@ function outfitwheel.applyOutfit(outfit)
   end
 
   logger.debug("Outfit applied via wheel:", outfit.name)
-  lib.notify({ title = "Outfits", description = ("Outfit '%s' applied"):format(outfit.name), type = "success" })
+  lib.notify({ title = locale.t("ui.outfits.title"), description = locale.t("ui.outfit_wheel.applied", outfit.name), type = "success" })
 
   local fullAppearance <const> = ped.getAppearance(p)
   TriggerServerEvent("juddlie_appearance:server:saveAppearance", fullAppearance)
@@ -125,7 +125,6 @@ function outfitwheel.saveJobOutfit(jobName)
     tattoos = appearance.tattoos,
   }
 
-  lastJobOutfit = outfitData
   TriggerServerEvent("juddlie_appearance:server:saveJobOutfit", jobName, outfitData)
   logger.debug("Job outfit saved for:", jobName)
 end
@@ -139,8 +138,6 @@ function outfitwheel.loadJobOutfit(jobName)
     logger.debug("No job outfit found for:", jobName)
     return
   end
-
-  lastJobOutfit = outfitData
 
   if outfitData.clothing then
     for _, c in ipairs(outfitData.clothing) do
@@ -164,7 +161,7 @@ function outfitwheel.loadJobOutfit(jobName)
   end
 
   logger.debug("Job outfit loaded for:", jobName)
-  lib.notify({ title = "Outfits", description = "Job outfit loaded", type = "success" })
+  lib.notify({ title = locale.t("ui.outfits.title"), description = locale.t("notify.job_outfit_loaded"), type = "success" })
 end
 
 function outfitwheel.init()
