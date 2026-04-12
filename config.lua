@@ -364,4 +364,36 @@ config.commands = {
 	reloadSkin = "reloadskin",
 }
 
+-- allows players to quickly swap outfits via a keybind
+-- opens an ox_lib context menu with saved outfits
+config.outfitWheel = {
+	enabled = true,
+	-- the keybind to open the outfit wheel (can be rebound by the player in their keybind settings)
+	key = "F7",
+	-- the command name (used internally for RegisterKeyMapping)
+	command = "+outfitwheel",
+}
+
+-- allows admins/staff to edit another player's appearance
+-- usage: /setappearance [player server id]
+config.admin = {
+	enabled = true,
+	-- the command name to open the editor for a target player
+	command = "setappearance",
+	-- ace permission required to use the command
+	-- set to false to disable permission checks (not recommended)
+	-- grant in server.cfg: add_ace group.admin admin.appearance allow
+	acePermission = "admin.appearance",
+}
+
+-- one-time migration tool to import data from illenium-appearance
+-- usage: run the command from server console or with the appropriate ace permission
+config.migration = {
+	enabled = true,
+	-- the command to trigger migration
+	command = "migrateappearance",
+	-- ace permission required (set to false to allow console-only)
+	acePermission = false,
+}
+
 return config

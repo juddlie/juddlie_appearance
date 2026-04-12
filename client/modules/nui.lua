@@ -1,4 +1,9 @@
 local config <const> = require("config")
+local localeModule = nil
+
+pcall(function()
+  localeModule = require("shared.locale")
+end)
 
 local nui = {}
 
@@ -58,6 +63,7 @@ nui.handleMessage("ready", function()
     randomizerCategories = config.randomizerCategories,
     outfitCategories = config.outfitCategories,
     locale = config.locale or "en",
+    localeStrings = localeModule and localeModule.getAll() or {},
     disabledComponents = config.disabledComponents or {},
     disabledProps = config.disabledProps or {},
   })

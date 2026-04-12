@@ -2,6 +2,7 @@ local cache <const> = require("server.modules.cache")
 local blacklist <const> = require("shared.blacklist")
 local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
+local config <const> = require("config")
 
 ---@param appearance table
 RegisterNetEvent("juddlie_appearance:server:saveAppearance", function(appearance)
@@ -149,3 +150,132 @@ exports("getPlayerOutfit", function(src, outfitId)
 
   return nil
 end)
+
+---@param jobName string
+---@param data table
+RegisterNetEvent("juddlie_appearance:server:saveJobOutfit", function(jobName, data)
+  local source <const> = source
+  if not source or not jobName or type(data) ~= "table" then return end
+
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  logger.debug("Saving job outfit for player:", source, "job:", jobName)
+
+  MySQL.insert(
+    "INSERT INTO juddlie_appearance_job_outfits (identifier, job, data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)",
+    { identifier, jobName, json.encode(data) }
+  )
+end)
+
+---@param source number
+---@param jobName string
+---@return table?
+lib.callback.register("juddlie_appearance:server:getJobOutfit", function(source, jobName)
+  if not source or not jobName then return end
+
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  local data <const> = MySQL.scalar.await(
+    "SELECT data FROM juddlie_appearance_job_outfits WHERE identifier = ? AND job = ?",
+    { identifier, jobName }
+  )
+
+  if data then
+    return json.decode(data)
+  end
+
+  return nil
+end)
+
+---@param targetSrc number
+RegisterNetEvent("juddlie_appearance:server:adminRequestAppearance", function(targetSrc)
+  local source <const> = source
+  if not source then return end
+
+  if config.admin and config.admin.acePermission then
+    if not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
+      logger.warn("Unauthorized admin command attempt from player:", source)
+      lib.notify(source, { title = "Admin", description = "You don't have permission to use this command.", type = "error" })
+      return
+    end
+  end
+
+  local targetId <const> = tonumber(targetSrc)
+  if not targetId or not GetPlayerName(targetId) then
+    lib.notify(source, { title = "Admin", description = "Player not found.", type = "error" })
+    return
+  end
+
+  local targetAppearance <const> = cache.getAppearance(targetId)
+  if not targetAppearance then
+    lib.notify(source, { title = "Admin", description = "Could not load target player's appearance.", type = "error" })
+    return
+  end
+
+  logger.info("Admin", source, "requested appearance for player:", targetId)
+  TriggerClientEvent("juddlie_appearance:client:adminOpenEditor", source, targetId, targetAppearance)
+end)
+
+---@param targetSrc number
+---@param appearance table
+RegisterNetEvent("juddlie_appearance:server:adminSaveAppearance", function(targetSrc, appearance)
+  local source <const> = source
+  if not source then return end
+
+  if config.admin and config.admin.acePermission then
+    if not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
+      logger.warn("Unauthorized admin save attempt from player:", source)
+      return
+    end
+  end
+
+  local targetId <const> = tonumber(targetSrc)
+  if not targetId or not GetPlayerName(targetId) then return end
+
+  logger.info("Admin", source, "saving appearance for player:", targetId)
+  cache.setAppearance(targetId, appearance)
+
+  TriggerClientEvent("juddlie_appearance:client:applyAppearance", targetId, appearance)
+end)
+
+if config.migration and config.migration.enabled then
+  local migrate <const> = require("server.modules.migrate")
+
+  RegisterCommand(config.migration.command or "migrateappearance", function(source)
+    if source ~= 0 then
+      if config.migration.acePermission then
+        if not IsPlayerAceAllowed(tostring(source), config.migration.acePermission) then
+          lib.notify(source, { title = "Migration", description = "You don't have permission to use this command.", type = "error" })
+          return
+        end
+      else
+        lib.notify(source, { title = "Migration", description = "This command can only be used from the server console.", type = "error" })
+        return
+      end
+    end
+
+    logger.info("Starting illenium-appearance migration...")
+    print("^3[juddlie_appearance] Starting migration from illenium-appearance...^0")
+
+    local success, skins, outfits = migrate.fromIllenium()
+    if success then
+      local msg = ("Migration complete: %d skins, %d outfits migrated."):format(skins, outfits)
+      logger.info(msg)
+      print(("^2[juddlie_appearance] %s^0"):format(msg))
+      if source ~= 0 then
+        lib.notify(source, { title = "Migration", description = msg, type = "success" })
+      end
+    else
+      local msg = ("Migration failed: %s"):format(tostring(skins))
+      logger.error(msg)
+      print(("^1[juddlie_appearance] %s^0"):format(msg))
+      if source ~= 0 then
+        lib.notify(source, { title = "Migration", description = msg, type = "error" })
+      end
+    end
+  end, true)
+
+  logger.info("Migration command registered:", config.migration.command or "migrateappearance")
+end

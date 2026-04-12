@@ -334,3 +334,21 @@ exports("setAppearance", function(data)
   if type(data) ~= "table" then return end
   ped.applyAppearance(cache.ped, data)
 end)
+
+local outfitwheel <const> = require("client.modules.outfitwheel")
+outfitwheel.init()
+
+local admin <const> = require("client.modules.admin")
+admin.init()
+
+RegisterNetEvent("juddlie_appearance:client:adminOpenEditor", function(targetSrc, targetAppearance)
+  admin.openForPlayer(targetSrc, targetAppearance)
+end)
+
+nui.handleMessage("appearance:adminApply", function(data)
+  if admin.isAdminEdit then
+    admin.saveForPlayer(data)
+    admin.close()
+    menu.close(false)
+  end
+end)

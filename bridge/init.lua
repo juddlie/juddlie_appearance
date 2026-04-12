@@ -13,6 +13,7 @@ function bridge.get(type)
   if type == "framework" then
     local path <const> = ("bridge/framework/%s/%s"):format(config.framework, context)
     logger.debug("Loading framework bridge:", path)
+    
     local ok, mod = pcall(require, path)
     if not ok then
       logger.error("Failed to load framework bridge:", config.framework, mod)
@@ -29,10 +30,12 @@ function bridge.get(type)
       logger.debug("Interaction bridge disabled")
       return {}
     end
+
     if context ~= "client" then return {} end
 
     local path <const> = ("bridge/interaction/%s/client"):format(config.interaction)
     logger.debug("Loading interaction bridge:", path)
+
     local ok, mod = pcall(require, path)
     if not ok then
       logger.error("Failed to load interaction bridge:", config.interaction, mod)

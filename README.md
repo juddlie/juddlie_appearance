@@ -500,3 +500,113 @@ bridge.getPlayerData(src)        -- return { identifier, job, jobGrade, gang }
 ### Database tables not created
 - Make sure `oxmysql` is started and connected before this resource
 - Check your server console for SQL errors
+
+---
+
+## Outfit Wheel (Quick Swap)
+
+Quickly swap between saved outfits using a keybind — no need to open the full appearance menu.
+
+```lua
+config.outfitWheel = {
+    enabled = true,
+    key = "F7",               -- default keybind (players can rebind it in their FiveM keybind settings)
+    command = "+outfitwheel",  -- internal command name
+}
+```
+
+When pressed, opens an ox_lib context menu listing all saved outfits. Favorites (⭐) appear at the top. The applied outfit is automatically saved to the database.
+
+---
+
+## Admin Appearance Panel
+
+Staff members can edit another player's appearance remotely using a command.
+
+```lua
+config.admin = {
+    enabled = true,
+    command = "setappearance",        -- /setappearance [player id]
+    acePermission = "admin.appearance", -- ACE permission required
+}
+```
+
+**Usage:** `/setappearance 5` — opens the appearance menu with player 5's current skin. Changes are saved to that player's database entry and applied to their ped in real-time.
+
+**Grant permission in server.cfg:**
+```cfg
+add_ace group.admin admin.appearance allow
+```
+
+---
+
+## Migration from illenium-appearance
+
+One-command migration tool to import all player skins and outfits from illenium-appearance.
+
+```lua
+config.migration = {
+    enabled = true,
+    command = "migrateappearance",
+    acePermission = false,  -- console-only by default
+}
+```
+
+**Usage:** Run `migrateappearance` from the server console. The tool will:
+
+1. Auto-detect whether you're migrating from QB (`citizenid` column) or ESX (`identifier` column)
+2. Convert all skin data from illenium's flat format to juddlie's structured format
+3. Migrate outfits from the `player_outfits` table
+4. **Skip** any players who already have data in juddlie_appearance (safe to re-run)
+5. Print a summary of how many skins and outfits were migrated
+
+> **Important:** Back up your database before running the migration. The tool only inserts new data — it never overwrites existing juddlie_appearance records.
+
+---
+
+## Localization (i18n)
+
+The resource supports multiple languages. Locale files are stored as JSON in the `locales/` folder.
+
+```lua
+config.locale = "en"  -- change to "es", "fr", "de", "pt", etc.
+```
+
+### Included Languages
+
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `es` | Spanish |
+| `fr` | French |
+| `de` | German |
+| `pt` | Portuguese |
+
+### Adding a New Language
+
+1. Copy `locales/en.json` to `locales/xx.json` (where `xx` is your language code)
+2. Translate all strings in the JSON file
+3. Set `config.locale = "xx"` in `config.lua`
+
+Locale strings are automatically sent to the NUI and can be accessed in the React UI via the `useLocale` store:
+
+```tsx
+import { useLocale } from "../store/locale";
+
+const MyComponent = () => {
+  const t = useLocale((s) => s.t);
+  return <Text>{t("ui.sidebar.clothing")}</Text>;
+};
+```
+
+---
+
+## Clothing Search
+
+The clothing tab includes a built-in search bar that filters components by name, component ID, or drawable number. This makes it much faster to find specific clothing items when working with hundreds of drawables.
+
+---
+
+## Job Outfit Persistence
+
+When players use job clothing rooms, their outfit is automatically saved per job. On reconnect, the job outfit is restored — players no longer lose their work clothes after disconnecting.

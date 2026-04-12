@@ -31,4 +31,5 @@ files {
 	"web/build/assets/*.css",
 	"bridge/framework/**/client.lua",
 	"bridge/interaction/**/client.lua",
+	"locales/*.json",
 }
