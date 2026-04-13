@@ -345,18 +345,6 @@ bridge.onPlayerLoaded(function()
   zones.init()
 end)
 
-if config.debug then
-  RegisterCommand("appearance", function()
-    menu.open()
-  end, false)
-end
-
-RegisterCommand(config.commands and config.commands.reloadSkin or "reloadskin", function()
-  logger.info("Reloading skin from database")
-  initAppearance()
-  lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.skin_reloaded"), type = "success" })
-end, false)
-
 AddEventHandler("onResourceStart", function(resource)
   if resource ~= cache.resource then return end
 
@@ -372,6 +360,30 @@ AddEventHandler("onResourceStop", function(resource)
   zones.destroy()
   menu.close(false)
 end)
+
+if config.debug then
+  RegisterCommand("appearance", function()
+    menu.open()
+  end, false)
+end
+
+if config.pedMenu and config.pedMenu.enabled then
+  RegisterCommand(config.pedMenu.command or "pedmenu", function()
+    menu.allowedTabs = { "ped" }
+    menu.open()
+    nui.sendMessage("setAllowedTabs", { tabs = { "ped" } })
+  end, false)
+
+  if config.pedMenu.acePermission then
+    ExecuteCommand(("add_ace builtin.everyone command.%s deny"):format(config.pedMenu.command or "pedmenu"))
+  end
+end
+
+RegisterCommand(config.commands and config.commands.reloadSkin or "reloadskin", function()
+  logger.info("Reloading skin from database")
+  initAppearance()
+  lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.skin_reloaded"), type = "success" })
+end, false)
 
 exports("open", function(options)
   if type(options) == "table" and options.tabs then
