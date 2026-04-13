@@ -2,6 +2,29 @@ local logger <const> = require("shared.logger")
 
 local migrate = {}
 
+local componentMap <const> = {
+  [0] = { drawable = "drawable_0", texture = "texture_0" },
+  [1] = { drawable = "drawable_1", texture = "texture_1" },
+  [2] = { drawable = "drawable_2", texture = "texture_2" },
+  [3] = { drawable = "arms", texture = "arms_2" },
+  [4] = { drawable = "pants_1", texture = "pants_2" },
+  [5] = { drawable = "bags_1", texture = "bags_2" },
+  [6] = { drawable = "shoes_1", texture = "shoes_2" },
+  [7] = { drawable = "chain_1", texture = "chain_2" },
+  [8] = { drawable = "tshirt_1", texture = "tshirt_2" },
+  [9] = { drawable = "bproof_1", texture = "bproof_2" },
+  [10] = { drawable = "decals_1", texture = "decals_2" },
+  [11] = { drawable = "torso_1", texture = "torso_2" },
+}
+
+local propMap <const> = {
+  [0] = { drawable = "hat_1", texture = "hat_2" },
+  [1] = { drawable = "glasses_1", texture = "glasses_2" },
+  [2] = { drawable = "ear_1", texture = "ear_2" },
+  [6] = { drawable = "watch_1", texture = "watch_2" },
+  [7] = { drawable = "brace_1", texture = "brace_2" },
+}
+
 ---@return boolean success
 ---@return number|string skinCount_or_error
 ---@return number? outfitCount
@@ -258,21 +281,6 @@ function migrate.convertSkin(skin, model)
     end
   end
 
-  local componentMap = {
-    [0] = { drawable = "drawable_0", texture = "texture_0" },
-    [1] = { drawable = "drawable_1", texture = "texture_1" },
-    [2] = { drawable = "drawable_2", texture = "texture_2" },
-    [3] = { drawable = "arms", texture = "arms_2" },
-    [4] = { drawable = "pants_1", texture = "pants_2" },
-    [5] = { drawable = "bags_1", texture = "bags_2" },
-    [6] = { drawable = "shoes_1", texture = "shoes_2" },
-    [7] = { drawable = "chain_1", texture = "chain_2" },
-    [8] = { drawable = "tshirt_1", texture = "tshirt_2" },
-    [9] = { drawable = "bproof_1", texture = "bproof_2" },
-    [10] = { drawable = "decals_1", texture = "decals_2" },
-    [11] = { drawable = "torso_1", texture = "torso_2" },
-  }
-
   for cid = 0, 11 do
     local map = componentMap[cid]
     local drawable = 0
@@ -289,14 +297,6 @@ function migrate.convertSkin(skin, model)
       texture = texture,
     }
   end
-
-  local propMap = {
-    [0] = { drawable = "hat_1", texture = "hat_2" },
-    [1] = { drawable = "glasses_1", texture = "glasses_2" },
-    [2] = { drawable = "ear_1", texture = "ear_2" },
-    [6] = { drawable = "watch_1", texture = "watch_2" },
-    [7] = { drawable = "brace_1", texture = "brace_2" },
-  }
 
   for _, pid in ipairs({ 0, 1, 2, 6, 7 }) do
     local map = propMap[pid]
@@ -326,21 +326,6 @@ function migrate.convertToOutfit(skin)
   local clothing = {}
   local props = {}
 
-  local componentMap = {
-    [0] = { drawable = "drawable_0", texture = "texture_0" },
-    [1] = { drawable = "drawable_1", texture = "texture_1" },
-    [2] = { drawable = "drawable_2", texture = "texture_2" },
-    [3] = { drawable = "arms", texture = "arms_2" },
-    [4] = { drawable = "pants_1", texture = "pants_2" },
-    [5] = { drawable = "bags_1", texture = "bags_2" },
-    [6] = { drawable = "shoes_1", texture = "shoes_2" },
-    [7] = { drawable = "chain_1", texture = "chain_2" },
-    [8] = { drawable = "tshirt_1", texture = "tshirt_2" },
-    [9] = { drawable = "bproof_1", texture = "bproof_2" },
-    [10] = { drawable = "decals_1", texture = "decals_2" },
-    [11] = { drawable = "torso_1", texture = "torso_2" },
-  }
-
   for cid = 0, 11 do
     local map = componentMap[cid]
     clothing[#clothing + 1] = {
@@ -349,14 +334,6 @@ function migrate.convertToOutfit(skin)
       texture = tonumber(skin[map.texture]) or tonumber(skin[("texture_%d"):format(cid)]) or 0,
     }
   end
-
-  local propMap = {
-    [0] = { drawable = "hat_1", texture = "hat_2" },
-    [1] = { drawable = "glasses_1", texture = "glasses_2" },
-    [2] = { drawable = "ear_1", texture = "ear_2" },
-    [6] = { drawable = "watch_1", texture = "watch_2" },
-    [7] = { drawable = "brace_1", texture = "brace_2" },
-  }
 
   for _, pid in ipairs({ 0, 1, 2, 6, 7 }) do
     local map = propMap[pid]
