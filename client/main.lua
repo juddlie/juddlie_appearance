@@ -28,12 +28,19 @@ local function initAppearance()
   end
 
   logger.debug("Applying initial appearance")
+  if appearance.model then
+    ped.applyModel(appearance.model)
+  end
+
   ped.applyAppearance(cache.ped, appearance)
 end
 
 RegisterNetEvent("juddlie_appearance:client:applyAppearance", function(data)
   if type(data) ~= "table" then return end
 
+  if data.model then
+    ped.applyModel(data.model)
+  end
   ped.applyAppearance(cache.ped, data)
 end)
 
@@ -84,6 +91,9 @@ nui.handleMessage("appearance:apply", function(data)
   if type(data) ~= "table" then return end
 
   logger.debug("Applying and saving appearance")
+  if data.model then
+    ped.applyModel(data.model)
+  end
   ped.applyAppearance(cache.ped, data)
   menu.originalAppearance = ped.getAppearance(cache.ped)
 

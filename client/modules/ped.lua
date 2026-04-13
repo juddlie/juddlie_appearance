@@ -115,6 +115,35 @@ function ped.getAppearance(p)
   }
 end
 
+---@param model string
+---@return boolean
+function ped.applyModel(model)
+  if type(model) ~= "string" then return false end
+
+  local modelHash <const> = joaat(model)
+  if GetEntityModel(cache.ped) == modelHash then return false end
+  if not IsModelInCdimage(modelHash) then return false end
+
+  RequestModel(modelHash)
+
+  local timeout <const> = GetGameTimer() + 5000
+  while not HasModelLoaded(modelHash) do
+    if GetGameTimer() > timeout then return false end
+    Wait(0)
+  end
+
+  SetPlayerModel(PlayerId(), modelHash)
+  SetModelAsNoLongerNeeded(modelHash)
+  cache.ped = PlayerPedId()
+
+  if ped.isFreemode(cache.ped) then
+    SetPedDefaultComponentVariation(cache.ped)
+    SetPedHeadBlendData(cache.ped, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0, false)
+  end
+
+  return true
+end
+
 ---@param p number
 ---@param data table
 function ped.applyAppearance(p, data)
