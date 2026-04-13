@@ -93,11 +93,90 @@ When using ESX or QBX, the identifier comes from the framework automatically —
 ### General Settings
 
 ```lua
-config.debug = true                        -- enables /appearance command for testing
-config.locale = "en"                       -- language
-config.defaultFov = 50                     -- camera field of view
-config.invincibleDuringCustomization = true -- god mode while menu is open
-config.hideRadar = false                   -- hide minimap while menu is open
+config.debug = true                          -- enables /appearance command for testing
+config.locale = "en"                         -- language (see Localization section)
+config.defaultFov = 50                       -- camera field of view
+config.invincibleDuringCustomization = true   -- god mode while menu is open
+config.freezeDuringCustomization = true       -- freeze the player in place while menu is open
+config.hideRadar = false                     -- hide minimap while menu is open
+```
+
+### Head Blend Defaults
+
+```lua
+-- default head blend mix values when creating a new freemode ped (range: 0.0 to 1.0)
+config.defaultShapeMix = 0.5
+config.defaultSkinMix = 0.5
+```
+
+### Timeouts & Animation
+
+```lua
+config.modelLoadTimeout = 5000      -- timeout (ms) for loading ped models
+config.animationLoadTimeout = 5000  -- timeout (ms) for loading animation dicts
+config.animationBlendIn = 8.0       -- animation blend in speed
+config.animationBlendOut = -8.0     -- animation blend out speed
+config.cameraTransitionTime = 500   -- camera create/destroy transition (ms)
+config.randomizerDefaultSpeed = 2   -- auto-randomizer speed in seconds
+```
+
+### Server Limits
+
+Prevent abuse with payload size limits and max saved items:
+
+```lua
+config.limits = {
+    maxPresets = 50,       -- max presets per player
+    maxOutfits = 50,       -- max outfits per player
+    maxPayloadSize = 100000, -- max JSON payload size in bytes
+}
+```
+
+### Default Blip & Radius
+
+```lua
+-- default blip settings used when a location doesn't specify its own
+config.defaultBlip = {
+    sprite = 1,
+    color = 0,
+    scale = 0.7,
+}
+
+-- default interaction radius for locations and clothing rooms (in meters)
+config.defaultLocationRadius = 2.0
+config.defaultClothingRoomRadius = 1.5
+```
+
+### Target Icons
+
+```lua
+-- icons used for ox_target / qb-target interaction zones
+config.targetIcons = {
+    location = "fas fa-tshirt",
+    clothingRoom = "fas fa-door-open",
+}
+```
+
+### Lighting Times
+
+```lua
+-- clock times set for each lighting preset (hour, minute, second)
+config.lightingTimes = {
+    studio = { 18, 0, 0 },
+    day    = { 12, 0, 0 },
+    night  = { 0, 0, 0 },
+}
+```
+
+### Ped Models
+
+Models available in the ped model selector page:
+
+```lua
+config.pedModels = {
+    { value = "mp_m_freemode_01", label = "Freemode Male" },
+    { value = "mp_f_freemode_01", label = "Freemode Female" },
+}
 ```
 
 ### Disabled Components / Props
@@ -398,6 +477,7 @@ config.commands = {
 |---------|-------------|
 | `/reloadskin` | Re-applies your saved appearance from the database |
 | `/appearance` | Opens the full menu (only available when `config.debug = true`) |
+| `/pedmenu` | Opens the ped model selector (when `config.pedMenu.enabled = true`) |
 
 ---
 
@@ -512,6 +592,14 @@ config.outfitWheel = {
     enabled = true,
     key = "F7",               -- default keybind (players can rebind it in their FiveM keybind settings)
     command = "+outfitwheel",  -- internal command name
+    favoriteIcon = "star",     -- icon for favorite outfits in the context menu
+    defaultIcon = "shirt",     -- icon for regular outfits in the context menu
+    categoryColors = {         -- color mapping for outfit categories
+        casual = "blue",
+        work = "orange",
+        formal = "purple",
+        custom = "gray",
+    },
 }
 ```
 
