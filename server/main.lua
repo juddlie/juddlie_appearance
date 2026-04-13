@@ -213,6 +213,36 @@ lib.callback.register("juddlie_appearance:server:getAppearance", function(source
 end)
 
 ---@param source number
+---@param shopType string
+---@return boolean hasEnough
+---@return number price
+lib.callback.register("juddlie_appearance:server:hasMoney", function(source, shopType)
+  local source <const> = source
+  if not source or not shopType then return true, 0 end
+
+  local price <const> = config.prices and config.prices[shopType] or 0
+  if price <= 0 then return true, 0 end
+
+  return bridge.hasMoney(source, "cash", price), price
+end)
+
+RegisterNetEvent("juddlie_appearance:server:chargeCustomer", function(shopType)
+  local source <const> = source
+  if not source or not shopType then return end
+
+  local price <const> = config.prices and config.prices[shopType] or 0
+  if price <= 0 then return end
+
+  if not bridge.hasMoney(source, "cash", price) then
+    logger.warn("Player", source, "tried to save without enough money for:", shopType)
+    return
+  end
+
+  bridge.removeMoney(source, "cash", price)
+  logger.info("Charged player", source, "$" .. price, "for:", shopType)
+end)
+
+---@param source number
 ---@return table?
 lib.callback.register("juddlie_appearance:server:getPresets", function(source)
   local source <const> = source

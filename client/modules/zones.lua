@@ -50,6 +50,15 @@ local function openAtLocation(location)
     nui.sendMessage("setAllowedTabs", { tabs = location.tabs })
   end
 
+  if location.type and config.prices and config.prices[location.type] and config.prices[location.type] > 0 then
+    local hasMoney, price = lib.callback.await("juddlie_appearance:server:hasMoney", false, location.type)
+    if not hasMoney then
+      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.not_enough_money", price), type = "error" })
+      return
+    end
+  end
+
+  menu.shopType = location.type or nil
   menu.allowedTabs = location.tabs or nil
   logger.debug("Opening menu at location:", location.label)
   menu.open()

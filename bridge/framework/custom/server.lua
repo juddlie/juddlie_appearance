@@ -26,4 +26,20 @@ function bridge.getPlayerData(src)
   }
 end
 
+---@param src number
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.hasMoney(src, moneyType, amount)
+  return true
+end
+
+---@param src number
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.removeMoney(src, moneyType, amount)
+  return true
+end
+
 return bridge

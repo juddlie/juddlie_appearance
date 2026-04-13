@@ -321,6 +321,20 @@ config.locations = {
 	},
 }
 
+-- how much to charge players when they save changes at each shop type
+-- set a price to 0 to make that shop free
+-- these match the "type" field on each location in config.locations
+config.prices = {
+	clothing_store = 100,
+	barber = 100,
+	tattoo = 100,
+	surgeon = 500,
+}
+
+-- if true, players are charged per tattoo applied (uses the tattoo shop price above)
+-- if false, players pay once when they save, regardless of how many tattoos they add
+config.chargePerTattoo = false
+
 -- block (or exclusively allow) specific clothing drawables and props
 -- based on job, gang, identifier, or ace permissions
 --

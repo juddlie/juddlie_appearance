@@ -11,6 +11,7 @@ local menu = {}
 menu.active = false
 menu.originalAppearance = nil
 menu.allowedTabs = nil
+menu.shopType = nil
 
 function menu.open()
   if menu.active then return end
@@ -48,6 +49,7 @@ function menu.close(save)
   logger.debug("Closing appearance menu, save:", save)
   menu.active = false
   menu.allowedTabs = nil
+  menu.shopType = nil
   camera.destroy()
 
   if config.freezeDuringCustomization ~= false then FreezeEntityPosition(cache.ped, false) end

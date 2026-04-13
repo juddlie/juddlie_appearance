@@ -98,6 +98,10 @@ nui.handleMessage("appearance:apply", function(data)
   menu.originalAppearance = ped.getAppearance(cache.ped)
 
   TriggerServerEvent("juddlie_appearance:server:saveAppearance", menu.originalAppearance)
+
+  if menu.shopType then
+    TriggerServerEvent("juddlie_appearance:server:chargeCustomer", menu.shopType)
+  end
 end)
 
 nui.handleMessage("appearance:revert", function()

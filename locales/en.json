@@ -201,6 +201,7 @@
     "admin_no_permission": "You don't have permission to use this command",
     "admin_player_not_found": "Player not found",
     "admin_load_failed": "Could not load target player's appearance",
-    "admin_usage": "Usage: /setappearance [player id]"
+    "admin_usage": "Usage: /setappearance [player id]",
+    "not_enough_money": "You need $%d to use this shop"
   }
 }

@@ -299,69 +299,20 @@ RegisterNetEvent("illenium-appearance:server:ResetRoutingBucket", function()
 	SetPlayerRoutingBucket(tostring(source), 0)
 end)
 
-lib.callback.register("illenium-appearance:server:getAppearance", function(source, model)
-	local source <const> = source
-	if not source then return end
-
-	logger.debug("illenium compat: getAppearance callback for player:", source)
-	local appearance <const> = cache.getAppearance(source)
-	if not appearance then return nil end
-	return toIlleniumAppearance(appearance)
-end)
-
-lib.callback.register("illenium-appearance:server:getOutfits", function(source)
-	local source <const> = source
-	if not source then return {} end
-
-	logger.debug("illenium compat: getOutfits callback for player:", source)
-	local outfits <const> = cache.getOutfits(source)
-	local result = {}
-
-	for _, outfit in ipairs(outfits) do
-		local outfitData = outfit.data or {}
-		local components = {}
-		local props = {}
-
-		if outfitData.clothing then
-			for index, c in ipairs(outfitData.clothing) do
-				components[index] = { component_id = c.component, drawable = c.drawable, texture = c.texture }
-			end
-		end
-
-		if outfitData.props then
-			for index, p in ipairs(outfitData.props) do
-				props[index] = { prop_id = p.prop, drawable = p.drawable, texture = p.texture }
-			end
-		end
-
-		result[#result + 1] = {
-			id = outfit.id,
-			name = outfit.name,
-			model = outfitData.model or "mp_m_freemode_01",
-			components = components,
-			props = props,
-		}
-	end
-
-	return result
-end)
-
-lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
-	return true, 0
-end)
-
-lib.callback.register("illenium-appearance:server:getManagementOutfits", function(source, mType, gender)
-	return {}
-end)
-
-lib.callback.register("illenium-appearance:server:getUniform", function(source)
-	return nil
-end)
-
 RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
 	local source <const> = source
-	if not source then return end
-	logger.debug("illenium compat: chargeCustomer (no-op)")
+	if not source or not shopType then return end
+	local config <const> = require("config")
+	local price <const> = config.prices and config.prices[shopType] or 0
+	if price <= 0 then return end
+
+	if not bridge.hasMoney(source, "cash", price) then
+		logger.warn("illenium compat: chargeCustomer — player", source, "cannot afford", shopType)
+		return
+	end
+
+	bridge.removeMoney(source, "cash", price)
+	logger.info("illenium compat: charged player", source, "$" .. price, "for", shopType)
 end)
 
 RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)
@@ -422,13 +373,6 @@ RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(i
 	logger.debug("illenium compat: deleteManagementOutfit (not supported)")
 end)
 
-exports("getPlayerAppearance", function(src)
-	local appearance <const> = cache.getAppearance(src)
-	if not appearance then return nil end
-	return toIlleniumAppearance(appearance)
-end)
-
-
 RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, components, props)
 	local source <const> = source
 	if not source then return end
@@ -473,7 +417,17 @@ RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(i
 end)
 
 RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
-	logger.debug("illenium compat: chargeCustomer — shop costs not configured, skipping")
+	local source <const> = source
+	if not source or not shopType then return end
+	local config <const> = require("config")
+	local price <const> = config.prices and config.prices[shopType] or 0
+	if price <= 0 then return end
+	if not bridge.hasMoney(source, "cash", price) then
+		logger.warn("illenium compat: chargeCustomer — player", source, "cannot afford", shopType)
+		return
+	end
+	bridge.removeMoney(source, "cash", price)
+	logger.info("illenium compat: charged player", source, "$" .. price, "for", shopType)
 end)
 
 RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)
@@ -485,6 +439,69 @@ RegisterNetEvent("illenium-appearance:server:resetOutfitCache", function()
 end)
 
 logger.info("Registering illenium-appearance server compatibility")
+
+lib.callback.register("illenium-appearance:server:getAppearance", function(source, model)
+	local source <const> = source
+	if not source then return end
+
+	logger.debug("illenium compat: getAppearance callback for player:", source)
+	local appearance <const> = cache.getAppearance(source)
+	if not appearance then return nil end
+	return toIlleniumAppearance(appearance)
+end)
+
+lib.callback.register("illenium-appearance:server:getOutfits", function(source)
+	local source <const> = source
+	if not source then return {} end
+
+	logger.debug("illenium compat: getOutfits callback for player:", source)
+	local outfits <const> = cache.getOutfits(source)
+	local result = {}
+
+	for _, outfit in ipairs(outfits) do
+		local outfitData = outfit.data or {}
+		local components = {}
+		local props = {}
+
+		if outfitData.clothing then
+			for index, c in ipairs(outfitData.clothing) do
+				components[index] = { component_id = c.component, drawable = c.drawable, texture = c.texture }
+			end
+		end
+
+		if outfitData.props then
+			for index, p in ipairs(outfitData.props) do
+				props[index] = { prop_id = p.prop, drawable = p.drawable, texture = p.texture }
+			end
+		end
+
+		result[#result + 1] = {
+			id = outfit.id,
+			name = outfit.name,
+			model = outfitData.model or "mp_m_freemode_01",
+			components = components,
+			props = props,
+		}
+	end
+
+	return result
+end)
+
+lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
+	local config <const> = require("config")
+	local price <const> = config.prices and config.prices[shopType] or 0
+	if price <= 0 then return true, 0 end
+	
+	return bridge.hasMoney(source, "cash", price), price
+end)
+
+lib.callback.register("illenium-appearance:server:getManagementOutfits", function(source, mType, gender)
+	return {}
+end)
+
+lib.callback.register("illenium-appearance:server:getUniform", function(source)
+	return nil
+end)
 
 ---@param source number
 ---@return table? appearance
@@ -531,7 +548,10 @@ lib.callback.register("illenium-appearance:server:getUniform", function(source)
 end)
 
 lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
-	return true, 0
+	local config <const> = require("config")
+	local price <const> = config.prices and config.prices[shopType] or 0
+	if price <= 0 then return true, 0 end
+	return bridge.hasMoney(source, "cash", price), price
 end)
 
 lib.callback.register("illenium-appearance:server:payForTattoo", function(source, tattoo)
@@ -587,6 +607,13 @@ end)
 
 lib.addCommand("gangoutfits", { help = "Open gang outfits menu" }, function(source)
 	TriggerClientEvent("illenium-apearance:client:outfitsCommand", source, false)
+end)
+
+exports("getPlayerAppearance", function(src)
+	local appearance <const> = cache.getAppearance(src)
+	if not appearance then return nil end
+	
+	return toIlleniumAppearance(appearance)
 end)
 
 logger.info("Illenium-appearance server compatibility loaded")
