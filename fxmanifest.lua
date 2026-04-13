@@ -17,12 +17,14 @@ shared_scripts {
 client_scripts {
 	"client/modules/*.lua",
 	"client/main.lua",
+	"bridge/compat/illenium/client.lua",
 }
 
 server_scripts {
 	"@oxmysql/lib/MySQL.lua",
 	"server/modules/*.lua",
 	"server/main.lua",
+	"bridge/compat/illenium/server.lua",
 }
 
 files {
@@ -33,3 +35,5 @@ files {
 	"bridge/interaction/**/client.lua",
 	"locales/*.json",
 }
+
+provide "illenium-appearance"
