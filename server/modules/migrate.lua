@@ -25,6 +25,58 @@ local propMap <const> = {
   [7] = { drawable = "brace_1", texture = "brace_2" },
 }
 
+local legacyFeatureMap <const> = {
+  noseWidth = "nose_1",
+  nosePeakHeight = "nose_2",
+  nosePeakLength = "nose_3",
+  noseBoneHeight = "nose_4",
+  nosePeakLowering = "nose_5",
+  noseBoneTwist = "nose_6",
+  eyebrowHeight = "eyebrows_5",
+  eyebrowDepth = "eyebrows_6",
+  cheekboneHeight = "cheeks_1",
+  cheekboneWidth = "cheeks_2",
+  cheekWidth = "cheeks_3",
+  eyeOpening = "eye_squint",
+  lipThickness = "lip_thickness",
+  jawBoneWidth = "jaw_1",
+  jawBoneLength = "jaw_2",
+  chinBoneHeight = "chin_1",
+  chinBoneLength = "chin_2",
+  chinBoneWidth = "chin_3",
+  chinHole = "chin_4",
+  neckThickness = "neck_thickness",
+}
+
+local illeniumHeadOverlays <const> = {
+  "blemishes", "beard", "eyebrows", "ageing", "makeUp",
+  "blush", "complexion", "sunDamage", "lipstick",
+  "moleAndFreckles", "chestHair", "bodyBlemishes", "addBodyBlemishes",
+}
+
+local featureToJuddlie <const> = {
+  noseWidth = "noseWidth",
+  nosePeakHigh = "nosePeakHeight",
+  nosePeakSize = "nosePeakLength",
+  noseBoneHigh = "noseBoneHeight",
+  nosePeakLowering = "nosePeakLowering",
+  noseBoneTwist = "noseBoneTwist",
+  eyeBrownHigh = "eyebrowHeight",
+  eyeBrownForward = "eyebrowDepth",
+  cheeksBoneHigh = "cheekboneHeight",
+  cheeksBoneWidth = "cheekboneWidth",
+  cheeksWidth = "cheekWidth",
+  eyesOpening = "eyeOpening",
+  lipsThickness = "lipThickness",
+  jawBoneWidth = "jawBoneWidth",
+  jawBoneBackSize = "jawBoneLength",
+  chinBoneLowering = "chinBoneHeight",
+  chinBoneLenght = "chinBoneLength",
+  chinBoneSize = "chinBoneWidth",
+  chinHole = "chinHole",
+  neckThickness = "neckThickness",
+}
+
 ---@return boolean success
 ---@return number|string skinCount_or_error
 ---@return number? outfitCount
@@ -129,71 +181,130 @@ function migrate.fromIllenium()
     end
 
     if outfitIdCol then
-      local dataCol = nil
+      local colSet = {}
       local allColNames = {}
       for _, col in ipairs(outfitColumns or {}) do
         local name = col.COLUMN_NAME or col.column_name
         allColNames[#allColNames + 1] = name
-        if not dataCol and (name == "outfitData" or name == "outfit_data" or name == "outfit" or name == "skin" or name == "data") then
-          dataCol = name
+        colSet[name] = true
+      end
+
+      local hasModel = colSet["model"] ~= nil
+      local hasComponents = colSet["components"] ~= nil
+      local hasProps = colSet["props"] ~= nil
+      local nameCol = colSet["outfitname"] and "outfitname"
+          or colSet["outfit_name"] and "outfit_name"
+          or colSet["name"] and "name"
+          or nil
+
+      local dataCol = nil
+      if not hasComponents then
+        for _, name in ipairs(allColNames) do
+          if name == "outfitData" or name == "outfit_data" or name == "outfit" or name == "skin" or name == "data" then
+            dataCol = name
+            break
+          end
         end
       end
 
-      if not dataCol then
-        logger.warn("player_outfits: no known data column found. Columns:", table.concat(allColNames, ", "))
+      if not nameCol then
+        logger.warn("player_outfits: no name column found. Columns:", table.concat(allColNames, ", "))
         logger.warn("Skipping outfit migration.")
-      else
+      elseif hasComponents and hasProps then
+        logger.debug("player_outfits: detected illenium format (components + props columns)")
+
+        local selectParts = {
+          ("`%s` AS ident"):format(outfitIdCol),
+          ("`%s` AS oname"):format(nameCol),
+          "`components`",
+          "`props`",
+        }
+        if hasModel then selectParts[#selectParts + 1] = "`model`" end
+
+        local selectQuery = ("SELECT %s FROM `player_outfits`"):format(table.concat(selectParts, ", "))
+        local outfitRows = MySQL.query.await(selectQuery)
+
+        for _, row in ipairs(outfitRows or {}) do
+          if row.ident and row.oname then
+            local components = row.components and json.decode(row.components) or {}
+            local props = row.props and json.decode(row.props) or {}
+
+            local clothing = {}
+            for _, comp in ipairs(components) do
+              clothing[#clothing + 1] = {
+                component = comp.component_id,
+                drawable = comp.drawable or 0,
+                texture = comp.texture or 0,
+              }
+            end
+
+            local outfitProps = {}
+            for _, propData in ipairs(props) do
+              outfitProps[#outfitProps + 1] = {
+                prop = propData.prop_id,
+                drawable = propData.drawable or -1,
+                texture = propData.texture or 0,
+              }
+            end
+
+            local outfitData = { clothing = clothing, props = outfitProps, tattoos = {} }
+            local outfitId = ("migrated_%s_%d"):format(row.oname:gsub("%s+", "_"):lower(), os.time())
+
+            MySQL.insert(
+              "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              {
+                row.ident,
+                outfitId,
+                row.oname,
+                "custom",
+                json.encode(outfitData),
+                0,
+                os.time() * 1000,
+              }
+            )
+            outfitCount = outfitCount + 1
+          end
+        end
+      elseif dataCol then
         logger.debug("player_outfits data column:", dataCol)
 
-        local colSet = {}
-        for _, n in ipairs(allColNames) do colSet[n] = true end
+        local selectParts = {
+          ("`%s` AS ident"):format(outfitIdCol),
+          ("`%s` AS oname"):format(nameCol),
+          ("`%s` AS skin"):format(dataCol),
+        }
+        if hasModel then selectParts[#selectParts + 1] = "`model`" end
 
-        local hasModel = colSet["model"] ~= nil
-        local nameCol = colSet["outfitname"] and "outfitname"
-            or colSet["outfit_name"] and "outfit_name"
-            or colSet["name"] and "name"
-            or nil
+        local selectQuery = ("SELECT %s FROM `player_outfits`"):format(table.concat(selectParts, ", "))
+        local outfitRows = MySQL.query.await(selectQuery)
 
-        if not nameCol then
-          logger.warn("player_outfits: no name column found. Columns:", table.concat(allColNames, ", "))
-          logger.warn("Skipping outfit migration.")
-        else
-          local selectParts = {
-            ("`%s` AS ident"):format(outfitIdCol),
-            ("`%s` AS oname"):format(nameCol),
-            ("`%s` AS skin"):format(dataCol),
-          }
-          if hasModel then selectParts[#selectParts + 1] = "`model`" end
-
-          local selectQuery = ("SELECT %s FROM `player_outfits`"):format(table.concat(selectParts, ", "))
-
-          local outfitRows = MySQL.query.await(selectQuery)
-
-          for _, row in ipairs(outfitRows or {}) do
-            if row.ident and row.skin and row.oname then
-              local ok, skinData = pcall(json.decode, row.skin)
-              if ok and skinData then
-                local outfitData = migrate.convertToOutfit(skinData)
-                if outfitData then
-                  local outfitId = ("migrated_%s_%d"):format(row.oname:gsub("%s+", "_"):lower(), os.time())
-                  MySQL.insert(
-                    "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    {
-                      row.ident,
-                      outfitId,
-                      row.oname,
-                      "custom",
-                      json.encode(outfitData),
-                      0,
-                      os.time() * 1000,
-                    }
-                  )
-                  outfitCount = outfitCount + 1
-                end
+        for _, row in ipairs(outfitRows or {}) do
+          if row.ident and row.skin and row.oname then
+            local ok, skinData = pcall(json.decode, row.skin)
+            if ok and skinData then
+              local outfitData = migrate.convertToOutfit(skinData)
+              if outfitData then
+                local outfitId = ("migrated_%s_%d"):format(row.oname:gsub("%s+", "_"):lower(), os.time())
+                MySQL.insert(
+                  "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                  {
+                    row.ident,
+                    outfitId,
+                    row.oname,
+                    "custom",
+                    json.encode(outfitData),
+                    0,
+                    os.time() * 1000,
+                  }
+                )
+                outfitCount = outfitCount + 1
               end
             end
           end
         end
+      else
+        logger.warn("player_outfits: no known data column found. Columns:", table.concat(allColNames, ", "))
+        logger.warn("Skipping outfit migration.")
       end
     end
   end
@@ -204,8 +315,138 @@ end
 
 ---@param skin table
 ---@param model string?
----@return table? converted
+---@return table?
 function migrate.convertSkin(skin, model)
+  if not skin then return nil end
+
+  if skin.headBlend or skin.headOverlays or skin.components then
+    return migrate.convertModernSkin(skin, model)
+  end
+
+  return migrate.convertLegacySkin(skin, model)
+end
+
+---@param skin table
+---@param model string?
+---@return table?
+function migrate.convertModernSkin(skin, model)
+  local result = {
+    model = model or skin.model or "mp_m_freemode_01",
+    headBlend = {},
+    faceFeatures = {},
+    headOverlays = {},
+    hair = {},
+    eyeColor = skin.eyeColor or 0,
+    clothing = {},
+    props = {},
+    tattoos = {},
+  }
+
+  if skin.headBlend then
+    result.headBlend = {
+      shapeFirst = skin.headBlend.shapeFirst or 0,
+      shapeSecond = skin.headBlend.shapeSecond or 0,
+      skinFirst = skin.headBlend.skinFirst or 0,
+      skinSecond = skin.headBlend.skinSecond or 0,
+      shapeMix = skin.headBlend.shapeMix or 0.5,
+      skinMix = skin.headBlend.skinMix or 0.5,
+    }
+  end
+
+  if skin.faceFeatures then
+    for illeniumKey, juddlieKey in pairs(featureToJuddlie) do
+      result.faceFeatures[juddlieKey] = tonumber(skin.faceFeatures[illeniumKey]) or 0.0
+    end
+  end
+
+  if skin.headOverlays then
+    for i, name in ipairs(illeniumHeadOverlays) do
+      local overlay = skin.headOverlays[name]
+      if overlay then
+        local value = overlay.style or overlay.value or -1
+        local opacity = overlay.opacity or 1.0
+        if value == 0 and opacity == 0 then value = -1 end
+
+        result.headOverlays[i] = {
+          value = value,
+          opacity = opacity,
+          firstColor = overlay.color or overlay.firstColor or 0,
+          secondColor = overlay.secondColor or 0,
+        }
+      else
+        result.headOverlays[i] = { value = -1, opacity = 1.0, firstColor = 0, secondColor = 0 }
+      end
+    end
+  end
+
+  if skin.hair then
+    result.hair = {
+      style = skin.hair.style or 0,
+      color = skin.hair.color or 0,
+      highlight = skin.hair.highlight or 0,
+    }
+  end
+
+  if skin.components then
+    for _, comp in ipairs(skin.components) do
+      result.clothing[#result.clothing + 1] = {
+        component = comp.component_id,
+        drawable = comp.drawable or 0,
+        texture = comp.texture or 0,
+      }
+    end
+  else
+    for cid = 0, 11 do
+      result.clothing[#result.clothing + 1] = { component = cid, drawable = 0, texture = 0 }
+    end
+  end
+
+  if skin.props then
+    for _, propData in ipairs(skin.props) do
+      result.props[#result.props + 1] = {
+        prop = propData.prop_id,
+        drawable = propData.drawable or -1,
+        texture = propData.texture or 0,
+      }
+    end
+  else
+    for _, pid in ipairs({ 0, 1, 2, 6, 7 }) do
+      result.props[#result.props + 1] = { prop = pid, drawable = -1, texture = 0 }
+    end
+  end
+
+  if skin.tattoos and type(skin.tattoos) == "table" then
+    local isZoned = false
+    for key in pairs(skin.tattoos) do
+      if type(key) == "string" and key:find("^ZONE_") then
+        isZoned = true
+        break
+      end
+    end
+
+    if isZoned then
+      for zone, zoneTattoos in pairs(skin.tattoos) do
+        for _, tattoo in ipairs(zoneTattoos) do
+          result.tattoos[#result.tattoos + 1] = {
+            collection = tattoo.collection,
+            overlay = tattoo.hashMale or tattoo.hashFemale or tattoo.overlay,
+            zone = zone,
+            label = tattoo.name or tattoo.label or "",
+          }
+        end
+      end
+    else
+      result.tattoos = skin.tattoos
+    end
+  end
+
+  return result
+end
+
+---@param skin table
+---@param model string?
+---@return table?
+function migrate.convertLegacySkin(skin, model)
   if not skin then return nil end
 
   local result = {
@@ -231,31 +472,8 @@ function migrate.convertSkin(skin, model)
     tattoos = skin.tattoos or {},
   }
 
-  local featureMap = {
-    noseWidth = "nose_1",
-    nosePeakHeight = "nose_2",
-    nosePeakLength = "nose_3",
-    noseBoneHeight = "nose_4",
-    nosePeakLowering = "nose_5",
-    noseBoneTwist = "nose_6",
-    eyebrowHeight = "eyebrows_5",
-    eyebrowDepth = "eyebrows_6",
-    cheekboneHeight = "cheeks_1",
-    cheekboneWidth = "cheeks_2",
-    cheekWidth = "cheeks_3",
-    eyeOpening = "eye_squint",
-    lipThickness = "lip_thickness",
-    jawBoneWidth = "jaw_1",
-    jawBoneLength = "jaw_2",
-    chinBoneHeight = "chin_1",
-    chinBoneLength = "chin_2",
-    chinBoneWidth = "chin_3",
-    chinHole = "chin_4",
-    neckThickness = "neck_thickness",
-  }
-
-  for juddlieKey, illeniumKey in pairs(featureMap) do
-    result.faceFeatures[juddlieKey] = tonumber(skin[illeniumKey]) or 0.0
+  for juddlieKey, legacyKey in pairs(legacyFeatureMap) do
+    result.faceFeatures[juddlieKey] = tonumber(skin[legacyKey]) or 0.0
   end
 
   for i = 0, 12 do
@@ -319,29 +537,49 @@ function migrate.convertSkin(skin, model)
 end
 
 ---@param skin table
----@return table? outfit
+---@return table?
 function migrate.convertToOutfit(skin)
   if not skin then return nil end
 
   local clothing = {}
   local props = {}
 
-  for cid = 0, 11 do
-    local map = componentMap[cid]
-    clothing[#clothing + 1] = {
-      component = cid,
-      drawable = tonumber(skin[map.drawable]) or tonumber(skin[("drawable_%d"):format(cid)]) or 0,
-      texture = tonumber(skin[map.texture]) or tonumber(skin[("texture_%d"):format(cid)]) or 0,
-    }
+  if skin.components then
+    for _, comp in ipairs(skin.components) do
+      clothing[#clothing + 1] = {
+        component = comp.component_id,
+        drawable = comp.drawable or 0,
+        texture = comp.texture or 0,
+      }
+    end
+  else
+    for cid = 0, 11 do
+      local map = componentMap[cid]
+      clothing[#clothing + 1] = {
+        component = cid,
+        drawable = tonumber(skin[map.drawable]) or tonumber(skin[("drawable_%d"):format(cid)]) or 0,
+        texture = tonumber(skin[map.texture]) or tonumber(skin[("texture_%d"):format(cid)]) or 0,
+      }
+    end
   end
 
-  for _, pid in ipairs({ 0, 1, 2, 6, 7 }) do
-    local map = propMap[pid]
-    props[#props + 1] = {
-      prop = pid,
-      drawable = tonumber(skin[map.drawable]) or tonumber(skin[("prop_%d"):format(pid)]) or -1,
-      texture = tonumber(skin[map.texture]) or tonumber(skin[("propTexture_%d"):format(pid)]) or 0,
-    }
+  if skin.props and type(skin.props) == "table" and #skin.props > 0 and skin.props[1] and skin.props[1].prop_id ~= nil then
+    for _, propData in ipairs(skin.props) do
+      props[#props + 1] = {
+        prop = propData.prop_id,
+        drawable = propData.drawable or -1,
+        texture = propData.texture or 0,
+      }
+    end
+  else
+    for _, pid in ipairs({ 0, 1, 2, 6, 7 }) do
+      local map = propMap[pid]
+      props[#props + 1] = {
+        prop = pid,
+        drawable = tonumber(skin[map.drawable]) or tonumber(skin[("prop_%d"):format(pid)]) or -1,
+        texture = tonumber(skin[map.texture]) or tonumber(skin[("propTexture_%d"):format(pid)]) or 0,
+      }
+    end
   end
 
   return {

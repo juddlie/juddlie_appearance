@@ -110,7 +110,7 @@ config.targetIcons = {
 -- players from changing certain slots through the appearance menu
 --
 -- component ids:
---   0 = head, 1 = beard/mask, 2 = hair, 3 = upper body/torso,
+--   0 = head, 1 = mask, 2 = hair, 3 = upper body/torso,
 --   4 = legs/pants, 5 = bags/parachute, 6 = shoes, 7 = accessories,
 --   8 = undershirt, 9 = body armor, 10 = decals/badges, 11 = jacket/outer
 --

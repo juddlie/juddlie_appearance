@@ -1,27 +1,42 @@
-if GetResourceState("qbx_core") ~= "started" then
-	error("qbx_core is not started. Please start qbx_core before starting juddlie_appearance.")
-end
+local useQBX = GetResourceState("qbx_core") == "started"
+local useQB = not useQBX and GetResourceState("qb-core") == "started"
 
-local QBX <const> = exports["qbx_core"]
+if not useQBX and not useQB then
+	error("qbx_core or qb-core is not started. Please start one of them before starting juddlie_appearance.")
+end
 
 local bridge = {}
 
 ---@param src number
 ---@return string?
 function bridge.getIdentifier(src)
-	local player <const> = QBX:GetPlayer(src)
-	if not player then return end
-
-	return player.PlayerData.citizenid
+	if useQBX then
+		local player <const> = exports["qbx_core"]:GetPlayer(src)
+		if not player then return end
+		return player.PlayerData.citizenid
+	else
+		local QBCore <const> = exports["qb-core"]:GetCoreObject()
+		local player <const> = QBCore.Functions.GetPlayer(src)
+		if not player then return end
+		return player.PlayerData.citizenid
+	end
 end
 
 ---@param src number
 ---@return table
 function bridge.getPlayerData(src)
-	local player <const> = QBX:GetPlayer(src)
-	if not player then return {} end
+	local pd
+	if useQBX then
+		local player <const> = exports["qbx_core"]:GetPlayer(src)
+		if not player then return {} end
+		pd = player.PlayerData
+	else
+		local QBCore <const> = exports["qb-core"]:GetCoreObject()
+		local player <const> = QBCore.Functions.GetPlayer(src)
+		if not player then return {} end
+		pd = player.PlayerData
+	end
 
-	local pd = player.PlayerData
 	return {
 		identifier = pd.citizenid,
 		job = pd.job and pd.job.name or nil,

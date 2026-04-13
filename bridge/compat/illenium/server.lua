@@ -1,10 +1,11 @@
 local cache <const> = require("server.modules.cache")
+local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
 
 local illeniumHeadOverlays <const> = {
 	"blemishes", "beard", "eyebrows", "ageing", "makeUp",
 	"blush", "complexion", "sunDamage", "lipstick",
-	"moleAndFreckles", "chestHair", "bodyBlemishes",
+	"moleAndFreckles", "chestHair", "bodyBlemishes", "addBodyBlemishes",
 }
 
 local featureToJuddlie <const> = {
@@ -296,6 +297,135 @@ RegisterNetEvent("illenium-appearance:server:ResetRoutingBucket", function()
 	local source <const> = source
 	if not source then return end
 	SetPlayerRoutingBucket(tostring(source), 0)
+end)
+
+lib.callback.register("illenium-appearance:server:getAppearance", function(source, model)
+	local source <const> = source
+	if not source then return end
+
+	logger.debug("illenium compat: getAppearance callback for player:", source)
+	local appearance <const> = cache.getAppearance(source)
+	if not appearance then return nil end
+	return toIlleniumAppearance(appearance)
+end)
+
+lib.callback.register("illenium-appearance:server:getOutfits", function(source)
+	local source <const> = source
+	if not source then return {} end
+
+	logger.debug("illenium compat: getOutfits callback for player:", source)
+	local outfits <const> = cache.getOutfits(source)
+	local result = {}
+
+	for _, outfit in ipairs(outfits) do
+		local outfitData = outfit.data or {}
+		local components = {}
+		local props = {}
+
+		if outfitData.clothing then
+			for index, c in ipairs(outfitData.clothing) do
+				components[index] = { component_id = c.component, drawable = c.drawable, texture = c.texture }
+			end
+		end
+
+		if outfitData.props then
+			for index, p in ipairs(outfitData.props) do
+				props[index] = { prop_id = p.prop, drawable = p.drawable, texture = p.texture }
+			end
+		end
+
+		result[#result + 1] = {
+			id = outfit.id,
+			name = outfit.name,
+			model = outfitData.model or "mp_m_freemode_01",
+			components = components,
+			props = props,
+		}
+	end
+
+	return result
+end)
+
+lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
+	return true, 0
+end)
+
+lib.callback.register("illenium-appearance:server:getManagementOutfits", function(source, mType, gender)
+	return {}
+end)
+
+lib.callback.register("illenium-appearance:server:getUniform", function(source)
+	return nil
+end)
+
+RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
+	local source <const> = source
+	if not source then return end
+	logger.debug("illenium compat: chargeCustomer (no-op)")
+end)
+
+RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)
+	local source <const> = source
+	if not source then return end
+	logger.debug("illenium compat: syncUniform (no-op)")
+end)
+
+RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, components, props)
+	local source <const> = source
+	if not source then return end
+
+	logger.debug("illenium compat: updateOutfit for player:", source, id)
+
+	local outfits <const> = cache.getOutfits(source)
+	for _, outfit in ipairs(outfits) do
+		if outfit.id == tostring(id) or outfit.id == id then
+			local clothing = {}
+			if components then
+				for index, comp in ipairs(components) do
+					clothing[index] = { component = comp.component_id, drawable = comp.drawable, texture = comp.texture }
+				end
+			end
+
+			local outfitProps = {}
+			if props then
+				for index, propData in ipairs(props) do
+					outfitProps[index] = { prop = propData.prop_id, drawable = propData.drawable, texture = propData.texture }
+				end
+			end
+
+			outfit.data = outfit.data or {}
+			outfit.data.model = model or outfit.data.model
+			outfit.data.clothing = clothing
+			outfit.data.props = outfitProps
+
+			cache.updateOutfit(source, outfit.id, outfit)
+			return
+		end
+	end
+end)
+
+RegisterNetEvent("illenium-appearance:server:resetOutfitCache", function()
+	local source <const> = source
+	if not source then return end
+	logger.debug("illenium compat: resetOutfitCache (handled by juddlie cache)")
+end)
+
+RegisterNetEvent("illenium-appearance:server:saveManagementOutfit", function(outfitData)
+	local source <const> = source
+	if not source then return end
+	logger.debug("illenium compat: saveManagementOutfit (not supported)")
+end)
+
+RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(id)
+	local source <const> = source
+	if not source then return end
+	logger.debug("illenium compat: deleteManagementOutfit (not supported)")
+end)
+
+exports("getPlayerAppearance", function(src)
+	local appearance <const> = cache.getAppearance(src)
+	if not appearance then return nil end
+	return toIlleniumAppearance(appearance)
 end)
 
 

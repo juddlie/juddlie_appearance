@@ -1,7 +1,13 @@
 local bridge <const> = {}
 
 ---@param handler function
-function bridge.onPlayerLoaded(handler) end
+function bridge.onPlayerLoaded(handler)
+  CreateThread(function()
+    repeat Wait(500) until NetworkIsSessionActive()
+
+    handler()
+  end)
+end
 
 ---@return string?, number?
 function bridge.getPlayerJob() return nil, nil end

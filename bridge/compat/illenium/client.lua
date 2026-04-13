@@ -7,7 +7,7 @@ local config <const> = require("config")
 local illeniumHeadOverlays <const> = {
   "blemishes", "beard", "eyebrows", "ageing", "makeUp",
   "blush", "complexion", "sunDamage", "lipstick",
-  "moleAndFreckles", "chestHair", "bodyBlemishes",
+  "moleAndFreckles", "chestHair", "bodyBlemishes", "addBodyBlemishes",
 }
 
 local featureToJuddlie <const> = {
@@ -263,23 +263,35 @@ local function setPlayerModel(model)
 end
 
 
-RegisterNetEvent("illenium-appearance:client:openClothingShop", function()
-  logger.debug("illenium compat: openClothingShop")
-  menu.allowedTabs = nil
-  menu.open()
+RegisterNetEvent("illenium-appearance:client:openClothingShop", function(isPedMenu)
+  logger.debug("illenium compat: openClothingShop, isPedMenu:", isPedMenu)
+  if isPedMenu then
+    menu.allowedTabs = nil
+    menu.open()
+  else
+    menu.allowedTabs = { "clothing", "props", "outfits" }
+    menu.open()
+    nui.sendMessage("setAllowedTabs", { tabs = { "clothing", "props", "outfits" } })
+  end
 end)
 
-RegisterNetEvent("illenium-appearance:client:openClothingShopMenu", function()
-  logger.debug("illenium compat: openClothingShopMenu")
-  menu.allowedTabs = nil
-  menu.open()
+RegisterNetEvent("illenium-appearance:client:openClothingShopMenu", function(isPedMenu)
+  logger.debug("illenium compat: openClothingShopMenu, isPedMenu:", isPedMenu)
+  if isPedMenu then
+    menu.allowedTabs = nil
+    menu.open()
+  else
+    menu.allowedTabs = { "clothing", "props", "outfits" }
+    menu.open()
+    nui.sendMessage("setAllowedTabs", { tabs = { "clothing", "props", "outfits" } })
+  end
 end)
 
 RegisterNetEvent("illenium-appearance:client:OpenBarberShop", function()
   logger.debug("illenium compat: OpenBarberShop")
-  menu.allowedTabs = { "hair" }
+  menu.allowedTabs = { "hair", "face", "colors" }
   menu.open()
-  nui.sendMessage("setAllowedTabs", { tabs = { "hair" } })
+  nui.sendMessage("setAllowedTabs", { tabs = { "hair", "face", "colors" } })
 end)
 
 RegisterNetEvent("illenium-appearance:client:OpenTattooShop", function()
