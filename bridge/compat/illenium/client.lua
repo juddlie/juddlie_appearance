@@ -343,6 +343,87 @@ RegisterNetEvent("illenium-appearance:client:OpenPlayerOutfitRoom", function()
   nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
 end)
 
+RegisterNetEvent("illenium-appearance:client:saveOutfit", function()
+  logger.debug("illenium compat: saveOutfit")
+  local appearance <const> = ped.getAppearance(cache.ped)
+  if not appearance then return end
+
+  local illeniumApp <const> = toIlleniumAppearance(appearance)
+  if not illeniumApp then return end
+
+  TriggerServerEvent("illenium-appearance:server:saveOutfit",
+    "Outfit " .. os.date("%H:%M"),
+    illeniumApp.model,
+    illeniumApp.components,
+    illeniumApp.props
+  )
+end)
+
+RegisterNetEvent("illenium-appearance:client:generateOutfitCode", function(outfitID)
+  logger.debug("illenium compat: generateOutfitCode — not fully supported")
+end)
+
+RegisterNetEvent("illenium-appearance:client:importOutfitCode", function()
+  logger.debug("illenium compat: importOutfitCode — not fully supported")
+end)
+
+RegisterNetEvent("illenium-appearance:client:updateOutfit", function(outfitID)
+  logger.debug("illenium compat: updateOutfit")
+  local appearance <const> = ped.getAppearance(cache.ped)
+  if not appearance then return end
+
+  local illeniumApp <const> = toIlleniumAppearance(appearance)
+  if not illeniumApp then return end
+
+  TriggerServerEvent("illenium-appearance:server:updateOutfit",
+    outfitID,
+    illeniumApp.model,
+    illeniumApp.components,
+    illeniumApp.props
+  )
+end)
+
+RegisterNetEvent("illenium-appearance:client:deleteOutfit", function(outfitID)
+  logger.debug("illenium compat: deleteOutfit")
+  TriggerServerEvent("illenium-appearance:server:deleteOutfit", outfitID)
+end)
+
+RegisterNetEvent("illenium-appearance:client:OutfitManagementMenu", function(data)
+  logger.debug("illenium compat: OutfitManagementMenu — not supported, opening outfits tab instead")
+  menu.allowedTabs = { "outfits" }
+  menu.open()
+  nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
+end)
+
+RegisterNetEvent("illenium-appearance:client:SaveManagementOutfit", function(mType)
+  logger.debug("illenium compat: SaveManagementOutfit — not supported")
+end)
+
+RegisterNetEvent("illenium-appearance:client:DeleteManagementOutfit", function(outfitID)
+  logger.debug("illenium compat: DeleteManagementOutfit — not supported")
+end)
+
+RegisterNetEvent("illenium-appearance:client:openOutfitMenu", function()
+  logger.debug("illenium compat: openOutfitMenu")
+  menu.allowedTabs = { "outfits" }
+  menu.open()
+  nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
+end)
+
+RegisterNetEvent("illenium-apearance:client:outfitsCommand", function(isJob)
+  logger.debug("illenium compat: outfitsCommand", isJob and "job" or "gang")
+  menu.allowedTabs = { "outfits" }
+  menu.open()
+  nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
+end)
+
+RegisterNetEvent("illenium-appearance:client:openJobOutfitsMenu", function(outfitsToShow)
+  logger.debug("illenium compat: openJobOutfitsMenu")
+  menu.allowedTabs = { "outfits" }
+  menu.open()
+  nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
+end)
+
 logger.info("Registering illenium-appearance compatibility exports")
 
 exportHandler("getPedAppearance", function(pedHandle)
@@ -507,3 +588,45 @@ exportHandler("startPlayerCustomization", function(cb, conf)
     end)
   end
 end)
+
+if config.framework == "qbx" then
+  logger.info("Registering qb-clothing/qb-multicharacter compatibility events")
+
+  RegisterNetEvent("qb-clothes:client:CreateFirstCharacter", function()
+    logger.debug("illenium compat: qb-clothes:client:CreateFirstCharacter")
+
+    repeat Wait(0) until IsScreenFadedIn() and not IsPlayerSwitchInProgress()
+
+    menu.allowedTabs = nil
+    menu.open()
+  end)
+
+  RegisterNetEvent("qb-clothing:client:openMenu", function()
+    logger.debug("illenium compat: qb-clothing:client:openMenu")
+    menu.allowedTabs = nil
+    menu.open()
+  end)
+
+  RegisterNetEvent("qb-clothing:client:openOutfitMenu", function()
+    logger.debug("illenium compat: qb-clothing:client:openOutfitMenu")
+    menu.allowedTabs = { "outfits" }
+    menu.open()
+    nui.sendMessage("setAllowedTabs", { tabs = { "outfits" } })
+  end)
+
+  RegisterNetEvent("qb-clothing:client:loadOutfit", function(outfitData)
+    if type(outfitData) ~= "table" then return end
+    logger.debug("illenium compat: qb-clothing:client:loadOutfit")
+
+    local converted <const> = toJuddlieAppearance(outfitData)
+    if converted then
+      ped.applyAppearance(cache.ped, { clothing = converted.clothing, props = converted.props })
+    end
+  end)
+
+  RegisterNetEvent("qb-multicharacter:client:chooseChar", function()
+    logger.debug("illenium compat: qb-multicharacter:client:chooseChar — clearing decorations")
+    ClearPedDecorations(cache.ped)
+    pedTattoos = {}
+  end)
+end

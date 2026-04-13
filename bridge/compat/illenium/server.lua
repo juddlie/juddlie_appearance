@@ -24,7 +24,7 @@ local featureToJuddlie <const> = {
 	jawBoneWidth = "jawBoneWidth",
 	jawBoneBackSize = "jawBoneLength",
 	chinBoneLowering = "chinBoneHeight",
-	chinBoneLength = "chinBoneLength",
+	chinBoneLenght = "chinBoneLength",
 	chinBoneSize = "chinBoneWidth",
 	chinHole = "chinHole",
 	neckThickness = "neckThickness",
@@ -298,6 +298,62 @@ RegisterNetEvent("illenium-appearance:server:ResetRoutingBucket", function()
 	SetPlayerRoutingBucket(tostring(source), 0)
 end)
 
+
+RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, components, props)
+	local source <const> = source
+	if not source then return end
+
+	logger.debug("illenium compat: updating outfit for player:", source, id)
+
+	local outfits <const> = cache.getOutfits(source)
+	for _, outfit in ipairs(outfits) do
+		if outfit.id == tostring(id) or outfit.id == id then
+			local clothing = {}
+			if components then
+				for index, comp in ipairs(components) do
+					clothing[index] = { component = comp.component_id, drawable = comp.drawable, texture = comp.texture }
+				end
+			end
+
+			local outfitProps = {}
+			if props then
+				for index, propData in ipairs(props) do
+					outfitProps[index] = { prop = propData.prop_id, drawable = propData.drawable, texture = propData.texture }
+				end
+			end
+
+			outfit.data = {
+				model = model or outfit.data.model or "mp_m_freemode_01",
+				clothing = clothing,
+				props = outfitProps,
+			}
+
+			cache.updateOutfit(source, outfit.id, { data = outfit.data })
+			return
+		end
+	end
+end)
+
+RegisterNetEvent("illenium-appearance:server:saveManagementOutfit", function(outfitData)
+	logger.debug("illenium compat: saveManagementOutfit — not supported, ignoring")
+end)
+
+RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(id)
+	logger.debug("illenium compat: deleteManagementOutfit — not supported, ignoring")
+end)
+
+RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
+	logger.debug("illenium compat: chargeCustomer — shop costs not configured, skipping")
+end)
+
+RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)
+	logger.debug("illenium compat: syncUniform — not supported, ignoring")
+end)
+
+RegisterNetEvent("illenium-appearance:server:resetOutfitCache", function()
+	logger.debug("illenium compat: resetOutfitCache — cache managed internally")
+end)
+
 logger.info("Registering illenium-appearance server compatibility")
 
 ---@param source number
@@ -346,6 +402,61 @@ end)
 
 lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
 	return true, 0
+end)
+
+lib.callback.register("illenium-appearance:server:payForTattoo", function(source, tattoo)
+	return true
+end)
+
+lib.callback.register("illenium-appearance:server:generateOutfitCode", function(source, outfitID)
+	logger.debug("illenium compat: generateOutfitCode — not fully supported")
+	return nil
+end)
+
+lib.callback.register("illenium-appearance:server:importOutfitCode", function(source, outfitName, outfitCode)
+	logger.debug("illenium compat: importOutfitCode — not fully supported")
+	return nil
+end)
+
+lib.callback.register("illenium-appearance:server:getManagementOutfits", function(source, mType, gender)
+	return {}
+end)
+
+lib.callback.register("illenium-appearance:server:GetPlayerAces", function(source)
+	return {}
+end)
+
+lib.addCommand("pedmenu", {
+	help = "Open ped/appearance editor",
+	params = {
+		{ name = "playerID", type = "number", help = "Target player's server id", optional = true },
+	},
+	restricted = "group.admin",
+}, function(source, args)
+	local target = source
+	if args.playerID then
+		if not GetPlayerName(args.playerID) then
+			return
+		end
+		target = args.playerID
+	end
+	TriggerClientEvent("illenium-appearance:client:openClothingShopMenu", target, true)
+end)
+
+lib.addCommand("reloadskin", { help = "Reload your appearance from the database" }, function(source)
+	TriggerClientEvent("illenium-appearance:client:reloadSkin", source)
+end)
+
+lib.addCommand("clearstuckprops", { help = "Remove stuck props from your character" }, function(source)
+	TriggerClientEvent("illenium-appearance:client:ClearStuckProps", source)
+end)
+
+lib.addCommand("joboutfits", { help = "Open job outfits menu" }, function(source)
+	TriggerClientEvent("illenium-apearance:client:outfitsCommand", source, true)
+end)
+
+lib.addCommand("gangoutfits", { help = "Open gang outfits menu" }, function(source)
+	TriggerClientEvent("illenium-apearance:client:outfitsCommand", source, false)
 end)
 
 logger.info("Illenium-appearance server compatibility loaded")
