@@ -39,6 +39,13 @@ config.licenseType = "license"
 -- language locale
 config.locale = "en"
 
+-- accent color used throughout the ui
+-- supports:
+--   mantine color names: "blue", "teal", "cyan", "green", "violet", "grape", "pink", "red", "orange", "yellow", "lime", "indigo"
+--   hex codes: "#3B82F6", "#ff5733"
+--   rgb values: "rgb(59, 130, 246)"
+config.accentColor = "blue"
+
 -- default camera field of view when the menu opens
 config.defaultFov = 50
 

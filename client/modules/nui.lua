@@ -68,6 +68,7 @@ nui.handleMessage("ready", function()
     localeStrings = localeModule and localeModule.getAll() or {},
     disabledComponents = config.disabledComponents or {},
     disabledProps = config.disabledProps or {},
+    accentColor = config.accentColor or "blue",
   })
 end)
 
