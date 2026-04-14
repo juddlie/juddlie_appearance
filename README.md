@@ -95,11 +95,28 @@ When using ESX or QBX, the identifier comes from the framework automatically —
 ```lua
 config.debug = true                          -- enables /appearance command for testing
 config.locale = "en"                         -- language (see Localization section)
+config.accentColor = "blue"                  -- UI accent color (name, hex, or rgb)
 config.defaultFov = 50                       -- camera field of view
 config.invincibleDuringCustomization = true   -- god mode while menu is open
 config.freezeDuringCustomization = true       -- freeze the player in place while menu is open
 config.hideRadar = false                     -- hide minimap while menu is open
 ```
+
+### Accent Color
+
+```lua
+config.accentColor = "blue"
+```
+
+The accent color is used throughout the UI for buttons, badges, active indicators, and highlights. Accepts three formats:
+
+| Format | Example |
+|--------|---------|
+| Mantine color name | `"blue"`, `"teal"`, `"violet"`, `"cyan"`, `"green"`, `"grape"`, `"pink"`, `"red"`, `"orange"`, `"yellow"`, `"lime"`, `"indigo"` |
+| Hex code | `"#3B82F6"`, `"#ff5733"` |
+| RGB value | `"rgb(59, 130, 246)"` |
+
+When a hex or RGB value is provided, a full 10-shade palette is generated automatically to match Mantine's color system.
 
 ### Head Blend Defaults
 
