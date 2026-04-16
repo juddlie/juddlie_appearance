@@ -498,49 +498,6 @@ config.commands = {
 
 ---
 
-## Exports
-
-### Client Exports
-
-Use these from other client-side resources:
-
-```lua
--- Open the appearance menu
-exports.juddlie_appearance:open()
-
--- Open with restricted tabs only
-exports.juddlie_appearance:open({ tabs = { "clothing", "props" } })
-
--- Close the menu
-exports.juddlie_appearance:close()
-
--- Get the player's current appearance data
-local appearance = exports.juddlie_appearance:getAppearance()
-
--- Apply appearance data to the player's ped
-exports.juddlie_appearance:setAppearance(appearanceData)
-```
-
-### Server Exports
-
-Use these from other server-side resources:
-
-```lua
--- Get a player's saved appearance
-local appearance = exports.juddlie_appearance:getPlayerAppearance(source)
-
--- Set a player's appearance (saves to DB + applies on client)
-exports.juddlie_appearance:setPlayerAppearance(source, appearanceData)
-
--- Get all outfits for a player
-local outfits = exports.juddlie_appearance:getPlayerOutfits(source)
-
--- Get a specific outfit by ID
-local outfit = exports.juddlie_appearance:getPlayerOutfit(source, "outfit_id_here")
-```
-
----
-
 ## illenium-appearance Exports (Compatibility Layer)
 
 juddlie_appearance fully re-implements all illenium-appearance client exports. Any resource that calls `exports['illenium-appearance']` will work out of the box — no code changes needed.
