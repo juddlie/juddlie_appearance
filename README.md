@@ -661,9 +661,11 @@ config.migration = {
 
 1. Auto-detect whether you're migrating from QB (`citizenid` column) or ESX (`identifier` column)
 2. Convert all skin data from illenium's flat format to juddlie's structured format
-3. Migrate outfits from the `player_outfits` table
+3. Migrate outfits from the `player_outfits` table (including share codes from `player_outfit_codes`)
 4. **Skip** any players who already have data in juddlie_appearance (safe to re-run)
 5. Print a summary of how many skins and outfits were migrated
+
+> **Note:** `management_outfits` (global job/gang uniforms) are not migrated. juddlie_appearance uses per-player job outfits instead — see the Job Outfit Persistence section below.
 
 > **Important:** Back up your database before running the migration. The tool only inserts new data — it never overwrites existing juddlie_appearance records.
 
