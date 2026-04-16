@@ -541,6 +541,377 @@ local outfit = exports.juddlie_appearance:getPlayerOutfit(source, "outfit_id_her
 
 ---
 
+## illenium-appearance Exports (Compatibility Layer)
+
+juddlie_appearance fully re-implements all illenium-appearance client exports. Any resource that calls `exports['illenium-appearance']` will work out of the box — no code changes needed.
+
+> **Note:** Data formats are translated automatically. illenium-appearance uses different key names for face features and a flat overlay format — the compatibility bridge handles the conversion in both directions.
+
+### Getters
+
+#### `getPedModel(ped)`
+
+Returns the model name string for the given ped.
+
+```lua
+local model = exports['illenium-appearance']:getPedModel(PlayerPedId())
+-- "mp_m_freemode_01"
+```
+
+#### `getPedComponents(ped)`
+
+Returns an array of component tables.
+
+```lua
+local components = exports['illenium-appearance']:getPedComponents(PlayerPedId())
+--[[
+{
+    { component_id = 0, drawable = 0, texture = 0 },
+    { component_id = 1, drawable = 0, texture = 0 },
+    ...
+}
+]]
+```
+
+#### `getPedProps(ped)`
+
+Returns an array of prop tables.
+
+```lua
+local props = exports['illenium-appearance']:getPedProps(PlayerPedId())
+--[[
+{
+    { prop_id = 0, drawable = -1, texture = 0 },
+    { prop_id = 1, drawable = -1, texture = 0 },
+    ...
+}
+]]
+```
+
+#### `getPedHeadBlend(ped)`
+
+Returns the ped's head blend (heritage) data.
+
+```lua
+local headBlend = exports['illenium-appearance']:getPedHeadBlend(PlayerPedId())
+--[[
+{
+    shapeFirst = 0,     -- mother face shape
+    shapeSecond = 0,    -- father face shape
+    shapeThird = 0,     -- third parent
+    skinFirst = 0,      -- mother skin tone
+    skinSecond = 0,     -- father skin tone
+    skinThird = 0,      -- third parent skin
+    shapeMix = 0.5,     -- face shape mix (0.0 - 1.0)
+    skinMix = 0.5,      -- skin tone mix (0.0 - 1.0)
+    thirdMix = 0.0      -- third parent mix (0.0 - 1.0)
+}
+]]
+```
+
+#### `getPedFaceFeatures(ped)`
+
+Returns a table of face feature values (20 features, each -1.0 to 1.0).
+
+```lua
+local features = exports['illenium-appearance']:getPedFaceFeatures(PlayerPedId())
+--[[
+{
+    noseWidth = 0.0,
+    nosePeakHigh = 0.0,
+    nosePeakSize = 0.0,
+    noseBoneHigh = 0.0,
+    nosePeakLowering = 0.0,
+    noseBoneTwist = 0.0,
+    eyeBrownHigh = 0.0,
+    eyeBrownForward = 0.0,
+    cheeksBoneHigh = 0.0,
+    cheeksBoneWidth = 0.0,
+    cheeksWidth = 0.0,
+    eyesOpening = 0.0,
+    lipsThickness = 0.0,
+    jawBoneWidth = 0.0,
+    jawBoneBackSize = 0.0,
+    chinBoneLowering = 0.0,
+    chinBoneLenght = 0.0,
+    chinBoneSize = 0.0,
+    chinHole = 0.0,
+    neckThickness = 0.0
+}
+]]
+```
+
+#### `getPedHeadOverlays(ped)`
+
+Returns a table of head overlay (makeup/facial feature) data.
+
+```lua
+local overlays = exports['illenium-appearance']:getPedHeadOverlays(PlayerPedId())
+--[[
+{
+    blemishes       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    beard           = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    eyebrows        = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    ageing          = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    makeUp          = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    blush           = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    complexion      = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    sunDamage       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    lipstick        = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    moleAndFreckles = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    chestHair       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    bodyBlemishes   = { style = 0, opacity = 0.0, color = 0, secondColor = 0 }
+}
+]]
+```
+
+#### `getPedHair(ped)`
+
+Returns the ped's hair data.
+
+```lua
+local hair = exports['illenium-appearance']:getPedHair(PlayerPedId())
+--[[
+{
+    style = 0,        -- hair drawable ID
+    color = 0,        -- primary hair color
+    highlight = 0,    -- highlight color
+    texture = 0       -- hair texture
+}
+]]
+```
+
+#### `getPedAppearance(ped)`
+
+Returns the complete appearance table combining all of the above.
+
+```lua
+local appearance = exports['illenium-appearance']:getPedAppearance(PlayerPedId())
+--[[
+{
+    model = "mp_m_freemode_01",
+    headBlend = { ... },        -- see getPedHeadBlend
+    faceFeatures = { ... },     -- see getPedFaceFeatures
+    headOverlays = { ... },     -- see getPedHeadOverlays
+    components = { ... },       -- see getPedComponents
+    props = { ... },            -- see getPedProps
+    hair = { ... },             -- see getPedHair
+    tattoos = { ... },          -- see setPedTattoos
+    eyeColor = 0                -- eye color index
+}
+]]
+```
+
+### Setters
+
+#### `setPlayerModel(model)`
+
+Loads and sets the player's ped model. Accepts a model name string or hash.
+
+```lua
+exports['illenium-appearance']:setPlayerModel("mp_f_freemode_01")
+```
+
+#### `setPedHeadBlend(ped, headBlend)`
+
+Applies head blend (heritage) data. Only works on freemode peds.
+
+```lua
+exports['illenium-appearance']:setPedHeadBlend(PlayerPedId(), {
+    shapeFirst = 0, shapeSecond = 5, shapeThird = 0,
+    skinFirst = 0, skinSecond = 5, skinThird = 0,
+    shapeMix = 0.5, skinMix = 0.5, thirdMix = 0.0
+})
+```
+
+#### `setPedFaceFeatures(ped, faceFeatures)`
+
+Applies face feature values. Each value ranges from -1.0 to 1.0.
+
+```lua
+exports['illenium-appearance']:setPedFaceFeatures(PlayerPedId(), {
+    noseWidth = 0.3,
+    jawBoneWidth = -0.5,
+    -- ... any of the 20 face feature keys
+})
+```
+
+#### `setPedHeadOverlays(ped, headOverlays)`
+
+Applies head overlay data (beard, makeup, blemishes, etc.).
+
+```lua
+exports['illenium-appearance']:setPedHeadOverlays(PlayerPedId(), {
+    beard = { style = 1, opacity = 1.0, color = 0, secondColor = 0 },
+    eyebrows = { style = 3, opacity = 1.0, color = 0, secondColor = 0 },
+    -- ... any of the 12 overlay keys
+})
+```
+
+#### `setPedHair(ped, hair, tattoos?)`
+
+Applies hair style and color. Optionally pass tattoos to reapply decorations (needed because hair decorations/fades are tied to the tattoo system).
+
+```lua
+exports['illenium-appearance']:setPedHair(PlayerPedId(), {
+    style = 5,
+    color = 0,
+    highlight = 0,
+    texture = 0
+})
+```
+
+#### `setPedEyeColor(ped, eyeColor)`
+
+Sets the ped's eye color by index.
+
+```lua
+exports['illenium-appearance']:setPedEyeColor(PlayerPedId(), 3) -- Ocean Blue
+```
+
+#### `setPedComponent(ped, component)`
+
+Sets a single clothing component. Skips head (0) and hair (2) on freemode peds.
+
+```lua
+exports['illenium-appearance']:setPedComponent(PlayerPedId(), {
+    component_id = 11,  -- jacket
+    drawable = 5,
+    texture = 0
+})
+```
+
+#### `setPedComponents(ped, components)`
+
+Sets multiple clothing components at once.
+
+```lua
+exports['illenium-appearance']:setPedComponents(PlayerPedId(), {
+    { component_id = 3, drawable = 1, texture = 0 },   -- torso
+    { component_id = 4, drawable = 10, texture = 0 },   -- legs
+    { component_id = 6, drawable = 5, texture = 0 },    -- shoes
+    { component_id = 11, drawable = 2, texture = 0 },   -- jacket
+})
+```
+
+#### `setPedProp(ped, prop)`
+
+Sets a single prop. Use `drawable = -1` to remove the prop.
+
+```lua
+exports['illenium-appearance']:setPedProp(PlayerPedId(), {
+    prop_id = 0,    -- hat
+    drawable = 5,
+    texture = 0
+})
+
+-- Remove a prop
+exports['illenium-appearance']:setPedProp(PlayerPedId(), {
+    prop_id = 0,
+    drawable = -1,
+    texture = 0
+})
+```
+
+#### `setPedProps(ped, props)`
+
+Sets multiple props at once.
+
+```lua
+exports['illenium-appearance']:setPedProps(PlayerPedId(), {
+    { prop_id = 0, drawable = 5, texture = 0 },   -- hat
+    { prop_id = 1, drawable = 3, texture = 0 },   -- glasses
+})
+```
+
+#### `setPedTattoos(ped, tattoos)`
+
+Applies tattoo decorations. Tattoos are organized by body zone.
+
+```lua
+exports['illenium-appearance']:setPedTattoos(PlayerPedId(), {
+    ZONE_TORSO = {
+        { collection = "mpairraces_overlays", hashMale = "MP_Airraces_Tattoo_000_M", hashFemale = "MP_Airraces_Tattoo_000_F", name = "tattoo_name", zone = "ZONE_TORSO", opacity = 1.0 },
+    },
+    ZONE_LEFT_ARM = {},
+    -- ...
+})
+```
+
+#### `setPlayerAppearance(appearance)`
+
+Applies a full appearance table to the local player — sets the model first, then applies all appearance data.
+
+```lua
+exports['illenium-appearance']:setPlayerAppearance({
+    model = "mp_m_freemode_01",
+    headBlend = { ... },
+    faceFeatures = { ... },
+    headOverlays = { ... },
+    components = { ... },
+    props = { ... },
+    hair = { ... },
+    tattoos = { ... },
+    eyeColor = 0
+})
+```
+
+#### `setPedAppearance(ped, appearance)`
+
+Applies appearance data to any ped (without changing the model). Same structure as `setPlayerAppearance` but targets a specific ped entity.
+
+```lua
+exports['illenium-appearance']:setPedAppearance(somePed, appearanceData)
+```
+
+### Customization UI
+
+#### `startPlayerCustomization(callback, config)`
+
+Opens the illenium-appearance NUI customization menu with a camera. When the player saves or exits, the callback fires with the appearance data (or `nil` if cancelled).
+
+```lua
+exports['illenium-appearance']:startPlayerCustomization(function(appearance)
+    if appearance then
+        -- Player saved — appearance contains the full appearance table
+        TriggerServerEvent("saveAppearance", appearance)
+    else
+        -- Player cancelled
+    end
+end, {
+    -- config options (passed to the NUI)
+})
+```
+
+### Quick Reference
+
+| Export | Type | Parameters | Returns |
+|--------|------|------------|---------|
+| `getPedModel` | getter | `ped` | `string` — model name |
+| `getPedComponents` | getter | `ped` | `table` — array of `{component_id, drawable, texture}` |
+| `getPedProps` | getter | `ped` | `table` — array of `{prop_id, drawable, texture}` |
+| `getPedHeadBlend` | getter | `ped` | `table` — `{shapeFirst, shapeSecond, shapeThird, skinFirst, skinSecond, skinThird, shapeMix, skinMix, thirdMix}` |
+| `getPedFaceFeatures` | getter | `ped` | `table` — 20 face feature keys → float |
+| `getPedHeadOverlays` | getter | `ped` | `table` — 12 overlay keys → `{style, opacity, color, secondColor}` |
+| `getPedHair` | getter | `ped` | `table` — `{style, color, highlight, texture}` |
+| `getPedAppearance` | getter | `ped` | `table` — full appearance (all above combined) |
+| `setPlayerModel` | setter | `model` | `ped` handle |
+| `setPedHeadBlend` | setter | `ped, headBlend` | — |
+| `setPedFaceFeatures` | setter | `ped, faceFeatures` | — |
+| `setPedHeadOverlays` | setter | `ped, headOverlays` | — |
+| `setPedHair` | setter | `ped, hair, tattoos?` | — |
+| `setPedEyeColor` | setter | `ped, eyeColor` | — |
+| `setPedComponent` | setter | `ped, component` | — |
+| `setPedComponents` | setter | `ped, components` | — |
+| `setPedProp` | setter | `ped, prop` | — |
+| `setPedProps` | setter | `ped, props` | — |
+| `setPedTattoos` | setter | `ped, tattoos` | — |
+| `setPlayerAppearance` | setter | `appearance` | — |
+| `setPedAppearance` | setter | `ped, appearance` | — |
+| `startPlayerCustomization` | UI | `callback, config` | — |
+
+---
+
 ## Custom Framework Bridge
 
 If you set `config.framework = "custom"`, the resource runs without ESX or QBX. The custom bridge uses FiveM native identifiers.
