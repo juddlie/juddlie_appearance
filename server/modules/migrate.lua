@@ -189,6 +189,20 @@ function migrate.fromIllenium()
         colSet[name] = true
       end
 
+      local codeMap = {}
+      local hasOutfitCodes = MySQL.scalar.await(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'player_outfit_codes'"
+      )
+      if hasOutfitCodes and hasOutfitCodes > 0 then
+        local codeRows = MySQL.query.await("SELECT `outfitid`, `code` FROM `player_outfit_codes`")
+        for _, codeRow in ipairs(codeRows or {}) do
+          if codeRow.outfitid and codeRow.code and codeRow.code ~= "" then
+            codeMap[codeRow.outfitid] = codeRow.code
+          end
+        end
+        logger.info(("Loaded %d outfit share codes from player_outfit_codes"):format(#codeRows or 0))
+      end
+
       local hasModel = colSet["model"] ~= nil
       local hasComponents = colSet["components"] ~= nil
       local hasProps = colSet["props"] ~= nil
@@ -214,6 +228,7 @@ function migrate.fromIllenium()
         logger.debug("player_outfits: detected illenium format (components + props columns)")
 
         local selectParts = {
+          "`id`",
           ("`%s` AS ident"):format(outfitIdCol),
           ("`%s` AS oname"):format(nameCol),
           "`components`",
@@ -249,15 +264,17 @@ function migrate.fromIllenium()
 
             local outfitData = { clothing = clothing, props = outfitProps, tattoos = {} }
             local outfitId = ("migrated_%s_%d"):format(row.oname:gsub("%s+", "_"):lower(), os.time())
+            local shareCode = row.id and codeMap[row.id] or nil
 
             MySQL.insert(
-              "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, share_code, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
               {
                 row.ident,
                 outfitId,
                 row.oname,
                 "custom",
                 json.encode(outfitData),
+                shareCode,
                 0,
                 os.time() * 1000,
               }
@@ -269,6 +286,7 @@ function migrate.fromIllenium()
         logger.debug("player_outfits data column:", dataCol)
 
         local selectParts = {
+          "`id`",
           ("`%s` AS ident"):format(outfitIdCol),
           ("`%s` AS oname"):format(nameCol),
           ("`%s` AS skin"):format(dataCol),
@@ -285,14 +303,16 @@ function migrate.fromIllenium()
               local outfitData = migrate.convertToOutfit(skinData)
               if outfitData then
                 local outfitId = ("migrated_%s_%d"):format(row.oname:gsub("%s+", "_"):lower(), os.time())
+                local shareCode = row.id and codeMap[row.id] or nil
                 MySQL.insert(
-                  "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                  "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, share_code, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                   {
                     row.ident,
                     outfitId,
                     row.oname,
                     "custom",
                     json.encode(outfitData),
+                    shareCode,
                     0,
                     os.time() * 1000,
                   }
