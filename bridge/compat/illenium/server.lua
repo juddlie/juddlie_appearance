@@ -1,6 +1,7 @@
 local cache <const> = require("server.modules.cache")
 local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
+local config <const> = require("config")
 
 local illeniumHeadOverlays <const> = {
 	"blemishes", "beard", "eyebrows", "ageing", "makeUp",
@@ -302,7 +303,7 @@ end)
 RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
 	local source <const> = source
 	if not source or not shopType then return end
-	local config <const> = require("config")
+
 	local price <const> = config.prices and config.prices[shopType] or 0
 	if price <= 0 then return end
 
@@ -355,77 +356,18 @@ RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, 
 	end
 end)
 
-RegisterNetEvent("illenium-appearance:server:resetOutfitCache", function()
-	local source <const> = source
-	if not source then return end
-	logger.debug("illenium compat: resetOutfitCache (handled by juddlie cache)")
-end)
-
-RegisterNetEvent("illenium-appearance:server:saveManagementOutfit", function(outfitData)
-	local source <const> = source
-	if not source then return end
-	logger.debug("illenium compat: saveManagementOutfit (not supported)")
-end)
-
-RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(id)
-	local source <const> = source
-	if not source then return end
-	logger.debug("illenium compat: deleteManagementOutfit (not supported)")
-end)
-
-RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, components, props)
-	local source <const> = source
-	if not source then return end
-
-	logger.debug("illenium compat: updating outfit for player:", source, id)
-
-	local outfits <const> = cache.getOutfits(source)
-	for _, outfit in ipairs(outfits) do
-		if outfit.id == tostring(id) or outfit.id == id then
-			local clothing = {}
-			if components then
-				for index, comp in ipairs(components) do
-					clothing[index] = { component = comp.component_id, drawable = comp.drawable, texture = comp.texture }
-				end
-			end
-
-			local outfitProps = {}
-			if props then
-				for index, propData in ipairs(props) do
-					outfitProps[index] = { prop = propData.prop_id, drawable = propData.drawable, texture = propData.texture }
-				end
-			end
-
-			outfit.data = {
-				model = model or outfit.data.model or "mp_m_freemode_01",
-				clothing = clothing,
-				props = outfitProps,
-			}
-
-			cache.updateOutfit(source, outfit.id, { data = outfit.data })
-			return
-		end
-	end
-end)
-
-RegisterNetEvent("illenium-appearance:server:saveManagementOutfit", function(outfitData)
-	logger.debug("illenium compat: saveManagementOutfit — not supported, ignoring")
-end)
-
-RegisterNetEvent("illenium-appearance:server:deleteManagementOutfit", function(id)
-	logger.debug("illenium compat: deleteManagementOutfit — not supported, ignoring")
-end)
-
 RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
 	local source <const> = source
 	if not source or not shopType then return end
-	local config <const> = require("config")
+
 	local price <const> = config.prices and config.prices[shopType] or 0
 	if price <= 0 then return end
+
 	if not bridge.hasMoney(source, "cash", price) then
 		logger.warn("illenium compat: chargeCustomer — player", source, "cannot afford", shopType)
 		return
 	end
+
 	bridge.removeMoney(source, "cash", price)
 	logger.info("illenium compat: charged player", source, "$" .. price, "for", shopType)
 end)
@@ -488,7 +430,6 @@ lib.callback.register("illenium-appearance:server:getOutfits", function(source)
 end)
 
 lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
-	local config <const> = require("config")
 	local price <const> = config.prices and config.prices[shopType] or 0
 	if price <= 0 then return true, 0 end
 	
@@ -548,9 +489,9 @@ lib.callback.register("illenium-appearance:server:getUniform", function(source)
 end)
 
 lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
-	local config <const> = require("config")
 	local price <const> = config.prices and config.prices[shopType] or 0
 	if price <= 0 then return true, 0 end
+	
 	return bridge.hasMoney(source, "cash", price), price
 end)
 
