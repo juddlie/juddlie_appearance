@@ -879,17 +879,66 @@ To add your own framework support, edit the files in:
 
 Each bridge must return a table with these functions:
 
-**Client:**
+### Client Bridge
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `bridge.onPlayerLoaded(handler)` | `handler: function` | — | Called when the player session is ready. Invoke `handler()` once the player is fully loaded. |
+| `bridge.getPlayerJob()` | — | `string?, number?` | Returns the player's job name and grade. Return `nil, nil` if not applicable. |
+| `bridge.getPlayerGang()` | — | `string?` | Returns the player's gang name. Return `nil` if not applicable. |
+
+**ESX implementation:**
 ```lua
-bridge.onPlayerLoaded(handler)   -- call handler() when the player is ready
-bridge.getPlayerJob()            -- return jobName, jobGrade
-bridge.getPlayerGang()           -- return gangName
+bridge.onPlayerLoaded(handler)   -- listens for esx:playerLoaded event
+bridge.getPlayerJob()            -- returns ESX.GetPlayerData().job.name, .grade
+bridge.getPlayerGang()           -- returns nil (ESX has no gang system)
 ```
 
-**Server:**
+**QBX implementation:**
 ```lua
-bridge.getIdentifier(src)        -- return the player's unique identifier string
-bridge.getPlayerData(src)        -- return { identifier, job, jobGrade, gang }
+bridge.onPlayerLoaded(handler)   -- listens for QBCore:Client:OnPlayerLoaded event
+bridge.getPlayerJob()            -- returns player.job.name, player.job.grade.level
+bridge.getPlayerGang()           -- returns player.gang.name
+```
+
+**Custom implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- polls NetworkIsSessionActive() every 500ms, then calls handler
+bridge.getPlayerJob()            -- returns nil, nil (stub — implement your own)
+bridge.getPlayerGang()           -- returns nil (stub — implement your own)
+```
+
+### Server Bridge
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `bridge.getIdentifier(src)` | `src: number` | `string?` | Returns the player's unique identifier string. |
+| `bridge.getPlayerData(src)` | `src: number` | `table` | Returns `{ identifier, job, jobGrade, gang }`. |
+| `bridge.hasMoney(src, moneyType, amount)` | `src: number, moneyType: string, amount: number` | `boolean` | Checks if the player has enough money of the given type. |
+| `bridge.removeMoney(src, moneyType, amount)` | `src: number, moneyType: string, amount: number` | `boolean` | Removes the specified amount of money from the player. |
+
+**ESX implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns xPlayer.identifier
+bridge.getPlayerData(src)                  -- returns { identifier, job, jobGrade, gang = nil }
+bridge.hasMoney(src, moneyType, amount)    -- checks xPlayer.getAccount() ("cash" maps to "money")
+bridge.removeMoney(src, moneyType, amount) -- calls xPlayer.removeAccountMoney()
+```
+
+**QBX implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns player.PlayerData.citizenid
+bridge.getPlayerData(src)                  -- returns { identifier, job, jobGrade, gang }
+bridge.hasMoney(src, moneyType, amount)    -- checks player.PlayerData.money[moneyType]
+bridge.removeMoney(src, moneyType, amount) -- calls player.Functions.RemoveMoney()
+```
+
+**Custom implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns GetPlayerIdentifierByType(src, config.licenseType) with prefix stripped
+bridge.getPlayerData(src)                  -- returns { identifier, job = nil, jobGrade = 0, gang = nil }
+bridge.hasMoney(src, moneyType, amount)    -- returns true (stub — implement your own)
+bridge.removeMoney(src, moneyType, amount) -- returns true (stub — implement your own)
 ```
 
 ---
