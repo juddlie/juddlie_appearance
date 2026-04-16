@@ -1,3 +1,5 @@
+lib.versionCheck("juddlie/juddlie_appearance")
+
 local cache <const> = require("server.modules.cache")
 local blacklist <const> = require("shared.blacklist")
 local bridge <const> = require("bridge").get("framework")
