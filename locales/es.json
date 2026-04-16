@@ -179,10 +179,12 @@
       "no_permission": "No tienes permiso para usar este comando"
     },
     "migrate": {
+      "title": "Migración",
       "starting": "Iniciando migración desde illenium-appearance...",
       "success": "Migración completa: %d skins, %d conjuntos migrados.",
       "no_table": "Tabla 'playerskins' no encontrada. ¿Está instalado illenium-appearance?",
-      "failed": "Migración fallida: %s"
+      "failed": "Migración fallida: %s",
+      "console_only": "Este comando solo puede usarse desde la consola del servidor."
     }
   },
   "notify": {
@@ -193,6 +195,13 @@
     "no_access": "No tienes acceso a este vestidor",
     "rank_too_low": "Tu rango es muy bajo",
     "job_outfit_saved": "Conjunto de trabajo guardado",
-    "job_outfit_loaded": "Conjunto de trabajo cargado"
+    "job_outfit_loaded": "Conjunto de trabajo cargado",
+    "max_presets": "Límite máximo de preajustes alcanzado",
+    "max_outfits": "Límite máximo de conjuntos alcanzado",
+    "admin_no_permission": "No tienes permiso para usar este comando",
+    "admin_player_not_found": "Jugador no encontrado",
+    "admin_load_failed": "No se pudo cargar la apariencia del jugador objetivo",
+    "admin_usage": "Uso: /setappearance [id del jugador]",
+    "not_enough_money": "Necesitas $%d para usar esta tienda"
   }
 }

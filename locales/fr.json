@@ -179,10 +179,12 @@
       "no_permission": "Vous n'avez pas la permission d'utiliser cette commande"
     },
     "migrate": {
+      "title": "Migration",
       "starting": "Début de la migration depuis illenium-appearance...",
       "success": "Migration terminée: %d skins, %d tenues migrées.",
       "no_table": "Table 'playerskins' non trouvée. illenium-appearance est-il installé?",
-      "failed": "Échec de la migration: %s"
+      "failed": "Échec de la migration: %s",
+      "console_only": "Cette commande ne peut être utilisée que depuis la console du serveur."
     }
   },
   "notify": {
@@ -193,6 +195,13 @@
     "no_access": "Vous n'avez pas accès à ce vestiaire",
     "rank_too_low": "Votre rang est trop bas",
     "job_outfit_saved": "Tenue de travail sauvegardée",
-    "job_outfit_loaded": "Tenue de travail chargée"
+    "job_outfit_loaded": "Tenue de travail chargée",
+    "max_presets": "Nombre maximum de préréglages atteint",
+    "max_outfits": "Nombre maximum de tenues atteint",
+    "admin_no_permission": "Vous n'avez pas la permission d'utiliser cette commande",
+    "admin_player_not_found": "Joueur non trouvé",
+    "admin_load_failed": "Impossible de charger l'apparence du joueur cible",
+    "admin_usage": "Utilisation: /setappearance [id du joueur]",
+    "not_enough_money": "Vous avez besoin de $%d pour utiliser ce magasin"
   }
 }
