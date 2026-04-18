@@ -54,6 +54,7 @@ function ped.getAppearance(p)
     if val == 255 then
       val = -1; opa = 1.0
     end
+    
     headOverlays[#headOverlays + 1] = {
       value = val,
       opacity = tonumber(string.format("%.2f", opa)),
@@ -172,10 +173,13 @@ function ped.applyAppearance(p, data)
       local idx = i - 1
       local val = overlay.value
       if val == -1 then val = 255 end
+
       SetPedHeadOverlay(p, idx, val, ped.tofloat(overlay.opacity or 1.0))
+
       if overlay.firstColor then
         local colorType = 1
         if idx == 4 or idx == 5 or idx == 8 then colorType = 2 end
+
         SetPedHeadOverlayColor(p, idx, colorType, overlay.firstColor, overlay.secondColor or 0)
       end
     end
@@ -187,6 +191,7 @@ function ped.applyAppearance(p, data)
     else
       SetPedComponentVariation(p, 2, data.hair.style, 0, 0)
     end
+
     SetPedHairColor(p, data.hair.color, data.hair.highlight)
   end
 
@@ -200,10 +205,12 @@ function ped.applyAppearance(p, data)
         if c.collection then
           local maxTex <const> = GetNumberOfPedCollectionTextureVariations(p, c.component, c.collection, c.localIndex) - 1
           local tex <const> = math.min(c.texture, math.max(maxTex, 0))
+
           SetPedCollectionComponentVariation(p, c.component, c.collection, c.localIndex, tex, 0)
         else
           local maxTex <const> = GetNumberOfPedTextureVariations(p, c.component, c.drawable) - 1
           local tex <const> = math.min(c.texture, math.max(maxTex, 0))
+
           SetPedComponentVariation(p, c.component, c.drawable, tex, 0)
         end
       end
@@ -218,10 +225,12 @@ function ped.applyAppearance(p, data)
         if pr.collection then
           local maxTex <const> = GetNumberOfPedCollectionPropTextureVariations(p, pr.prop, pr.collection, pr.localIndex) - 1
           local tex <const> = math.min(pr.texture, math.max(maxTex, 0))
+
           SetPedCollectionPropIndex(p, pr.prop, pr.collection, pr.localIndex, tex, false)
         else
           local maxTex <const> = GetNumberOfPedPropTextureVariations(p, pr.prop, pr.drawable) - 1
           local tex <const> = math.min(pr.texture, math.max(maxTex, 0))
+
           SetPedPropIndex(p, pr.prop, pr.drawable, tex, false)
         end
       end
@@ -241,7 +250,7 @@ end
 ---@param key string
 ---@param value number
 function ped.setFaceFeature(key, value)
-  local idx = faceFeatureIndex[key]
+  local idx <const> = faceFeatureIndex[key]
   if idx then
     SetPedFaceFeature(cache.ped, idx, ped.tofloat(value))
   end
@@ -279,6 +288,7 @@ function ped.setHair(data)
   else
     SetPedComponentVariation(cache.ped, 2, data.style, 0, 0)
   end
+
   SetPedHairColor(cache.ped, data.color, data.highlight)
 end
 
@@ -292,6 +302,7 @@ function ped.setOverlay(data)
   if data.firstColor then
     local colorType = 1
     if data.index == 4 or data.index == 5 or data.index == 8 then colorType = 2 end
+
     SetPedHeadOverlayColor(cache.ped, data.index, colorType, data.firstColor, data.secondColor or 0)
   end
 end
@@ -307,10 +318,12 @@ function ped.setClothing(data)
   if data.collection then
     local maxTex <const> = GetNumberOfPedCollectionTextureVariations(cache.ped, data.component, data.collection, data.localIndex) - 1
     local tex <const> = math.min(data.texture, math.max(maxTex, 0))
+
     SetPedCollectionComponentVariation(cache.ped, data.component, data.collection, data.localIndex, tex, 0)
   else
     local maxTex <const> = GetNumberOfPedTextureVariations(cache.ped, data.component, data.drawable) - 1
     local tex <const> = math.min(data.texture, math.max(maxTex, 0))
+
     SetPedComponentVariation(cache.ped, data.component, data.drawable, tex, 0)
   end
 end
@@ -323,10 +336,12 @@ function ped.setProp(data)
     if data.collection then
       local maxTex <const> = GetNumberOfPedCollectionPropTextureVariations(cache.ped, data.prop, data.collection, data.localIndex) - 1
       local tex <const> = math.min(data.texture, math.max(maxTex, 0))
+
       SetPedCollectionPropIndex(cache.ped, data.prop, data.collection, data.localIndex, tex, false)
     else
       local maxTex <const> = GetNumberOfPedPropTextureVariations(cache.ped, data.prop, data.drawable) - 1
       local tex <const> = math.min(data.texture, math.max(maxTex, 0))
+
       SetPedPropIndex(cache.ped, data.prop, data.drawable, tex, false)
     end
   end
@@ -351,6 +366,60 @@ end
 
 function ped.clearTattoos()
   ClearPedDecorations(cache.ped)
+end
+
+---@param p number
+---@return table
+function ped.getMaxValues(p)
+  local components = {}
+  for _, cid in ipairs(config.componentIds) do
+    local maxDraw <const> = GetNumberOfPedDrawableVariations(p, cid) - 1
+    local currentDraw <const> = GetPedDrawableVariation(p, cid)
+    local maxTex <const> = GetNumberOfPedTextureVariations(p, cid, currentDraw) - 1
+
+    components[tostring(cid)] = { maxDrawable = math.max(0, maxDraw), maxTexture = math.max(0, maxTex) }
+  end
+
+  local maxHairDraw <const> = GetNumberOfPedDrawableVariations(p, 2) - 1
+  local hair = { maxStyle = math.max(0, maxHairDraw), maxColor = 63 }
+
+  local props = {}
+  for _, pid in ipairs(config.propIds) do
+    local maxDraw <const> = GetNumberOfPedPropDrawableVariations(p, pid) - 1
+    local currentDraw <const> = GetPedPropIndex(p, pid)
+    local maxTex = 0
+
+    if currentDraw >= 0 then
+      maxTex = GetNumberOfPedPropTextureVariations(p, pid, currentDraw) - 1
+    end
+    
+    props[tostring(pid)] = { maxDrawable = math.max(0, maxDraw), maxTexture = math.max(0, maxTex) }
+  end
+
+  local overlays = {}
+  for i = 0, 12 do
+    overlays[tostring(i)] = math.max(0, GetNumHeadOverlayValues(i) - 1)
+  end
+
+  return { components = components, props = props, hair = hair, overlays = overlays }
+end
+
+---@param p number
+---@param componentId number
+---@param drawable number
+---@return number
+function ped.getComponentTextureMax(p, componentId, drawable)
+  return math.max(0, GetNumberOfPedTextureVariations(p, componentId, drawable) - 1)
+end
+
+---@param p number
+---@param propId number
+---@param drawable number
+---@return number
+function ped.getPropTextureMax(p, propId, drawable)
+  if drawable < 0 then return 0 end
+
+  return math.max(0, GetNumberOfPedPropTextureVariations(p, propId, drawable) - 1)
 end
 
 return ped
