@@ -28,6 +28,7 @@ function menu.open()
   camera.create()
   
   nui.sendMessage("setAppearance", menu.originalAppearance)
+  nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
 
   local userPresets <const> = lib.callback.await("juddlie_appearance:server:getPresets", false)
   if userPresets then

@@ -56,6 +56,7 @@ function randomizer.randomize(categories)
   end
 
   nui.sendMessage("setAppearance", ped.getAppearance(cache.ped))
+  nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
 end
 
 ---@param data table

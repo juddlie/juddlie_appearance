@@ -80,6 +80,7 @@ nui.handleMessage("appearance:setModel", function(data)
 
   local appearance <const> = ped.getAppearance(cache.ped)
   nui.sendMessage("setAppearance", appearance)
+  nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
 end)
 
 nui.handleMessage("appearance:exit", function()
@@ -151,12 +152,22 @@ nui.handleMessage("appearance:setClothing", function(data)
   if type(data) ~= "table" or type(data.component) ~= "number" or type(data.drawable) ~= "number" or type(data.texture) ~= "number" then return end
 
   ped.setClothing(data)
+  nui.sendMessage("updateTextureMax", {
+    type = "component",
+    id = data.component,
+    maxTexture = ped.getComponentTextureMax(cache.ped, data.component, data.drawable),
+  })
 end)
 
 nui.handleMessage("appearance:setProp", function(data)
   if type(data) ~= "table" or type(data.prop) ~= "number" or type(data.drawable) ~= "number" or type(data.texture) ~= "number" then return end
 
   ped.setProp(data)
+  nui.sendMessage("updateTextureMax", {
+    type = "prop",
+    id = data.prop,
+    maxTexture = ped.getPropTextureMax(cache.ped, data.prop, data.drawable),
+  })
 end)
 
 nui.handleMessage("appearance:browseTattoos", function(data)

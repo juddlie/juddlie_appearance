@@ -30,6 +30,7 @@ function admin.openForPlayer(targetSrc, targetAppearance)
   menu.open()
   menu.originalAppearance = targetAppearance
   nui.sendMessage("setAppearance", targetAppearance)
+  nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
   nui.sendMessage("setAdminMode", { enabled = true, targetId = targetSrc })
 end
 
