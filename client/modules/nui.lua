@@ -62,6 +62,8 @@ nui.handleMessage("ready", function()
     faceRegions = config.faceRegions,
     quickSlots = config.quickSlots,
     randomizerCategories = config.randomizerCategories,
+    walkStyles = config.walkStyles or {},
+    walkStyleCategories = config.walkStyleCategories or {},
     pedModels = config.pedModels,
     outfitCategories = config.outfitCategories,
     locale = config.locale or "en",
@@ -69,6 +71,7 @@ nui.handleMessage("ready", function()
     disabledComponents = config.disabledComponents or {},
     disabledProps = config.disabledProps or {},
     accentColor = config.accentColor or "blue",
+    prices = config.prices or {},
   })
 end)
 

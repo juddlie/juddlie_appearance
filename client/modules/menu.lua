@@ -29,6 +29,7 @@ function menu.open()
   
   nui.sendMessage("setAppearance", menu.originalAppearance)
   nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
+  nui.sendMessage("setShopType", { shopType = menu.shopType })
 
   local userPresets <const> = lib.callback.await("juddlie_appearance:server:getPresets", false)
   if userPresets then

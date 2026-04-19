@@ -166,6 +166,57 @@
       "crouch": "S'accroupir",
       "sit": "S'asseoir"
     },
+    "walkstyle": {
+      "title": "Style de Marche",
+      "description": "Personnalisez la façon dont votre personnage se déplace",
+      "default": "Par Défaut",
+      "category_all": "Tous",
+      "category_normal": "Normal",
+      "category_tough": "Dur",
+      "category_feminine": "Féminin",
+      "category_mood": "Humeur",
+      "category_impaired": "Altéré",
+      "category_professional": "Professionnel",
+      "category_special": "Spécial"
+    },
+    "accessories": {
+      "title": "Accessoires",
+      "description": "Sauvegardez et échangez des accessoires sans changer votre tenue de base",
+      "currently_equipped": "Actuellement Équipé",
+      "saved_sets": "Ensembles Sauvegardés",
+      "save_set": "Sauvegarder Ensemble d'Accessoires",
+      "none_saved": "Aucun ensemble d'accessoires sauvegardé. Cliquez + pour sauvegarder vos accessoires actuels.",
+      "none_equipped": "Aucun"
+    },
+    "history": {
+      "title": "Historique",
+      "undo": "Annuler",
+      "redo": "Refaire",
+      "snapshots": "Instantanés",
+      "timeline": "Chronologie",
+      "save_snapshot": "Sauvegarder Instantané",
+      "clear_history": "Effacer l'Historique",
+      "no_changes": "Aucun changement enregistré",
+      "just_now": "à l'instant"
+    },
+    "cost_tracker": {
+      "clothing_store": "Magasin de Vêtements",
+      "barber": "Coiffeur",
+      "tattoo": "Salon de Tatouage",
+      "surgeon": "Chirurgien",
+      "free": "GRATUIT",
+      "total_cost": "Coût Total",
+      "face_features": "Traits du Visage",
+      "heritage": "Héritage",
+      "overlays": "Overlays",
+      "hair": "Cheveux",
+      "eye_color": "Couleur des Yeux",
+      "clothing": "Vêtements",
+      "props": "Accessoires",
+      "tattoos": "Tatouages",
+      "walk_style": "Style de Marche",
+      "model": "Modèle"
+    },
     "outfit_wheel": {
       "title": "Tenues Rapides",
       "no_outfits": "Aucune tenue sauvegardée. Ouvrez le menu d'apparence pour créer des tenues.",

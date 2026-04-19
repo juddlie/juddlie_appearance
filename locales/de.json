@@ -166,6 +166,57 @@
       "crouch": "Hocken",
       "sit": "Sitzen"
     },
+    "walkstyle": {
+      "title": "Gangstil",
+      "description": "Passe an, wie sich dein Charakter bewegt",
+      "default": "Standard",
+      "category_all": "Alle",
+      "category_normal": "Normal",
+      "category_tough": "Hart",
+      "category_feminine": "Feminin",
+      "category_mood": "Stimmung",
+      "category_impaired": "Beeinträchtigt",
+      "category_professional": "Professionell",
+      "category_special": "Spezial"
+    },
+    "accessories": {
+      "title": "Zubehör",
+      "description": "Speichere & tausche Zubehör, ohne dein Basis-Outfit zu ändern",
+      "currently_equipped": "Aktuell Ausgerüstet",
+      "saved_sets": "Gespeicherte Sets",
+      "save_set": "Zubehör-Set Speichern",
+      "none_saved": "Keine Zubehör-Sets gespeichert. Klicke +, um dein aktuelles Zubehör zu speichern.",
+      "none_equipped": "Keine"
+    },
+    "history": {
+      "title": "Verlauf",
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "snapshots": "Schnappschüsse",
+      "timeline": "Zeitverlauf",
+      "save_snapshot": "Schnappschuss Speichern",
+      "clear_history": "Verlauf Löschen",
+      "no_changes": "Noch keine Änderungen aufgezeichnet",
+      "just_now": "gerade eben"
+    },
+    "cost_tracker": {
+      "clothing_store": "Bekleidungsgeschäft",
+      "barber": "Friseur",
+      "tattoo": "Tattoostudio",
+      "surgeon": "Chirurg",
+      "free": "KOSTENLOS",
+      "total_cost": "Gesamtkosten",
+      "face_features": "Gesichtszüge",
+      "heritage": "Abstammung",
+      "overlays": "Overlays",
+      "hair": "Haare",
+      "eye_color": "Augenfarbe",
+      "clothing": "Kleidung",
+      "props": "Requisiten",
+      "tattoos": "Tattoos",
+      "walk_style": "Gangstil",
+      "model": "Modell"
+    },
     "outfit_wheel": {
       "title": "Schnelle Outfits",
       "no_outfits": "Keine Outfits gespeichert. Öffne das Aussehen-Menü um Outfits zu erstellen.",

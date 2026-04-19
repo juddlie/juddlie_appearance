@@ -166,6 +166,57 @@
       "crouch": "Agachar",
       "sit": "Sentar"
     },
+    "walkstyle": {
+      "title": "Estilo de Andar",
+      "description": "Personalize como seu personagem se move",
+      "default": "Padrão",
+      "category_all": "Todos",
+      "category_normal": "Normal",
+      "category_tough": "Durão",
+      "category_feminine": "Feminino",
+      "category_mood": "Humor",
+      "category_impaired": "Prejudicado",
+      "category_professional": "Profissional",
+      "category_special": "Especial"
+    },
+    "accessories": {
+      "title": "Acessórios",
+      "description": "Salve e troque acessórios sem alterar seu traje base",
+      "currently_equipped": "Equipado Atualmente",
+      "saved_sets": "Conjuntos Salvos",
+      "save_set": "Salvar Conjunto de Acessórios",
+      "none_saved": "Nenhum conjunto de acessórios salvo. Clique em + para salvar seus acessórios atuais.",
+      "none_equipped": "Nenhum"
+    },
+    "history": {
+      "title": "Histórico",
+      "undo": "Desfazer",
+      "redo": "Refazer",
+      "snapshots": "Instantâneos",
+      "timeline": "Linha do Tempo",
+      "save_snapshot": "Salvar Instantâneo",
+      "clear_history": "Limpar Histórico",
+      "no_changes": "Nenhuma alteração registrada ainda",
+      "just_now": "agora mesmo"
+    },
+    "cost_tracker": {
+      "clothing_store": "Loja de Roupas",
+      "barber": "Barbearia",
+      "tattoo": "Estúdio de Tatuagem",
+      "surgeon": "Cirurgião",
+      "free": "GRÁTIS",
+      "total_cost": "Custo Total",
+      "face_features": "Traços Faciais",
+      "heritage": "Herança",
+      "overlays": "Overlays",
+      "hair": "Cabelo",
+      "eye_color": "Cor dos Olhos",
+      "clothing": "Roupas",
+      "props": "Acessórios",
+      "tattoos": "Tatuagens",
+      "walk_style": "Estilo de Andar",
+      "model": "Modelo"
+    },
     "outfit_wheel": {
       "title": "Trajes Rápidos",
       "no_outfits": "Nenhum traje salvo. Abra o menu de aparência para criar trajes.",

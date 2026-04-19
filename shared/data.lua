@@ -60,4 +60,47 @@ data.randomizerCategories = {
 	{ key = "tattoos", label = "Tattoos" },
 }
 
+data.walkStyles = {
+	{ value = "default", label = "Default", clipset = nil, category = "normal" },
+	{ value = "brave", label = "Brave", clipset = "move_m@brave", category = "normal" },
+	{ value = "confident", label = "Confident", clipset = "move_m@confident", category = "normal" },
+	{ value = "hurry", label = "Hurry", clipset = "move_m@hurry@a", category = "normal" },
+	{ value = "business", label = "Business", clipset = "move_m@business@a", category = "normal" },
+	{ value = "tough_guy", label = "Tough Guy", clipset = "move_m@tough_guy@", category = "tough" },
+	{ value = "gangster", label = "Gangster", clipset = "move_m@gangster@generic", category = "tough" },
+	{ value = "posh", label = "Posh", clipset = "move_m@posh@", category = "normal" },
+	{ value = "sexy", label = "Sexy", clipset = "move_f@sexy@a", category = "feminine" },
+	{ value = "heels", label = "Heels", clipset = "move_f@heels@c", category = "feminine" },
+	{ value = "arrogant", label = "Arrogant", clipset = "move_m@arrogant@a", category = "normal" },
+	{ value = "sad", label = "Sad", clipset = "move_m@sad@a", category = "mood" },
+	{ value = "intimidation", label = "Intimidation", clipset = "move_m@intimidation@1h", category = "tough" },
+	{ value = "drunk", label = "Drunk", clipset = "move_m@drunk@moderatedrunk", category = "impaired" },
+	{ value = "injured", label = "Injured", clipset = "move_m@injured", category = "impaired" },
+	{ value = "hipster", label = "Hipster", clipset = "move_m@hipster@a", category = "normal" },
+	{ value = "hobo", label = "Hobo", clipset = "move_m@hobo@a", category = "normal" },
+	{ value = "money", label = "Money", clipset = "move_m@money", category = "normal" },
+	{ value = "quick", label = "Quick", clipset = "move_m@quick", category = "normal" },
+	{ value = "fat", label = "Heavy", clipset = "move_m@fat@a", category = "normal" },
+	{ value = "swagger", label = "Swagger", clipset = "move_m@swagger", category = "tough" },
+	{ value = "muscle", label = "Muscle", clipset = "move_m@muscle@a", category = "tough" },
+	{ value = "femme", label = "Femme", clipset = "move_f@femme@", category = "feminine" },
+	{ value = "cop", label = "Cop", clipset = "move_m@cop@stroll", category = "professional" },
+	{ value = "alien", label = "Alien", clipset = "move_m@alien", category = "special" },
+	{ value = "maneater", label = "Maneater", clipset = "move_f@maneater", category = "feminine" },
+	{ value = "chichi", label = "Chichi", clipset = "move_f@chichi", category = "feminine" },
+	{ value = "sassy", label = "Sassy", clipset = "move_m@sassy", category = "feminine" },
+	{ value = "depressed", label = "Depressed", clipset = "move_m@depressed@a", category = "mood" },
+}
+
+data.walkStyleCategories = {
+	{ value = "all", label = "All" },
+	{ value = "normal", label = "Normal" },
+	{ value = "tough", label = "Tough" },
+	{ value = "feminine", label = "Feminine" },
+	{ value = "mood", label = "Mood" },
+	{ value = "impaired", label = "Impaired" },
+	{ value = "professional", label = "Professional" },
+	{ value = "special", label = "Special" },
+}
+
 return data

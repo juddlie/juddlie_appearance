@@ -166,6 +166,57 @@
       "crouch": "Agacharse",
       "sit": "Sentarse"
     },
+    "walkstyle": {
+      "title": "Estilo de Caminar",
+      "description": "Personaliza cómo se mueve tu personaje",
+      "default": "Predeterminado",
+      "category_all": "Todos",
+      "category_normal": "Normal",
+      "category_tough": "Rudo",
+      "category_feminine": "Femenino",
+      "category_mood": "Estado de Ánimo",
+      "category_impaired": "Deteriorado",
+      "category_professional": "Profesional",
+      "category_special": "Especial"
+    },
+    "accessories": {
+      "title": "Accesorios",
+      "description": "Guarda e intercambia accesorios sin cambiar tu conjunto base",
+      "currently_equipped": "Equipado Actualmente",
+      "saved_sets": "Conjuntos Guardados",
+      "save_set": "Guardar Conjunto de Accesorios",
+      "none_saved": "No hay conjuntos de accesorios guardados. Haz clic en + para guardar tus accesorios actuales.",
+      "none_equipped": "Ninguno"
+    },
+    "history": {
+      "title": "Historial",
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "snapshots": "Instantáneas",
+      "timeline": "Línea de Tiempo",
+      "save_snapshot": "Guardar Instantánea",
+      "clear_history": "Borrar Historial",
+      "no_changes": "Aún no se han registrado cambios",
+      "just_now": "justo ahora"
+    },
+    "cost_tracker": {
+      "clothing_store": "Tienda de Ropa",
+      "barber": "Barbería",
+      "tattoo": "Estudio de Tatuajes",
+      "surgeon": "Cirujano",
+      "free": "GRATIS",
+      "total_cost": "Costo Total",
+      "face_features": "Rasgos Faciales",
+      "heritage": "Herencia",
+      "overlays": "Overlays",
+      "hair": "Cabello",
+      "eye_color": "Color de Ojos",
+      "clothing": "Ropa",
+      "props": "Accesorios",
+      "tattoos": "Tatuajes",
+      "walk_style": "Estilo de Caminar",
+      "model": "Modelo"
+    },
     "outfit_wheel": {
       "title": "Conjuntos Rápidos",
       "no_outfits": "No hay conjuntos guardados. Abre el menú de apariencia para crear conjuntos.",

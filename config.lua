@@ -5,7 +5,7 @@ local config = {}
 
 -- enables debug logging and the /appearance command for testing
 -- set to false in production
-config.debug = false
+config.debug = true
 
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
@@ -203,7 +203,7 @@ config.outfitCategories = {
 --   radius = interaction radius in meters
 --   tabs = which menu tabs are available at this location
 --     valid tabs: "clothing", "props", "outfits", "hair", "face",
---      "colors", "tattoos", "presets", "animations", "randomizer", "camera"
+--      "colors", "tattoos", "presets", "animations", "randomizer", "camera", "walkstyle"
 --   blip = map blip config (optional)
 --     sprite = blip icon id (see https://docs.fivem.net/docs/game-references/blips/)
 --     color  = blip color id
@@ -490,5 +490,7 @@ config.faceRegions = sharedData.faceRegions
 config.animations = sharedData.animations
 config.quickSlots = sharedData.quickSlots
 config.randomizerCategories = sharedData.randomizerCategories
+config.walkStyles = sharedData.walkStyles
+config.walkStyleCategories = sharedData.walkStyleCategories
 
 return config

@@ -166,6 +166,57 @@
       "crouch": "Crouch",
       "sit": "Sit"
     },
+    "walkstyle": {
+      "title": "Walk Style",
+      "description": "Customize how your character moves",
+      "default": "Default",
+      "category_all": "All",
+      "category_normal": "Normal",
+      "category_tough": "Tough",
+      "category_feminine": "Feminine",
+      "category_mood": "Mood",
+      "category_impaired": "Impaired",
+      "category_professional": "Professional",
+      "category_special": "Special"
+    },
+    "accessories": {
+      "title": "Accessories",
+      "description": "Save & swap accessories without changing your base outfit",
+      "currently_equipped": "Currently Equipped",
+      "saved_sets": "Saved Sets",
+      "save_set": "Save Accessory Set",
+      "none_saved": "No accessory sets saved. Click + to save your current accessories.",
+      "none_equipped": "None"
+    },
+    "history": {
+      "title": "History",
+      "undo": "Undo",
+      "redo": "Redo",
+      "snapshots": "Snapshots",
+      "timeline": "Timeline",
+      "save_snapshot": "Save Snapshot",
+      "clear_history": "Clear History",
+      "no_changes": "No changes recorded yet",
+      "just_now": "just now"
+    },
+    "cost_tracker": {
+      "clothing_store": "Clothing Store",
+      "barber": "Barber",
+      "tattoo": "Tattoo Parlor",
+      "surgeon": "Surgeon",
+      "free": "FREE",
+      "total_cost": "Total Cost",
+      "face_features": "Face Features",
+      "heritage": "Heritage",
+      "overlays": "Overlays",
+      "hair": "Hair",
+      "eye_color": "Eye Color",
+      "clothing": "Clothing",
+      "props": "Props",
+      "tattoos": "Tattoos",
+      "walk_style": "Walk Style",
+      "model": "Model"
+    },
     "outfit_wheel": {
       "title": "Quick Outfits",
       "no_outfits": "No outfits saved. Open the appearance menu to create outfits.",
