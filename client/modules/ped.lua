@@ -2,10 +2,16 @@ local config <const> = require("config")
 
 local ped = {}
 ped.currentModelName = "mp_m_freemode_01"
+ped.walkStyle = "default"
 
 local faceFeatureIndex = {}
 for i, name in ipairs(config.faceFeatures) do
   faceFeatureIndex[name] = i - 1
+end
+
+local walkStylesByValue = {}
+for _, s in ipairs(config.walkStyles or {}) do
+  walkStylesByValue[s.value] = s
 end
 
 ---@param n number
@@ -120,6 +126,7 @@ function ped.getAppearance(p)
     clothing = clothing,
     props = props,
     tattoos = {},
+    walkStyle = ped.walkStyle or "default",
   }
 end
 
@@ -253,6 +260,10 @@ function ped.applyAppearance(p, data)
       end
     end
   end
+
+  if data.walkStyle ~= nil then
+    ped.applyWalkStyle(data.walkStyle)
+  end
 end
 
 ---@param key string
@@ -374,6 +385,34 @@ end
 
 function ped.clearTattoos()
   ClearPedDecorations(cache.ped)
+end
+
+---@param value string?
+function ped.applyWalkStyle(value)
+  if not value or value == "default" then
+    ResetPedMovementClipset(cache.ped, 0.25)
+    ped.walkStyle = "default"
+    return
+  end
+
+  local style <const> = walkStylesByValue[value]
+  if not style or not style.clipset then
+    ResetPedMovementClipset(cache.ped, 0.25)
+    ped.walkStyle = "default"
+    return
+  end
+
+  RequestClipSet(style.clipset)
+  local timeout = 0
+  while not HasClipSetLoaded(style.clipset) and timeout < 5000 do
+    Wait(10)
+    timeout = timeout + 10
+  end
+
+  if HasClipSetLoaded(style.clipset) then
+    SetPedMovementClipset(cache.ped, style.clipset, 0.25)
+    ped.walkStyle = value
+  end
 end
 
 ---@param p number

@@ -345,6 +345,50 @@ nui.handleMessage("appearance:playAnimation", function(data)
   animation.play(data.animation)
 end)
 
+nui.handleMessage("appearance:setWalkStyle", function(data)
+  if type(data) ~= "table" or type(data.walkStyle) ~= "string" then return end
+
+  ped.applyWalkStyle(data.walkStyle)
+end)
+
+nui.handleMessage("appearance:applyAccessorySet", function(data)
+  if type(data) ~= "table" then return end
+
+  local p <const> = cache.ped
+
+  if data.clothing then
+    for _, c in ipairs(data.clothing) do
+      if c.collection then
+        local maxTex <const> = GetNumberOfPedCollectionTextureVariations(p, c.component, c.collection, c.localIndex) - 1
+        local tex <const> = math.min(c.texture, math.max(maxTex, 0))
+        SetPedCollectionComponentVariation(p, c.component, c.collection, c.localIndex, tex, 0)
+      else
+        local maxTex <const> = GetNumberOfPedTextureVariations(p, c.component, c.drawable) - 1
+        local tex <const> = math.min(c.texture, math.max(maxTex, 0))
+        SetPedComponentVariation(p, c.component, c.drawable, tex, 0)
+      end
+    end
+  end
+
+  if data.props then
+    for _, pr in ipairs(data.props) do
+      if pr.drawable == -1 then
+        ClearPedProp(p, pr.prop)
+      else
+        if pr.collection then
+          local maxTex <const> = GetNumberOfPedCollectionPropTextureVariations(p, pr.prop, pr.collection, pr.localIndex) - 1
+          local tex <const> = math.min(pr.texture, math.max(maxTex, 0))
+          SetPedCollectionPropIndex(p, pr.prop, pr.collection, pr.localIndex, tex, false)
+        else
+          local maxTex <const> = GetNumberOfPedPropTextureVariations(p, pr.prop, pr.drawable) - 1
+          local tex <const> = math.min(pr.texture, math.max(maxTex, 0))
+          SetPedPropIndex(p, pr.prop, pr.drawable, tex, false)
+        end
+      end
+    end
+  end
+end)
+
 nui.handleMessage("appearance:adminApply", function(data)
   if admin.isAdminEdit then
     admin.saveForPlayer(data)
@@ -352,7 +396,6 @@ nui.handleMessage("appearance:adminApply", function(data)
     menu.close(false)
   end
 end)
-
 
 bridge.onPlayerLoaded(function()
   if not initialSpawn then return end
