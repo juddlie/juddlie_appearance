@@ -1,6 +1,7 @@
 local config <const> = require("config")
 
 local ped = {}
+ped.currentModelName = "mp_m_freemode_01"
 
 local faceFeatureIndex = {}
 for i, name in ipairs(config.faceFeatures) do
@@ -100,8 +101,14 @@ function ped.getAppearance(p)
   local eyeColor = GetPedEyeColor(p)
 
   local modelHash = GetEntityModel(p)
-  local model = "mp_m_freemode_01"
-  if modelHash == `mp_f_freemode_01` then model = "mp_f_freemode_01" end
+  local model
+  if modelHash == `mp_m_freemode_01` then
+    model = "mp_m_freemode_01"
+  elseif modelHash == `mp_f_freemode_01` then
+    model = "mp_f_freemode_01"
+  else
+    model = ped.currentModelName or "mp_m_freemode_01"
+  end
 
   return {
     model = model,
@@ -142,6 +149,7 @@ function ped.applyModel(model)
     SetPedHeadBlendData(cache.ped, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0, false)
   end
 
+  ped.currentModelName = model
   return true
 end
 

@@ -64,6 +64,10 @@ function menu.close(save)
   nui.sendMessage("setVisible", { visible = false })
 
   if not save then
+    if menu.originalAppearance.model then
+      ped.applyModel(menu.originalAppearance.model)
+    end
+    
     ped.applyAppearance(cache.ped, menu.originalAppearance)
   end
 

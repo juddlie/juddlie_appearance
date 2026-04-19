@@ -72,6 +72,7 @@ nui.handleMessage("appearance:setModel", function(data)
   SetModelAsNoLongerNeeded(modelHash)
 
   cache.ped = PlayerPedId()
+  ped.currentModelName = data.model
 
   if ped.isFreemode(cache.ped) then
     SetPedDefaultComponentVariation(cache.ped)
@@ -79,7 +80,7 @@ nui.handleMessage("appearance:setModel", function(data)
   end
 
   local appearance <const> = ped.getAppearance(cache.ped)
-  nui.sendMessage("setAppearance", appearance)
+  nui.sendMessage("updateModelAppearance", appearance)
   nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
 end)
 
@@ -109,6 +110,9 @@ nui.handleMessage("appearance:revert", function()
   if not menu.originalAppearance then return end
 
   logger.debug("Reverting appearance")
+  if menu.originalAppearance.model then
+    ped.applyModel(menu.originalAppearance.model)
+  end
   ped.applyAppearance(cache.ped, menu.originalAppearance)
 end)
 
