@@ -10,8 +10,9 @@ config.debug = false
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
 -- "qbx" = qbx_core / qb-core
+-- "ox" = ox_core (overextended framework, uses stateId + groups)
 -- "custom" = standalone (no framework, uses license identifier only)
----@type "esx" | "qbx" | "custom"
+---@type "esx" | "qbx" | "ox" | "custom"
 config.framework = "esx"
 
 -- which target resource handles interaction at locations
