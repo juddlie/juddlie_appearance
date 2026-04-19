@@ -282,6 +282,16 @@ nui.handleMessage("appearance:applyOutfit", function(data)
       end
     end
   end
+
+  if data.hair then
+    if data.hair.collection then
+      SetPedCollectionComponentVariation(cache.ped, 2, data.hair.collection, data.hair.localIndex, 0, 0)
+    else
+      SetPedComponentVariation(cache.ped, 2, data.hair.style, 0, 0)
+    end
+    
+    SetPedHairColor(cache.ped, data.hair.color, data.hair.highlight)
+  end
 end)
 
 nui.handleMessage("appearance:setCameraPreset", function(data)
