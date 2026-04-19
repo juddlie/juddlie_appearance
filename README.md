@@ -1,6 +1,6 @@
 # juddlie_appearance
 
-A fully-featured character appearance menu for FiveM. Supports ESX, QBX, and standalone frameworks with ox_target or qb-target interaction.
+A fully-featured character appearance menu for FiveM. Supports ESX, QBX, OX Core, and standalone frameworks with ox_target or qb-target interaction.
 
 ---
 
@@ -10,11 +10,13 @@ These resources **must** be installed and started before `juddlie_appearance`:
 
 | Resource | Required | Purpose |
 |----------|----------|---------|
-| [ox_lib](https://github.com/overextended/ox_lib) | Yes | UI notifications, points, utilities |
-| [oxmysql](https://github.com/overextended/oxmysql) | Yes | Database queries |
+| [ox_lib](https://github.com/CommunityOx/ox_lib) | Yes | UI notifications, points, utilities |
+| [oxmysql](https://github.com/CommunityOx/oxmysql) | Yes | Database queries |
 | [es_extended](https://github.com/esx-framework/esx_core) | If using ESX | ESX framework bridge |
 | [qbx_core](https://github.com/Qbox-project/qbx_core) | If using QBX | QBX framework bridge |
-| [ox_target](https://github.com/overextended/ox_target) | If using ox interaction | Target zones |
+| [ox_core](https://github.com/CommunityOx/ox_core) | If using OX | OX Core framework bridge |
+| [ox_inventory](https://github.com/CommunityOx/ox_inventory) | If using OX | Money checks/removal (used by OX bridge) |
+| [ox_target](https://github.com/CommunityOx/ox_target) | If using ox interaction | Target zones |
 | [qb-target](https://github.com/qbcore-framework/qb-target) | If using qb interaction | Target zones |
 
 ---
@@ -48,6 +50,7 @@ config.framework = "esx"
 |-------|-----------|
 | `"esx"` | ESX / es_extended |
 | `"qbx"` | QBX / qbx_core |
+| `"ox"` | OX Core / ox_core |
 | `"custom"` | Standalone — no framework, uses license identifier only |
 
 ### Interaction Method
@@ -88,7 +91,7 @@ Only used when `config.framework = "custom"`. Determines which FiveM identifier 
 | `"fivem"` | FiveM account ID |
 | `"discord"` | Discord ID |
 
-When using ESX or QBX, the identifier comes from the framework automatically — this setting is ignored.
+When using ESX, QBX, or OX Core, the identifier comes from the framework automatically — this setting is ignored.
 
 ### General Settings
 
@@ -871,7 +874,7 @@ end, {
 
 ## Custom Framework Bridge
 
-If you set `config.framework = "custom"`, the resource runs without ESX or QBX. The custom bridge uses FiveM native identifiers.
+If you set `config.framework = "custom"`, the resource runs without ESX, QBX, or OX Core. The custom bridge uses FiveM native identifiers.
 
 To add your own framework support, edit the files in:
 - `bridge/framework/custom/client.lua`
@@ -899,6 +902,13 @@ bridge.getPlayerGang()           -- returns nil (ESX has no gang system)
 bridge.onPlayerLoaded(handler)   -- listens for QBCore:Client:OnPlayerLoaded event
 bridge.getPlayerJob()            -- returns player.job.name, player.job.grade.level
 bridge.getPlayerGang()           -- returns player.gang.name
+```
+
+**OX Core implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- listens for ox:setActiveCharacter event; opens the menu if character is new
+bridge.getPlayerJob()            -- returns player.getGroupByType("job") name and grade
+bridge.getPlayerGang()           -- returns player.getGroupByType("gang") name
 ```
 
 **Custom implementation:**
@@ -933,6 +943,14 @@ bridge.hasMoney(src, moneyType, amount)    -- checks player.PlayerData.money[mon
 bridge.removeMoney(src, moneyType, amount) -- calls player.Functions.RemoveMoney()
 ```
 
+**OX Core implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns oxPlayer.stateId
+bridge.getPlayerData(src)                  -- returns { identifier = stateId, job, jobGrade, gang } via getGroupByType
+bridge.hasMoney(src, moneyType, amount)    -- checks ox_inventory item count (moneyType is the item name)
+bridge.removeMoney(src, moneyType, amount) -- removes item via ox_inventory
+```
+
 **Custom implementation:**
 ```lua
 bridge.getIdentifier(src)                  -- returns GetPlayerIdentifierByType(src, config.licenseType) with prefix stripped
@@ -951,7 +969,7 @@ bridge.removeMoney(src, moneyType, amount) -- returns true (stub — implement y
 - With `config.debug = true`, try `/appearance` to test without a location
 
 ### "Failed to load framework bridge" error
-- Make sure `config.framework` matches your installed framework (`"esx"`, `"qbx"`, or `"custom"`)
+- Make sure `config.framework` matches your installed framework (`"esx"`, `"qbx"`, `"ox"`, or `"custom"`)
 - Ensure your framework resource is started **before** `juddlie_appearance`
 
 ### "Failed to load interaction bridge" error
