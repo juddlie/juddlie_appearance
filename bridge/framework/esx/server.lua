@@ -62,6 +62,19 @@ function bridge.removeMoney(src, moneyType, amount)
 	return true
 end
 
+---@param src string
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.addMoney(src, moneyType, amount)
+	local xPlayer <const> = ESX.GetPlayerFromId(src)
+	if not xPlayer then return false end
+	if moneyType == "cash" then moneyType = "money" end
+
+	xPlayer.addAccountMoney(moneyType, amount)
+	return true
+end
+
 ESX.RegisterServerCallback("esx_skin:getPlayerSkin", function(source, cb)
 	local xPlayer <const> = ESX.GetPlayerFromId(source)
 	if not xPlayer then

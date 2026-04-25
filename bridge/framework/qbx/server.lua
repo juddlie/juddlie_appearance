@@ -53,4 +53,15 @@ function bridge.removeMoney(src, moneyType, amount)
 	return player.Functions.RemoveMoney(moneyType, amount)
 end
 
+---@param src number
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.addMoney(src, moneyType, amount)
+	local player <const> = QBXCore:GetPlayer(src)
+	if not player then return false end
+
+	return player.Functions.AddMoney(moneyType, amount)
+end
+
 return bridge

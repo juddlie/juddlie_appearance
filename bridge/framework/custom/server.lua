@@ -42,4 +42,12 @@ function bridge.removeMoney(src, moneyType, amount)
   return true
 end
 
+---@param src number
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.addMoney(src, moneyType, amount)
+  return true
+end
+
 return bridge

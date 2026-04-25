@@ -48,4 +48,12 @@ function bridge.removeMoney(src, moneyType, amount)
 	return exports.ox_inventory:RemoveItem(src, moneyType, amount)
 end
 
+---@param src number
+---@param moneyType string
+---@param amount number
+---@return boolean
+function bridge.addMoney(src, moneyType, amount)
+	return exports.ox_inventory:AddItem(src, moneyType, amount)
+end
+
 return bridge
