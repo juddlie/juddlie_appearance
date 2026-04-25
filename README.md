@@ -32,8 +32,13 @@ These resources **must** be installed and started before `juddlie_appearance`:
 > - `juddlie_appearance` — player skins
 > - `juddlie_appearance_presets` — saved presets
 > - `juddlie_appearance_outfits` — saved outfits
-> - `juddlie_appearance_job_outfits` — job outfits
-> - `juddlie_appearance_faction_uniforms` — faction work uniforms (job/gang)
+> - `juddlie_appearance_job_outfits` — job outfit persistence
+> - `juddlie_appearance_faction_uniforms` — faction work uniforms
+> - `juddlie_appearance_share_codes` — outfit share codes
+> - `juddlie_appearance_marketplace` — player-to-player outfit listings
+> - `juddlie_appearance_owned_items` — per-item purchase records
+> - `juddlie_appearance_drops` — outfit drops / event rewards
+> - `juddlie_appearance_wardrobe` — wardrobe slot saves
 
 ---
 
@@ -1163,3 +1168,159 @@ add_ace identifier.license:abc123 appearance.uniforms allow
 -- Returns true if the source player is a boss of their current faction.
 local isBoss = exports.juddlie_appearance:isFactionBoss(source)
 ```
+
+---
+
+## Share Codes
+
+Players can generate a text code for any saved outfit and share it with others. The recipient enters the code to import the outfit into their own collection.
+
+```lua
+config.share = {
+    enabled = true,
+    codeLength = 10,           -- character length of generated codes
+    maxPayloadBytes = 100000,  -- 100 KiB hard cap on outfit payload
+    rateLimitGen = 5,          -- max codes generated per player per window
+    rateLimitImport = 20,      -- max imports per player per window
+    rateLimitWindowMs = 60000, -- rate-limit window in milliseconds
+    defaultMaxUses = 0,        -- 0 = unlimited uses
+    defaultTtlSeconds = 0,     -- 0 = code never expires
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `codeLength` | number | Length of generated share codes |
+| `maxPayloadBytes` | number | Maximum outfit data size that can be shared |
+| `rateLimitGen` | number | Max codes a player can generate per window |
+| `rateLimitImport` | number | Max codes a player can import per window |
+| `rateLimitWindowMs` | number | Duration of the rate-limit window in milliseconds |
+| `defaultMaxUses` | number | How many times a code can be used (`0` = unlimited) |
+| `defaultTtlSeconds` | number | Time before a code expires in seconds (`0` = no expiry) |
+
+Share codes are stored in the `juddlie_appearance_share_codes` table and can be revoked by the player who generated them.
+
+---
+
+## Marketplace
+
+Players can list outfits for sale on a shared server marketplace. Other players can browse, preview outfits on their own ped, and purchase them. Purchased outfits are added to the buyer's personal collection.
+
+```lua
+config.marketplace = {
+    enabled = true,
+    maxListingsPerSeller = 5,
+    minPrice = 1,
+    maxPrice = 1000000,
+    defaultTtlHours = 168,    -- 7 days; 0 = no expiry
+    moneyType = "cash",       -- "cash" | "bank" | "money" (passed to your framework bridge)
+    tax = 0.10,               -- fraction of sale price kept by the server (0..1)
+    singleUse = false,        -- if true, listing is removed after first sale
+    rateLimitList = 5,
+    rateLimitBuy = 10,
+    rateLimitWindowMs = 60000,
+    maxPayloadBytes = 100000,
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `maxListingsPerSeller` | number | How many active listings one player can have at once |
+| `minPrice` / `maxPrice` | number | Price floor and ceiling enforced server-side |
+| `defaultTtlHours` | number | Auto-expiry for listings in hours; `0` = never expire |
+| `moneyType` | string | The money type name passed to your framework bridge (`"cash"`, `"bank"`, `"money"`) |
+| `tax` | number | Fraction taken by the server on each sale (e.g. `0.10` = 10%). Acts as a money sink |
+| `singleUse` | boolean | If `true`, a listing is removed after it sells once |
+| `rateLimitList` / `rateLimitBuy` | number | Max actions per player per rate-limit window |
+
+Listings are stored in the `juddlie_appearance_marketplace` table.
+
+---
+
+## Outfit Drops
+
+Time-limited or access-restricted outfits that players can claim or preview. Drops can be defined statically in config or managed at runtime via the database.
+
+```lua
+config.drops = {
+    enabled = true,
+    static = {
+        {
+            id = "halloween_2024",
+            name = "Pumpkin Lord",
+            description = "Limited Halloween 2024 set",
+            tier = "seasonal",
+            startsAt = 1729728000000,  -- millisecond epoch
+            endsAt   = 1730937600000,
+            claimable = true,           -- false = preview-only, player can't keep it
+            restrictions = {
+                aces = { "appearance.vip" },  -- optional; omit to allow everyone
+                jobs = { "police" },           -- OR require a specific job
+            },
+            data = { clothing = { ... }, props = { ... } },
+        },
+    },
+}
+```
+
+### Drop Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the drop |
+| `name` | string | Display name shown in the Drops panel |
+| `description` | string? | Optional description |
+| `tier` | string | `"seasonal"`, `"vip"`, `"event"`, or `"job"` |
+| `startsAt` / `endsAt` | number? | Millisecond epoch timestamps. `nil` = no time limit |
+| `claimable` | boolean | `true` = player keeps the outfit permanently; `false` = preview-only |
+| `restrictions` | table? | `{ aces, jobs, gangs, identifiers }` — all optional; omit entirely to allow everyone |
+| `data` | table | The outfit data (same format as saved outfits) |
+
+Runtime-managed drops (created by scripts or admin tools) are stored in the `juddlie_appearance_drops` table.
+
+---
+
+## Wardrobe Slots
+
+Quick-save slots that store a complete look (clothing + props). Players save their current outfit to a numbered slot and load it in one click from the outfit wheel — no need to open the full appearance menu.
+
+```lua
+config.wardrobe = {
+    enabled = true,
+    maxSlots = 4,  -- number of save slots per player
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `maxSlots` | number | How many save slots each player has |
+
+Wardrobe slots are shown alongside saved outfits in the outfit wheel. Slots persist across sessions in the `juddlie_appearance_wardrobe` table.
+
+---
+
+## Per-item Pricing
+
+Charge players once for specific drawables or props on first wear, instead of (or in addition to) the flat location price. Subsequent wears of an owned item are free.
+
+```lua
+config.itemPrices = {
+    enabled = false,       -- opt in per server
+    moneyType = "cash",
+    items = {
+        ["component_11_15"]   = 250,  -- jacket drawable 15 costs $250 (any texture)
+        ["prop_0_5_2"]        = 50,   -- hat drawable 5, texture 2 costs $50
+    },
+}
+```
+
+### Key Format
+
+| Format | Targets |
+|--------|----------|
+| `component_<id>_<drawable>` | Any texture of that component drawable |
+| `component_<id>_<drawable>_<texture>` | Exact texture of that drawable |
+| `prop_<id>_<drawable>` | Any texture of that prop drawable |
+| `prop_<id>_<drawable>_<texture>` | Exact texture of that prop drawable |
+
+The most specific matching key wins (texture-specific beats drawable-level). Ownership records are stored in the `juddlie_appearance_owned_items` table.
