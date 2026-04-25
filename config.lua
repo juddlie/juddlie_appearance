@@ -5,7 +5,7 @@ local config = {}
 
 -- enables debug logging and the /appearance command for testing
 -- set to false in production
-config.debug = false
+config.debug = true
 
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
@@ -508,6 +508,80 @@ config.migration = {
 	command = "migrateappearance",
 	-- ace permission required (set to false to allow console-only)
 	acePermission = false,
+}
+
+-- Outfit share codes (text codes a player can give to a friend who can then
+-- import the outfit into their own collection).
+config.share = {
+	enabled = true,
+	codeLength = 10,          -- code character count (alphabet is 32 chars)
+	maxPayloadBytes = 100000, -- 100 KiB cap on serialized outfit payload
+	rateLimitGen = 5,         -- max generations per identifier per window
+	rateLimitImport = 20,     -- max imports per identifier per window
+	rateLimitWindowMs = 60000,
+	defaultMaxUses = 0,       -- 0 = unlimited
+	defaultTtlSeconds = 0,    -- 0 = no expiry
+}
+
+-- Player-to-player marketplace.
+-- Sellers list outfits at a price. Buyers preview on their own ped (revertible)
+-- and purchase. Buyers receive the outfit in their personal collection.
+config.marketplace = {
+	enabled = true,
+	maxListingsPerSeller = 5,
+	minPrice = 1,
+	maxPrice = 1000000,
+	defaultTtlHours = 168,    -- 7 days; 0 = no expiry
+	moneyType = "cash",       -- "cash" | "bank" | "money" (passed to bridge)
+	tax = 0.10,               -- 0..1 fraction taken by the server (sink)
+	singleUse = false,        -- if true, listing is removed after first sale
+	rateLimitList = 5,
+	rateLimitBuy = 10,
+	rateLimitWindowMs = 60000,
+	maxPayloadBytes = 100000,
+}
+
+-- Per-item store/ownership: charge the player on first wear of certain
+-- drawables/props instead of the flat shop fee. Subsequent wears are free.
+-- Map of item key → price. Most specific key wins.
+--   component_<componentId>_<drawable>            → price for any texture
+--   component_<componentId>_<drawable>_<texture>  → price for that texture
+--   prop_<propId>_<drawable>[_<texture>]
+config.itemPrices = {
+	enabled = false,          -- off by default; opt in per server
+	moneyType = "cash",
+	items = {
+		-- ["component_11_15"] = 250,        -- jacket variant 15 costs 250
+		-- ["prop_0_5_2"]      = 50,         -- specific hat texture costs 50
+	},
+}
+
+-- Seasonal / VIP / job-restricted outfit drops.
+-- Static drops live here; runtime-managed drops live in juddlie_appearance_drops.
+config.drops = {
+	enabled = true,
+	-- Static drops example:
+	-- static = {
+	--   {
+	--     id = "halloween_2024",
+	--     name = "Pumpkin Lord",
+	--     description = "Limited Halloween 2024 set",
+	--     tier = "seasonal",
+	--     startsAt = 1729728000000,  -- ms epoch
+	--     endsAt   = 1730937600000,
+	--     claimable = true,           -- false = wear-only (preview)
+	--     restrictions = { aces = { "appearance.vip" }, jobs = { "police" } },
+	--     data = { clothing = { ... }, props = { ... } },
+	--   },
+	-- },
+	static = {},
+}
+
+-- Wardrobe slots: per-character "saved looks" swappable from the outfit wheel
+-- in addition to the regular outfits collection. Slots persist across sessions.
+config.wardrobe = {
+	enabled = true,
+	maxSlots = 4,
 }
 
 -- shared data (don't change unless you know what you're doing)
