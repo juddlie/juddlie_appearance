@@ -10,9 +10,12 @@ local locale <const> = require("shared.locale")
 locale.init()
 
 local limits <const> = config.limits or {}
+local uniformsCfg <const> = config.factionUniforms or {}
+
 local maxPresets <const> = limits.maxPresets or 50
 local maxOutfits <const> = limits.maxOutfits or 50
 local maxJsonSize <const> = limits.maxPayloadSize or 100000
+local maxUniforms <const> = uniformsCfg.maxPerFaction or 25
 
 ---@param value any
 ---@param expectedType string
@@ -26,6 +29,39 @@ end
 local function validatePayloadSize(data)
   local encoded = json.encode(data)
   return encoded and #encoded <= maxJsonSize
+end
+
+---@param src number
+---@return string? faction, string kind, number grade
+local function getPlayerFaction(src)
+  local data <const> = bridge.getPlayerData(src) or {}
+
+  if data.gang and data.gang ~= "" and data.gang ~= "none" then
+    return data.gang, "gang", tonumber(data.jobGrade) or 0
+  end
+
+  if data.job and data.job ~= "" and data.job ~= "none" then
+    return data.job, "job", tonumber(data.jobGrade) or 0
+  end
+
+  return nil, "job", 0
+end
+
+---@param src number
+---@param faction string
+---@return boolean
+local function isFactionBoss(src, faction)
+  if not faction then return false end
+
+  if uniformsCfg.acePermission and IsPlayerAceAllowed(tostring(src), uniformsCfg.acePermission) then
+    return true
+  end
+
+  local _, _, grade = getPlayerFaction(src)
+  local minGrade <const> = (uniformsCfg.bossGrades and uniformsCfg.bossGrades[faction])
+    or uniformsCfg.defaultBossGrade or 4
+
+  return grade >= minGrade
 end
 
 ---@param appearance table
@@ -130,6 +166,91 @@ RegisterNetEvent("juddlie_appearance:server:saveJobOutfit", function(jobName, da
     "INSERT INTO juddlie_appearance_job_outfits (identifier, job, data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)",
     { identifier, jobName, json.encode(data) }
   )
+end)
+
+---@param uniform table
+RegisterNetEvent("juddlie_appearance:server:saveFactionUniform", function(uniform)
+  local source <const> = source
+  if not uniformsCfg.enabled then return end
+  if not source or not validateType(uniform, "table") then return end
+  if not validateType(uniform.id, "string") or not validateType(uniform.name, "string") then return end
+  if not validateType(uniform.data, "table") then return end
+  if not validatePayloadSize(uniform.data) then
+    logger.warn("Oversized uniform payload rejected from player:", source)
+    return
+  end
+
+  local faction, kind = getPlayerFaction(source)
+  if not faction then
+    lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_no_faction"), type = "error" })
+    return
+  end
+
+  if not isFactionBoss(source, faction) then
+    logger.warn("Non-boss tried to save uniform:", source, faction)
+    lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_not_boss"), type = "error" })
+    return
+  end
+
+  local existing <const> = MySQL.scalar.await(
+    "SELECT id FROM juddlie_appearance_faction_uniforms WHERE faction = ? AND kind = ? AND uniform_id = ?",
+    { faction, kind, uniform.id }
+  )
+
+  if not existing then
+    local count <const> = MySQL.scalar.await(
+      "SELECT COUNT(*) FROM juddlie_appearance_faction_uniforms WHERE faction = ? AND kind = ?",
+      { faction, kind }
+    ) or 0
+
+    if count >= maxUniforms then
+      lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_max_reached"), type = "error" })
+      return
+    end
+  end
+
+  local minGrade <const> = math.max(0, math.floor(tonumber(uniform.minGrade) or 0))
+  local createdBy <const> = bridge.getIdentifier(source)
+
+  MySQL.insert(
+    [[
+      INSERT INTO juddlie_appearance_faction_uniforms
+        (faction, kind, uniform_id, name, min_grade, data, created_by, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        name = VALUES(name),
+        min_grade = VALUES(min_grade),
+        data = VALUES(data)
+    ]],
+    { faction, kind, uniform.id, uniform.name:sub(1, 100), minGrade, json.encode(uniform.data), createdBy, os.time() }
+  )
+
+  logger.info("Uniform saved:", source, faction, kind, uniform.name)
+  lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_saved"), type = "success" })
+end)
+
+---@param uniformId string
+RegisterNetEvent("juddlie_appearance:server:deleteFactionUniform", function(uniformId)
+  local source <const> = source
+  if not uniformsCfg.enabled then return end
+  if not source or not validateType(uniformId, "string") then return end
+
+  local faction, kind = getPlayerFaction(source)
+  if not faction then return end
+
+  if not isFactionBoss(source, faction) then
+    logger.warn("Non-boss tried to delete uniform:", source, faction)
+    lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_not_boss"), type = "error" })
+    return
+  end
+
+  MySQL.update(
+    "DELETE FROM juddlie_appearance_faction_uniforms WHERE faction = ? AND kind = ? AND uniform_id = ?",
+    { faction, kind, uniformId }
+  )
+
+  logger.info("Uniform deleted:", source, faction, kind, uniformId)
+  lib.notify(source, { title = locale.t("ui.uniforms.title"), description = locale.t("notify.uniform_deleted"), type = "success" })
 end)
 
 ---@param targetSrc number
@@ -284,6 +405,37 @@ lib.callback.register("juddlie_appearance:server:getJobOutfit", function(source,
 end)
 
 ---@param src number
+---@return table list, boolean canManage, string? faction
+lib.callback.register("juddlie_appearance:server:getFactionUniforms", function(src)
+  if not uniformsCfg.enabled then return {}, false, nil end
+
+  local faction, kind = getPlayerFaction(src)
+  if not faction then return {}, false, nil end
+
+  local rows <const> = MySQL.query.await(
+    "SELECT uniform_id AS id, name, min_grade AS minGrade, data, created_at AS createdAt FROM juddlie_appearance_faction_uniforms WHERE faction = ? AND kind = ? ORDER BY name ASC",
+    { faction, kind }
+  ) or {}
+
+  local _, _, grade = getPlayerFaction(src)
+  local list = {}
+  for i = 1, #rows do
+    local r <const> = rows[i]
+    if (tonumber(r.minGrade) or 0) <= grade then
+      list[#list + 1] = {
+        id = r.id,
+        name = r.name,
+        minGrade = tonumber(r.minGrade) or 0,
+        data = json.decode(r.data),
+        createdAt = r.createdAt,
+      }
+    end
+  end
+
+  return list, isFactionBoss(src, faction), faction
+end)
+
+---@param src number
 ---@return table?
 exports("getPlayerAppearance", function(src)
   return cache.getAppearance(src)
@@ -314,6 +466,15 @@ exports("getPlayerOutfit", function(src, outfitId)
   end
 
   return nil
+end)
+
+---@param src number
+---@return boolean
+exports("isFactionBoss", function(src)
+  local faction <const> = getPlayerFaction(src)
+  if not faction then return false end
+
+  return isFactionBoss(src, faction)
 end)
 
 
