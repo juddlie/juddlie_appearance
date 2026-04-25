@@ -2,6 +2,7 @@ local bridge <const> = require("bridge").get("framework")
 local config <const> = require("config")
 local logger <const> = require("shared.logger")
 local locale <const> = require("shared.locale")
+locale.init()
 
 local nui <const> = require("client.modules.nui")
 local ped <const> = require("client.modules.ped")
@@ -10,13 +11,20 @@ local menu <const> = require("client.modules.menu")
 local randomizer <const> = require("client.modules.randomizer")
 local animation <const> = require("client.modules.animation")
 local zones <const> = require("client.modules.zones")
-local outfitwheel <const> = require("client.modules.outfitwheel")
-local admin <const> = require("client.modules.admin")
-local uniforms <const> = require("client.modules.uniforms")
 
+local outfitwheel <const> = require("client.modules.outfitwheel")
 outfitwheel.init()
+
+local admin <const> = require("client.modules.admin")
 admin.init()
+
+local uniforms <const> = require("client.modules.uniforms")
 uniforms.init()
+
+local sharing <const> = require("client.modules.sharing")
+local marketplace <const> = require("client.modules.marketplace")
+local drops <const> = require("client.modules.drops")
+local wardrobe <const> = require("client.modules.wardrobe")
 
 local initialSpawn = true
 
@@ -37,15 +45,19 @@ local function initAppearance()
   ped.applyAppearance(cache.ped, appearance)
 end
 
+---@param data table
 RegisterNetEvent("juddlie_appearance:client:applyAppearance", function(data)
   if type(data) ~= "table" then return end
 
   if data.model then
     ped.applyModel(data.model)
   end
+
   ped.applyAppearance(cache.ped, data)
 end)
 
+---@param targetSrc number
+---@param targetAppearance table
 RegisterNetEvent("juddlie_appearance:client:adminOpenEditor", function(targetSrc, targetAppearance)
   admin.openForPlayer(targetSrc, targetAppearance)
 end)
@@ -409,6 +421,116 @@ nui.handleMessage("appearance:adminApply", function(data)
   end
 end)
 
+nui.handleMessage("appearance:generateShareCode", function(payload)
+  if type(payload) ~= "table" or type(payload.outfitId) ~= "string" then return end
+
+  sharing.generate(payload.outfitId, payload, function(code, err)
+    nui.sendMessage("shareCodeResult", { code = code, err = err, outfitId = payload.outfitId })
+  end)
+end)
+
+nui.handleMessage("appearance:importShareCode", function(payload)
+  if type(payload) ~= "table" or type(payload.code) ~= "string" then return end
+
+  sharing.import(payload.code, function(ok, err, outfitId)
+    nui.sendMessage("importCodeResult", { ok = ok, err = err, outfitId = outfitId })
+    if ok then
+      local userOutfits <const> = lib.callback.await("juddlie_appearance:server:getOutfits", false)
+      if userOutfits then nui.sendMessage("setOutfits", userOutfits) end
+    end
+  end)
+end)
+
+nui.handleMessage("appearance:revokeShareCode", function(payload)
+  if type(payload) ~= "table" or type(payload.code) ~= "string" then return end
+
+  sharing.revoke(payload.code)
+end)
+
+nui.handleMessage("appearance:browseMarketplace", function(payload)
+  marketplace.browse(payload or {}, function(rows)
+    nui.sendMessage("marketplaceResults", { listings = rows })
+  end)
+end)
+
+nui.handleMessage("appearance:listMarketplace", function(payload)
+  marketplace.list(payload)
+end)
+
+nui.handleMessage("appearance:unlistMarketplace", function(payload)
+  if type(payload) ~= "table" or type(payload.id) ~= "string" then return end
+
+  marketplace.unlist(payload.id)
+end)
+
+nui.handleMessage("appearance:previewMarketplace", function(payload)
+  if type(payload) ~= "table" or type(payload.id) ~= "string" then return end
+
+  marketplace.beginPreview(payload.id)
+end)
+
+nui.handleMessage("appearance:endMarketplacePreview", function()
+  marketplace.endPreview()
+end)
+
+nui.handleMessage("appearance:buyMarketplace", function(payload)
+  if type(payload) ~= "table" or type(payload.id) ~= "string" then return end
+  
+  marketplace.buy(payload.id, function(ok, err, outfit)
+    nui.sendMessage("marketplaceBuyResult", { ok = ok, err = err, outfit = outfit })
+    if ok then
+      local userOutfits <const> = lib.callback.await("juddlie_appearance:server:getOutfits", false)
+      if userOutfits then nui.sendMessage("setOutfits", userOutfits) end
+    end
+  end)
+end)
+
+nui.handleMessage("appearance:fetchDrops", function()
+  drops.refresh(function(list) nui.sendMessage("dropsList", { drops = list }) end)
+end)
+
+nui.handleMessage("appearance:previewDrop", function(payload)
+  if type(payload) ~= "table" or type(payload.data) ~= "table" then return end
+  drops.preview(payload.data)
+end)
+
+nui.handleMessage("appearance:endDropPreview", function()
+  drops.endPreview()
+end)
+
+nui.handleMessage("appearance:claimDrop", function(payload)
+  if type(payload) ~= "table" or type(payload.id) ~= "string" then return end
+  drops.claim(payload.id, function(ok, err)
+    nui.sendMessage("dropClaimResult", { ok = ok, err = err, id = payload.id })
+    if ok then
+      local userOutfits <const> = lib.callback.await("juddlie_appearance:server:getOutfits", false)
+      if userOutfits then nui.sendMessage("setOutfits", userOutfits) end
+    end
+  end)
+end)
+
+nui.handleMessage("appearance:fetchWardrobe", function()
+  wardrobe.refresh(function(list, max)
+    nui.sendMessage("wardrobeSlots", { slots = list, maxSlots = max })
+  end)
+end)
+
+nui.handleMessage("appearance:saveWardrobeSlot", function(payload)
+  if type(payload) ~= "table" or type(payload.slot) ~= "number" then return end
+  local data <const> = payload.data or ped.getAppearance(cache.ped)
+  wardrobe.save(payload.slot, payload.name or ("Slot " .. payload.slot), data)
+end)
+
+nui.handleMessage("appearance:deleteWardrobeSlot", function(payload)
+  if type(payload) ~= "table" or type(payload.slot) ~= "number" then return end
+  wardrobe.delete(payload.slot)
+end)
+
+nui.handleMessage("appearance:applyWardrobeSlot", function(payload)
+  if type(payload) ~= "table" or type(payload.slot) ~= "number" then return end
+  wardrobe.apply(payload.slot)
+end)
+
 bridge.onPlayerLoaded(function()
   if not initialSpawn then return end
 
@@ -419,6 +541,7 @@ bridge.onPlayerLoaded(function()
   zones.init()
 end)
 
+---@param resource string
 AddEventHandler("onResourceStart", function(resource)
   if resource ~= cache.resource then return end
 
@@ -427,6 +550,7 @@ AddEventHandler("onResourceStart", function(resource)
   zones.init()
 end)
 
+---@param resource string
 AddEventHandler("onResourceStop", function(resource)
   if resource ~= cache.resource then return end
 
@@ -459,6 +583,7 @@ RegisterCommand(config.commands and config.commands.reloadSkin or "reloadskin", 
   lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.skin_reloaded"), type = "success" })
 end, false)
 
+---@param options? { tabs?: string[] }
 exports("open", function(options)
   if type(options) == "table" and options.tabs then
     menu.allowedTabs = options.tabs
@@ -471,12 +596,3 @@ exports("open", function(options)
 end)
 
 exports("close", function() menu.close(false) end)
-
-exports("getAppearance", function()
-  return ped.getAppearance(cache.ped)
-end)
-
-exports("setAppearance", function(data)
-  if type(data) ~= "table" then return end
-  ped.applyAppearance(cache.ped, data)
-end)
