@@ -17,7 +17,7 @@ end
 
 ---@param identifier string
 ---@param sellerName string?
----@param listing { id:string, name:string, description?:string, category?:string, tags?:table, price:number, data:table, thumbnailId?:string, ttlSeconds?:number }
+---@param listing { id:string, name:string, description?:string, category?:string, tags?:table, price:number, data:table, ttlSeconds?:number }
 ---@return boolean ok, string? error
 function marketplace.list(identifier, sellerName, listing)
   if not config.marketplace.enabled then return false, "disabled" end
@@ -64,8 +64,8 @@ function marketplace.list(identifier, sellerName, listing)
   MySQL.insert(
     [[
       INSERT INTO juddlie_appearance_marketplace
-        (id, seller, seller_name, name, description, category, tags, price, data, thumbnail_id, created_at, expires_at, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+        (id, seller, seller_name, name, description, category, tags, price, data, created_at, expires_at, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
     ]],
     {
       listing.id,
@@ -77,7 +77,6 @@ function marketplace.list(identifier, sellerName, listing)
       json.encode(listing.tags or {}),
       price,
       json.encode(listing.data),
-      listing.thumbnailId,
       now,
       expiresAt,
     }
@@ -140,13 +139,12 @@ function marketplace.browse(query)
   params[#params + 1] = offset
 
   local rows <const> = MySQL.query.await(
-    ("SELECT id, seller, seller_name, name, description, category, tags, price, thumbnail_id, purchases, created_at, expires_at FROM juddlie_appearance_marketplace WHERE %s ORDER BY %s LIMIT ? OFFSET ?"):format(table.concat(where, " AND "), order),
+    ("SELECT id, seller, seller_name, name, description, category, tags, price, purchases, created_at, expires_at FROM juddlie_appearance_marketplace WHERE %s ORDER BY %s LIMIT ? OFFSET ?"):format(table.concat(where, " AND "), order),
     params
   ) or {}
 
   for _, r in ipairs(rows) do
     r.tags = r.tags and json.decode(r.tags) or {}
-    r.thumbnailId = r.thumbnail_id; r.thumbnail_id = nil
     r.sellerName = r.seller_name; r.seller_name = nil
   end
   

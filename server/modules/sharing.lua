@@ -6,7 +6,7 @@ local sharing = {}
 
 ---@param identifier string
 ---@param payload table 
----@param opts? { thumbnailId?:string, kind?:string, maxUses?:number, ttlSeconds?:number }
+---@param opts? { kind?:string, maxUses?:number, ttlSeconds?:number }
 ---@return string? code, string? error
 function sharing.generate(identifier, payload, opts)
   if type(identifier) ~= "string" or type(payload) ~= "table" then
@@ -50,15 +50,14 @@ function sharing.generate(identifier, payload, opts)
   MySQL.insert(
     [[
       INSERT INTO juddlie_appearance_share_codes
-        (code, identifier, kind, payload, thumbnail_id, max_uses, uses, expires_at, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
+        (code, identifier, kind, payload, max_uses, uses, expires_at, created_at)
+      VALUES (?, ?, ?, ?, ?, 0, ?, ?)
     ]],
     {
       code,
       identifier,
       opts.kind or "outfit",
       json.encode(payload),
-      opts.thumbnailId,
       math.max(0, math.floor(tonumber(opts.maxUses) or 0)),
       expiresAt,
       now,
@@ -71,7 +70,7 @@ end
 
 ---@param identifier string
 ---@param code string
----@return table? data, string? thumbnailId, string? error
+---@return table? data, nil, string? error
 function sharing.import(identifier, code)
   if type(code) ~= "string" or #code < 4 or #code > 32 then
     return nil, nil, "invalid_code"
@@ -108,7 +107,7 @@ function sharing.import(identifier, code)
   local ok, decoded = pcall(json.decode, row.payload)
   if not ok then return nil, nil, "corrupt" end
 
-  return decoded, row.thumbnail_id, nil
+  return decoded, nil, nil
 end
 
 ---@param identifier string

@@ -14,10 +14,9 @@ end
 ---@param slot number
 ---@param name string
 ---@param data table
----@param thumbnailId? string
-function wardrobe.save(slot, name, data, thumbnailId)
+function wardrobe.save(slot, name, data)
   TriggerServerEvent("juddlie_appearance:server:saveWardrobeSlot", {
-    slot = slot, name = name, data = data, thumbnailId = thumbnailId,
+    slot = slot, name = name, data = data,
   })
 end
 

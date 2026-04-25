@@ -16,7 +16,7 @@ end
 
 ---@param src number
 ---@param slot number
----@param entry { name:string, data:table, thumbnailId?:string }
+---@param entry { name:string, data:table }
 ---@return boolean
 function wardrobe.save(src, slot, entry)
   slot = math.floor(tonumber(slot) or -1)

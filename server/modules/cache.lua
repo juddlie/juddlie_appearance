@@ -28,7 +28,7 @@ function cache.load(src)
   )
 
   local outfitRows <const> = MySQL.query.await(
-    "SELECT id, identifier, outfit_id, name, category, data, share_code, favorite, created_at, tags, thumbnail_id FROM juddlie_appearance_outfits WHERE identifier = ? ORDER BY created_at DESC",
+    "SELECT id, identifier, outfit_id, name, category, data, share_code, favorite, created_at, tags FROM juddlie_appearance_outfits WHERE identifier = ? ORDER BY created_at DESC",
     { identifier }
   )
 
@@ -55,7 +55,6 @@ function cache.load(src)
       favorite = row.favorite == 1,
       createdAt = row.created_at,
       tags = row.tags and json.decode(row.tags) or {},
-      thumbnailId = row.thumbnail_id,
     }
   end
 
@@ -70,7 +69,7 @@ function cache.load(src)
   end
 
   local wardrobeRows <const> = MySQL.query.await(
-    "SELECT slot, name, data, thumbnail_id, updated_at FROM juddlie_appearance_wardrobe WHERE identifier = ? ORDER BY slot ASC",
+    "SELECT slot, name, data, updated_at FROM juddlie_appearance_wardrobe WHERE identifier = ? ORDER BY slot ASC",
     { identifier }
   ) or {}
   local wardrobe = {}
@@ -79,7 +78,6 @@ function cache.load(src)
       slot = row.slot,
       name = row.name,
       data = json.decode(row.data),
-      thumbnailId = row.thumbnail_id,
       updatedAt = row.updated_at,
     }
   end
@@ -220,11 +218,10 @@ function cache.addOutfit(src, outfit)
     favorite = outfit.favorite or false,
     createdAt = outfit.createdAt or os.time() * 1000,
     tags = outfit.tags or {},
-    thumbnailId = outfit.thumbnailId,
   }
 
   MySQL.insert(
-    "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, share_code, favorite, created_at, tags, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO juddlie_appearance_outfits (identifier, outfit_id, name, category, data, share_code, favorite, created_at, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
     {
       player.identifier,
       outfit.id,
@@ -235,7 +232,6 @@ function cache.addOutfit(src, outfit)
       outfit.favorite and 1 or 0,
       outfit.createdAt or os.time() * 1000,
       json.encode(outfit.tags or {}),
-      outfit.thumbnailId,
     }
   )
 end
@@ -267,16 +263,14 @@ function cache.updateOutfit(src, outfitId, updates)
   if updates.category then outfit.category = updates.category end
   if updates.favorite ~= nil then outfit.favorite = updates.favorite end
   if updates.tags then outfit.tags = updates.tags end
-  if updates.thumbnailId then outfit.thumbnailId = updates.thumbnailId end
 
   MySQL.query(
-    "UPDATE juddlie_appearance_outfits SET name = ?, category = ?, favorite = ?, tags = ?, thumbnail_id = COALESCE(?, thumbnail_id) WHERE identifier = ? AND outfit_id = ?",
+    "UPDATE juddlie_appearance_outfits SET name = ?, category = ?, favorite = ?, tags = ? WHERE identifier = ? AND outfit_id = ?",
     {
       outfit.name,
       outfit.category,
       outfit.favorite and 1 or 0,
       json.encode(outfit.tags or {}),
-      outfit.thumbnailId,
       player.identifier,
       outfitId,
     }
@@ -340,7 +334,7 @@ end
 
 ---@param src number
 ---@param slot number
----@param entry table { name, data, thumbnailId? }
+---@param entry table { name, data }
 function cache.setWardrobeSlot(src, slot, entry)
   local player <const> = cache.load(src)
   if not player then return end
@@ -349,19 +343,17 @@ function cache.setWardrobeSlot(src, slot, entry)
     slot = slot,
     name = entry.name,
     data = entry.data,
-    thumbnailId = entry.thumbnailId,
     updatedAt = os.time() * 1000,
   }
   player.wardrobe[slot] = stored
 
   MySQL.insert(
     [[
-      INSERT INTO juddlie_appearance_wardrobe (identifier, slot, name, data, thumbnail_id, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO juddlie_appearance_wardrobe (identifier, slot, name, data, updated_at)
+      VALUES (?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         name = VALUES(name),
         data = VALUES(data),
-        thumbnail_id = VALUES(thumbnail_id),
         updated_at = VALUES(updated_at)
     ]],
     {
@@ -369,7 +361,6 @@ function cache.setWardrobeSlot(src, slot, entry)
       slot,
       stored.name,
       json.encode(stored.data),
-      stored.thumbnailId,
       stored.updatedAt,
     }
   )
