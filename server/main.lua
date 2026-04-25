@@ -1,10 +1,16 @@
 lib.versionCheck("juddlie/juddlie_appearance")
 
-local cache <const> = require("server.modules.cache")
-local blacklist <const> = require("shared.blacklist")
 local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
 local config <const> = require("config")
+
+local sharing <const> = require("server.modules.sharing")
+local marketplace <const> = require("server.modules.marketplace")
+local store <const> = require("server.modules.store")
+local drops <const> = require("server.modules.drops")
+local wardrobe <const> = require("server.modules.wardrobe")
+local cache <const> = require("server.modules.cache")
+local blacklist <const> = require("shared.blacklist")
 
 local locale <const> = require("shared.locale")
 locale.init()
@@ -244,7 +250,7 @@ RegisterNetEvent("juddlie_appearance:server:deleteFactionUniform", function(unif
     return
   end
 
-  MySQL.update(
+  MySQL.query(
     "DELETE FROM juddlie_appearance_faction_uniforms WHERE faction = ? AND kind = ? AND uniform_id = ?",
     { faction, kind, uniformId }
   )
@@ -305,6 +311,96 @@ RegisterNetEvent("juddlie_appearance:server:adminSaveAppearance", function(targe
   TriggerClientEvent("juddlie_appearance:client:applyAppearance", targetId, appearance)
 end)
 
+RegisterNetEvent("juddlie_appearance:server:chargeCustomer", function(shopType)
+  local source <const> = source
+  if not source or not shopType then return end
+
+  local price <const> = config.prices and config.prices[shopType] or 0
+  if price <= 0 then return end
+
+  if not bridge.hasMoney(source, "cash", price) then
+    logger.warn("Player", source, "tried to save without enough money for:", shopType)
+    return
+  end
+
+  bridge.removeMoney(source, "cash", price)
+  logger.info("Charged player", source, "$" .. price, "for:", shopType)
+end)
+
+---@param code string
+RegisterNetEvent("juddlie_appearance:server:revokeShareCode", function(code)
+  local source <const> = source
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  sharing.revoke(identifier, code)
+end)
+
+---@param payload table
+RegisterNetEvent("juddlie_appearance:server:listMarketplace", function(payload)
+  local source <const> = source
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  local sellerName <const> = GetPlayerName(source)
+  local ok, err = marketplace.list(identifier, sellerName, payload or {})
+  if not ok then
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_" .. (err or "failed")), type = "error" })
+  else
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_listed"), type = "success" })
+  end
+end)
+
+---@param listingId string
+RegisterNetEvent("juddlie_appearance:server:unlistMarketplace", function(listingId)
+  local source <const> = source
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return end
+
+  marketplace.unlist(identifier, listingId)
+end)
+
+---@param payload table
+RegisterNetEvent("juddlie_appearance:server:adminUpsertDrop", function(payload)
+  local source <const> = source
+  if config.admin and config.admin.acePermission and not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
+    return
+  end
+
+  local identifier <const> = identifierOf(source); if not identifier then return end
+  drops.upsert(identifier, payload or {})
+end)
+
+---@param dropId string
+RegisterNetEvent("juddlie_appearance:server:adminRemoveDrop", function(dropId)
+  local source <const> = source
+  if config.admin and config.admin.acePermission and not IsPlayerAceAllowed(tostring(source), config.admin.acePermission) then
+    return
+  end
+  
+  drops.remove(dropId)
+end)
+
+---@param payload { slot:number, name?:string, data:table }
+RegisterNetEvent("juddlie_appearance:server:saveWardrobeSlot", function(payload)
+  local source <const> = source
+  if type(payload) ~= "table" or type(payload.slot) ~= "number" then return end
+  if not validatePayloadSize(payload.data or {}) then return end
+
+  wardrobe.save(source, payload.slot, {
+    name = payload.name or ("Slot " .. payload.slot),
+    data = payload.data,
+  })
+end)
+
+---@param slot number
+RegisterNetEvent("juddlie_appearance:server:deleteWardrobeSlot", function(slot)
+  local source <const> = source
+  if type(slot) ~= "number" then return end
+
+  wardrobe.delete(source, slot)
+end)
+
 AddEventHandler("playerDropped", function()
   local source <const> = source
   if not source then return end
@@ -347,22 +443,6 @@ lib.callback.register("juddlie_appearance:server:hasMoney", function(source, sho
   if price <= 0 then return true, 0 end
 
   return bridge.hasMoney(source, "cash", price), price
-end)
-
-RegisterNetEvent("juddlie_appearance:server:chargeCustomer", function(shopType)
-  local source <const> = source
-  if not source or not shopType then return end
-
-  local price <const> = config.prices and config.prices[shopType] or 0
-  if price <= 0 then return end
-
-  if not bridge.hasMoney(source, "cash", price) then
-    logger.warn("Player", source, "tried to save without enough money for:", shopType)
-    return
-  end
-
-  bridge.removeMoney(source, "cash", price)
-  logger.info("Charged player", source, "$" .. price, "for:", shopType)
 end)
 
 ---@param source number
@@ -435,6 +515,150 @@ lib.callback.register("juddlie_appearance:server:getFactionUniforms", function(s
   return list, isFactionBoss(src, faction), faction
 end)
 
+---@param source number
+---@param opts { outfitId:string, maxUses?:number, ttlSeconds?:number }
+---@return string?, string?
+lib.callback.register("juddlie_appearance:server:generateShareCode", function(source, opts)
+  if type(opts) ~= "table" or type(opts.outfitId) ~= "string" then return nil, "invalid_args" end
+
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return nil, "no_identifier" end
+
+  local list <const> = cache.getOutfits(source)
+  local outfit
+  for _, o in ipairs(list) do 
+    if o.id == opts.outfitId then outfit = o break end 
+  end
+
+  if not outfit then return nil, "not_found" end
+
+  local code, err = sharing.generate(identifier, outfit.data, {
+    kind = "outfit",
+    maxUses = opts.maxUses,
+    ttlSeconds = opts.ttlSeconds,
+  })
+
+  return code, err
+end)
+
+---@param source number
+---@param code string
+---@return boolean ok, string? error, string? outfitId
+lib.callback.register("juddlie_appearance:server:importShareCode", function(source, code)
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return false, "no_identifier" end
+
+  local data, _, err = sharing.import(identifier, code)
+  if not data then return false, err end
+
+  local outfitId <const> = ("share_%s_%d"):format(tostring(code):sub(1, 8), os.time())
+  cache.addOutfit(source, {
+    id = outfitId,
+    name = ("Imported %s"):format(os.date("%Y-%m-%d")),
+    category = "custom",
+    data = data,
+    favorite = false,
+    createdAt = os.time() * 1000,
+    tags = { "imported" },
+  })
+
+  return true, nil, outfitId
+end)
+
+---@param _ number
+---@param query? table
+---@return table[]
+lib.callback.register("juddlie_appearance:server:browseMarketplace", function(_, query)
+  return marketplace.browse(query or {})
+end)
+
+---@param _ number
+---@param listingId string
+---@return table?
+lib.callback.register("juddlie_appearance:server:previewMarketplace", function(_, listingId)
+  return marketplace.preview(listingId)
+end)
+
+---@param source number
+---@param listingId string
+---@return boolean, string?, table?
+lib.callback.register("juddlie_appearance:server:buyMarketplace", function(source, listingId)
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return false, "no_identifier" end
+
+  local ok, err, outfit = marketplace.buy(source, identifier, listingId)
+  if ok then
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_purchased"), type = "success" })
+  else
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_" .. (err or "failed")), type = "error" })
+  end
+
+  return ok, err, outfit
+end)
+
+---@param source number
+---@return table<string,boolean>
+lib.callback.register("juddlie_appearance:server:getOwnedItems", function(source)
+  return store.getOwnedKeys(source)
+end)
+
+---@param source number
+---@param appearance table
+---@return boolean ok, number owed
+lib.callback.register("juddlie_appearance:server:checkAndChargeItems", function(source, appearance)
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return false, 0 end
+
+  local ok, owed = store.checkAndCharge(source, identifier, appearance)
+  if ok and owed > 0 then
+    lib.notify(source, { title = locale.t("ui.store.title"), description = locale.t("notify.items_charged", owed), type = "info" })
+  elseif not ok then
+    lib.notify(source, { title = locale.t("ui.store.title"), description = locale.t("notify.items_no_money"), type = "error" })
+  end
+
+  return ok, owed
+end)
+
+---@param source number
+---@return table[]
+lib.callback.register("juddlie_appearance:server:getDrops", function(source)
+  local data <const> = bridge.getPlayerData(source) or {}
+
+  return drops.listForPlayer(source, data)
+end)
+
+---@param source number
+---@param dropId string
+---@return boolean ok, string? error, table? data
+lib.callback.register("juddlie_appearance:server:claimDrop", function(source, dropId)
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return false, "no_identifier" end
+
+  local data <const> = bridge.getPlayerData(source) or {}
+  local ok, err, dropData = drops.claim(source, identifier, dropId, data)
+  if ok then
+    lib.notify(source, { title = locale.t("ui.drops.title"), description = locale.t("notify.drop_claimed"), type = "success" })
+  end
+
+  return ok, err, dropData
+end)
+
+---@param source number
+---@return table[] slots, number maxSlots
+lib.callback.register("juddlie_appearance:server:getWardrobe", function(source)
+  return wardrobe.list(source), wardrobe.maxSlots()
+end)
+
+---@param source number
+---@param slot number
+---@return table?
+lib.callback.register("juddlie_appearance:server:applyWardrobeSlot", function(source, slot)
+  local entry <const> = wardrobe.get(source, slot)
+  if not entry then return nil end
+
+  return entry.data
+end)
+
 ---@param src number
 ---@return table?
 exports("getPlayerAppearance", function(src)
@@ -477,6 +701,28 @@ exports("isFactionBoss", function(src)
   return isFactionBoss(src, faction)
 end)
 
+---@param src number
+---@param listing table
+---@return boolean
+exports("listOutfitOnMarketplace", function(src, listing)
+  local identifier <const> = identifierOf(src); if not identifier then return false end
+  local ok = marketplace.list(identifier, GetPlayerName(src), listing or {})
+
+  return ok
+end)
+
+---@param src number
+---@param kind string
+---@param key string
+exports("grantOwnedItem", function(src, kind, key)
+  cache.grantItem(src, kind, key)
+end)
+
+---@param drop table
+---@return boolean
+exports("upsertDrop", function(drop)
+  return drops.upsert("system", drop or {})
+end)
 
 if config.migration and config.migration.enabled then
   local migrate <const> = require("server.modules.migrate")
