@@ -465,6 +465,41 @@ config.admin = {
 	acePermission = "admin.appearance",
 }
 
+-- faction uniform system
+-- lets faction "bosses" save shared work uniforms that any employee of
+-- the same job (or member of the same gang) can equip with one click
+--
+-- enabled         = master switch
+-- command         = chat command employees use to open the uniform list
+-- maxPerFaction   = maximum number of uniforms a single job/gang can store
+-- defaultBossGrade= minimum job/gang grade considered a "boss" when not
+--                   listed below in bossGrades (used for save/delete rights)
+-- bossGrades      = per-job/per-gang minimum grade overrides
+--                   key  = job or gang name
+--                   val  = minimum grade required to manage uniforms
+-- acePermission   = optional ace permission that also grants management
+--                   rights regardless of grade (set false to disable)
+--                   grant in server.cfg:
+--                       add_ace group.admin appearance.uniforms allow
+-- includeAccessories = if true, saved uniforms also include props
+--                      (hat, glasses, ears, watch, bracelet)
+-- saveCurrentAsCommand = chat command for bosses to quickly save the
+--                        outfit they are currently wearing as a uniform
+config.factionUniforms = {
+  enabled = true,
+  command = "uniforms",
+  saveCurrentAsCommand = "saveuniform",
+  maxPerFaction = 25,
+  defaultBossGrade = 4,
+  bossGrades = {
+    -- police = 4,
+    -- ambulance = 4,
+    -- mechanic = 3,
+  },
+  acePermission = "appearance.uniforms",
+  includeAccessories = true,
+}
+
 -- one-time migration tool to import data from illenium-appearance
 -- usage: run the command from server console or with the appropriate ace permission
 config.migration = {
