@@ -5,7 +5,7 @@ local config = {}
 
 -- enables debug logging and the /appearance command for testing
 -- set to false in production
-config.debug = true
+config.debug = false
 
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
