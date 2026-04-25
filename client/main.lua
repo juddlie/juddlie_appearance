@@ -12,9 +12,11 @@ local animation <const> = require("client.modules.animation")
 local zones <const> = require("client.modules.zones")
 local outfitwheel <const> = require("client.modules.outfitwheel")
 local admin <const> = require("client.modules.admin")
+local uniforms <const> = require("client.modules.uniforms")
 
 outfitwheel.init()
 admin.init()
+uniforms.init()
 
 local initialSpawn = true
 
