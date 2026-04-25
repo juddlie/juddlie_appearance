@@ -25,36 +25,10 @@ local function loadLocaleFile(lang)
   return data
 end
 
-function locale.init()
-  fallback = loadLocaleFile("en") or {}
-
-  local lang <const> = config.locale or "en"
-  if lang ~= "en" then
-    strings = loadLocaleFile(lang) or {}
-    logger.info("Locale loaded:", lang, "(" .. tostring(#strings) .. " keys)")
-  else
-    strings = fallback
-  end
-end
-
----@param key string
----@param ... any
----@return string translated
-function locale.t(key, ...)
-  local value = locale.resolve(strings, key) or locale.resolve(fallback, key) or key
-
-  if select("#", ...) > 0 then
-    local ok, result = pcall(string.format, value, ...)
-    if ok then return result end
-  end
-
-  return value
-end
-
 ---@param tbl table
 ---@param key string
 ---@return string?
-function locale.resolve(tbl, key)
+local function resolve(tbl, key)
   local current = tbl
   for part in key:gmatch("[^%.]+") do
     if type(current) ~= "table" then return nil end
@@ -65,28 +39,63 @@ function locale.resolve(tbl, key)
   return nil
 end
 
----@return table all 
-function locale.getAll()
-  local merged = {}
-
-  locale.flatten(fallback, "", merged)
-  locale.flatten(strings, "", merged)
-
-  return merged
-end
-
 ---@param tbl table
 ---@param prefix string
 ---@param result table
-function locale.flatten(tbl, prefix, result)
+local function flatten(tbl, prefix, result)
   for k, v in pairs(tbl) do
-    local fullKey = prefix == "" and k or (prefix .. "." .. k)
+    local fullKey <const> = prefix == "" and k or (prefix .. "." .. k)
     if type(v) == "table" then
-      locale.flatten(v, fullKey, result)
+      flatten(v, fullKey, result)
     else
       result[fullKey] = v
     end
   end
+end
+
+---@param tbl table
+---@return number
+local function countKeys(tbl)
+  local n = 0
+  for _ in pairs(tbl) do n = n + 1 end
+  
+  return n
+end
+
+function locale.init()
+  fallback = loadLocaleFile("en") or {}
+
+  local lang <const> = config.locale or "en"
+  if lang ~= "en" then
+    strings = loadLocaleFile(lang) or {}
+    logger.info("Locale loaded:", lang, "(" .. tostring(countKeys(strings)) .. " keys)")
+  else
+    strings = fallback
+  end
+end
+
+---@param key string
+---@param ... any
+---@return string translated
+function locale.t(key, ...)
+  local value <const> = resolve(strings, key) or resolve(fallback, key) or key
+
+  if select("#", ...) > 0 then
+    local ok, result = pcall(string.format, value, ...)
+    if ok then return result end
+  end
+
+  return value
+end
+
+---@return table all
+function locale.getAll()
+  local merged = {}
+
+  flatten(fallback, "", merged)
+  flatten(strings, "", merged)
+
+  return merged
 end
 
 return locale
