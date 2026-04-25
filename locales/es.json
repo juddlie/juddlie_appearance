@@ -222,6 +222,26 @@
       "no_outfits": "No hay conjuntos guardados. Abre el menú de apariencia para crear conjuntos.",
       "applied": "Conjunto '%s' aplicado"
     },
+    "uniforms": {
+      "title": "Uniformes de Facción",
+      "title_with_faction": "Uniformes — %s",
+      "save_title": "Guardar Uniforme de Facción",
+      "save_current": "Guardar conjunto actual como uniforme",
+      "save_current_desc": "Disponible para todos los miembros de tu facción",
+      "name": "Nombre del uniforme",
+      "min_grade": "Rango mínimo requerido",
+      "min_grade_label": "Rango mín.: %d",
+      "equip": "Equipar uniforme",
+      "overwrite": "Sobrescribir con el conjunto actual",
+      "overwrite_desc": "Reemplazar los datos guardados con lo que llevas puesto ahora",
+      "delete": "Eliminar uniforme",
+      "delete_title": "Eliminar uniforme",
+      "delete_confirm": "¿Eliminar '%s' permanentemente? Esto afecta a todos los miembros de la facción.",
+      "empty": "No hay uniformes guardados",
+      "empty_desc": "Los líderes de facción pueden guardar uniformes aquí",
+      "no_faction": "Sin facción",
+      "no_faction_desc": "Únete a un trabajo o pandilla para usar uniformes de facción"
+    },
     "admin": {
       "title": "Apariencia Admin",
       "editing": "Editando apariencia del jugador %s",
@@ -253,6 +273,12 @@
     "admin_player_not_found": "Jugador no encontrado",
     "admin_load_failed": "No se pudo cargar la apariencia del jugador objetivo",
     "admin_usage": "Uso: /setappearance [id del jugador]",
-    "not_enough_money": "Necesitas $%d para usar esta tienda"
+    "not_enough_money": "Necesitas $%d para usar esta tienda",
+    "uniform_saved": "Uniforme guardado para la facción",
+    "uniform_deleted": "Uniforme eliminado",
+    "uniform_applied": "Uniforme '%s' equipado",
+    "uniform_not_boss": "Solo los líderes de facción pueden gestionar uniformes",
+    "uniform_no_faction": "No perteneces a una facción",
+    "uniform_max_reached": "Límite de uniformes de facción alcanzado"
   }
 }

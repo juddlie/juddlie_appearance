@@ -222,6 +222,26 @@
       "no_outfits": "Keine Outfits gespeichert. Öffne das Aussehen-Menü um Outfits zu erstellen.",
       "applied": "Outfit '%s' angewendet"
     },
+    "uniforms": {
+      "title": "Fraktions-Uniformen",
+      "title_with_faction": "Uniformen — %s",
+      "save_title": "Fraktions-Uniform speichern",
+      "save_current": "Aktuelles Outfit als Uniform speichern",
+      "save_current_desc": "Verfügbar für jedes Mitglied deiner Fraktion",
+      "name": "Uniformname",
+      "min_grade": "Erforderlicher Mindestrang",
+      "min_grade_label": "Min. Rang: %d",
+      "equip": "Uniform anlegen",
+      "overwrite": "Mit aktuellem Outfit überschreiben",
+      "overwrite_desc": "Ersetze die gespeicherten Daten mit dem, was du gerade trägst",
+      "delete": "Uniform löschen",
+      "delete_title": "Uniform löschen",
+      "delete_confirm": "'%s' dauerhaft löschen? Dies betrifft jedes Mitglied der Fraktion.",
+      "empty": "Keine Uniformen gespeichert",
+      "empty_desc": "Fraktionsleiter können hier Uniformen speichern",
+      "no_faction": "Nicht in einer Fraktion",
+      "no_faction_desc": "Tritt einem Job oder einer Gang bei, um Fraktions-Uniformen zu nutzen"
+    },
     "admin": {
       "title": "Admin Aussehen",
       "editing": "Bearbeite Aussehen von Spieler %s",
@@ -253,6 +273,12 @@
     "admin_player_not_found": "Spieler nicht gefunden",
     "admin_load_failed": "Aussehen des Zielspielers konnte nicht geladen werden",
     "admin_usage": "Verwendung: /setappearance [Spieler-ID]",
-    "not_enough_money": "Du brauchst $%d um diesen Shop zu nutzen"
+    "not_enough_money": "Du brauchst $%d um diesen Shop zu nutzen",
+    "uniform_saved": "Uniform für die Fraktion gespeichert",
+    "uniform_deleted": "Uniform entfernt",
+    "uniform_applied": "Uniform '%s' angelegt",
+    "uniform_not_boss": "Nur Fraktionsleiter können Uniformen verwalten",
+    "uniform_no_faction": "Du bist in keiner Fraktion",
+    "uniform_max_reached": "Limit für Fraktions-Uniformen erreicht"
   }
 }

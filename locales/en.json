@@ -222,6 +222,26 @@
       "no_outfits": "No outfits saved. Open the appearance menu to create outfits.",
       "applied": "Outfit '%s' applied"
     },
+    "uniforms": {
+      "title": "Faction Uniforms",
+      "title_with_faction": "Uniforms — %s",
+      "save_title": "Save Faction Uniform",
+      "save_current": "Save current outfit as uniform",
+      "save_current_desc": "Available to every member of your faction",
+      "name": "Uniform name",
+      "min_grade": "Minimum grade required",
+      "min_grade_label": "Min. grade: %d",
+      "equip": "Equip uniform",
+      "overwrite": "Overwrite with current outfit",
+      "overwrite_desc": "Replace the saved data with what you're wearing now",
+      "delete": "Delete uniform",
+      "delete_title": "Delete uniform",
+      "delete_confirm": "Permanently delete '%s'? This affects every member of the faction.",
+      "empty": "No uniforms saved",
+      "empty_desc": "Faction leaders can save uniforms here",
+      "no_faction": "Not in a faction",
+      "no_faction_desc": "Join a job or gang to use faction uniforms"
+    },
     "admin": {
       "title": "Admin Appearance",
       "editing": "Editing appearance for player %s",
@@ -253,6 +273,12 @@
     "admin_player_not_found": "Player not found",
     "admin_load_failed": "Could not load target player's appearance",
     "admin_usage": "Usage: /setappearance [player id]",
-    "not_enough_money": "You need $%d to use this shop"
+    "not_enough_money": "You need $%d to use this shop",
+    "uniform_saved": "Uniform saved for the faction",
+    "uniform_deleted": "Uniform removed",
+    "uniform_applied": "Uniform '%s' equipped",
+    "uniform_not_boss": "Only faction leaders can manage uniforms",
+    "uniform_no_faction": "You are not part of a faction",
+    "uniform_max_reached": "Faction uniform limit reached"
   }
 }

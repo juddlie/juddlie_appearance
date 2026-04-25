@@ -222,6 +222,26 @@
       "no_outfits": "Aucune tenue sauvegardée. Ouvrez le menu d'apparence pour créer des tenues.",
       "applied": "Tenue '%s' appliquée"
     },
+    "uniforms": {
+      "title": "Uniformes de Faction",
+      "title_with_faction": "Uniformes — %s",
+      "save_title": "Sauvegarder Uniforme de Faction",
+      "save_current": "Sauvegarder la tenue actuelle comme uniforme",
+      "save_current_desc": "Disponible pour tous les membres de votre faction",
+      "name": "Nom de l'uniforme",
+      "min_grade": "Rang minimum requis",
+      "min_grade_label": "Rang min. : %d",
+      "equip": "Équiper l'uniforme",
+      "overwrite": "Écraser avec la tenue actuelle",
+      "overwrite_desc": "Remplacer les données sauvegardées par ce que vous portez actuellement",
+      "delete": "Supprimer l'uniforme",
+      "delete_title": "Supprimer l'uniforme",
+      "delete_confirm": "Supprimer définitivement '%s' ? Cela affecte tous les membres de la faction.",
+      "empty": "Aucun uniforme sauvegardé",
+      "empty_desc": "Les chefs de faction peuvent sauvegarder des uniformes ici",
+      "no_faction": "Pas dans une faction",
+      "no_faction_desc": "Rejoignez un travail ou un gang pour utiliser les uniformes de faction"
+    },
     "admin": {
       "title": "Apparence Admin",
       "editing": "Modification de l'apparence du joueur %s",
@@ -253,6 +273,12 @@
     "admin_player_not_found": "Joueur non trouvé",
     "admin_load_failed": "Impossible de charger l'apparence du joueur cible",
     "admin_usage": "Utilisation: /setappearance [id du joueur]",
-    "not_enough_money": "Vous avez besoin de $%d pour utiliser ce magasin"
+    "not_enough_money": "Vous avez besoin de $%d pour utiliser ce magasin",
+    "uniform_saved": "Uniforme sauvegardé pour la faction",
+    "uniform_deleted": "Uniforme supprimé",
+    "uniform_applied": "Uniforme '%s' équipé",
+    "uniform_not_boss": "Seuls les chefs de faction peuvent gérer les uniformes",
+    "uniform_no_faction": "Vous n'appartenez à aucune faction",
+    "uniform_max_reached": "Limite d'uniformes de faction atteinte"
   }
 }

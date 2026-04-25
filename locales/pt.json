@@ -222,6 +222,26 @@
       "no_outfits": "Nenhum traje salvo. Abra o menu de aparência para criar trajes.",
       "applied": "Traje '%s' aplicado"
     },
+    "uniforms": {
+      "title": "Uniformes de Facção",
+      "title_with_faction": "Uniformes — %s",
+      "save_title": "Salvar Uniforme de Facção",
+      "save_current": "Salvar traje atual como uniforme",
+      "save_current_desc": "Disponível para todos os membros da sua facção",
+      "name": "Nome do uniforme",
+      "min_grade": "Cargo mínimo exigido",
+      "min_grade_label": "Cargo mín.: %d",
+      "equip": "Equipar uniforme",
+      "overwrite": "Sobrescrever com o traje atual",
+      "overwrite_desc": "Substituir os dados salvos pelo que você está vestindo agora",
+      "delete": "Excluir uniforme",
+      "delete_title": "Excluir uniforme",
+      "delete_confirm": "Excluir '%s' permanentemente? Isso afeta todos os membros da facção.",
+      "empty": "Nenhum uniforme salvo",
+      "empty_desc": "Líderes de facção podem salvar uniformes aqui",
+      "no_faction": "Sem facção",
+      "no_faction_desc": "Entre em um trabalho ou gangue para usar uniformes de facção"
+    },
     "admin": {
       "title": "Aparência Admin",
       "editing": "Editando aparência do jogador %s",
@@ -253,6 +273,12 @@
     "admin_player_not_found": "Jogador não encontrado",
     "admin_load_failed": "Não foi possível carregar a aparência do jogador alvo",
     "admin_usage": "Uso: /setappearance [id do jogador]",
-    "not_enough_money": "Você precisa de $%d para usar esta loja"
+    "not_enough_money": "Você precisa de $%d para usar esta loja",
+    "uniform_saved": "Uniforme salvo para a facção",
+    "uniform_deleted": "Uniforme removido",
+    "uniform_applied": "Uniforme '%s' equipado",
+    "uniform_not_boss": "Somente líderes de facção podem gerenciar uniformes",
+    "uniform_no_faction": "Você não pertence a uma facção",
+    "uniform_max_reached": "Limite de uniformes da facção atingido"
   }
 }
