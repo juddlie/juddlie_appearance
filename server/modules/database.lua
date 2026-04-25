@@ -48,4 +48,21 @@ MySQL.ready(function()
       UNIQUE KEY `identifier_job` (`identifier`, `job`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_faction_uniforms` (
+      `id`         INT          NOT NULL AUTO_INCREMENT,
+      `faction`    VARCHAR(60)  NOT NULL,
+      `kind`       VARCHAR(10)  NOT NULL DEFAULT 'job',
+      `uniform_id` VARCHAR(60)  NOT NULL,
+      `name`       VARCHAR(100) NOT NULL,
+      `min_grade`  INT          NOT NULL DEFAULT 0,
+      `data`       LONGTEXT     NOT NULL,
+      `created_by` VARCHAR(60)  DEFAULT NULL,
+      `created_at` BIGINT       NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `faction_kind_uniform` (`faction`, `kind`, `uniform_id`),
+      KEY `faction` (`faction`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
 end)
