@@ -33,6 +33,7 @@ These resources **must** be installed and started before `juddlie_appearance`:
 > - `juddlie_appearance_presets` — saved presets
 > - `juddlie_appearance_outfits` — saved outfits
 > - `juddlie_appearance_job_outfits` — job outfits
+> - `juddlie_appearance_faction_uniforms` — faction work uniforms (job/gang)
 
 ---
 
@@ -498,6 +499,8 @@ config.commands = {
 | `/reloadskin` | Re-applies your saved appearance from the database |
 | `/appearance` | Opens the full menu (only available when `config.debug = true`) |
 | `/pedmenu` | Opens the ped model selector (when `config.pedMenu.enabled = true`) |
+| `/uniforms` | Opens the faction uniform menu (when `config.factionUniforms.enabled = true`) |
+| `/saveuniform` | Boss-only shortcut to save the current outfit as a faction uniform |
 
 ---
 
@@ -1101,3 +1104,62 @@ The clothing tab includes a built-in search bar that filters components by name,
 ## Job Outfit Persistence
 
 When players use job clothing rooms, their outfit is automatically saved per job. On reconnect, the job outfit is restored — players no longer lose their work clothes after disconnecting.
+
+---
+
+## Faction Uniforms (Boss-Managed Work Outfits)
+
+Faction leaders (job bosses or gang bosses) can create a shared catalog of work uniforms that every member of the faction can equip on demand. Uniforms are stored per faction and gated by minimum grade so you can have entry-level outfits, supervisor outfits, and command outfits side-by-side.
+
+```lua
+config.factionUniforms = {
+    enabled = true,
+    command = "uniforms",                   -- /uniforms — opens the uniform menu
+    saveCurrentAsCommand = "saveuniform",   -- /saveuniform — boss shortcut to save current outfit
+    maxPerFaction = 25,                     -- max uniforms saved per faction
+    defaultBossGrade = 4,                   -- minimum grade required to manage uniforms
+    bossGrades = {                          -- per-faction overrides for the boss grade
+        -- police = 4,
+        -- ambulance = 4,
+        -- mechanic = 3,
+    },
+    acePermission = "appearance.uniforms",  -- ACE permission that also grants management
+                                            -- (set to false to disable)
+    includeAccessories = true,              -- save props (hat, glasses, watch, etc.) with uniforms
+}
+```
+
+### How It Works
+
+- The player's faction is resolved automatically: **gang takes priority over job**. If neither is set (or value is `""` / `"none"`), the menu shows an empty state.
+- A player is treated as a **boss** (and may manage uniforms) when **either**:
+  - their job/gang grade is `>=` the configured boss grade for that faction (`bossGrades[faction]` if set, otherwise `defaultBossGrade`), **or**
+  - they hold the configured ACE permission.
+- Each uniform has a **minimum grade**. Members only see uniforms whose `min_grade` is `<=` their current grade.
+- Uniforms are stored in the `juddlie_appearance_faction_uniforms` table, scoped by `(faction, kind)` where `kind` is `"job"` or `"gang"`. Saving an existing `uniform_id` performs an upsert.
+
+### Commands
+
+| Command | Who | Description |
+|---------|-----|-------------|
+| `/uniforms` | All faction members | Opens the uniform menu. Members can equip; bosses can also save / overwrite / delete. |
+| `/saveuniform` | Bosses only | Shortcut that captures the outfit you're currently wearing and prompts for a name + minimum grade. |
+
+### Grant the Boss ACE Permission
+
+```cfg
+add_ace group.admin appearance.uniforms allow
+add_ace identifier.license:abc123 appearance.uniforms allow
+```
+
+### Notes
+
+- The uniform menu uses the locale strings under `ui.uniforms.*` and `notify.uniform_*` in `locales/en.json`. Other locale files fall back to English automatically — translate only if desired.
+- Equipping a uniform applies the saved clothing (and props if `includeAccessories = true`) to the player's ped and persists the change so it survives reconnect.
+
+### Server Export
+
+```lua
+-- Returns true if the source player is a boss of their current faction.
+local isBoss = exports.juddlie_appearance:isFactionBoss(source)
+```
