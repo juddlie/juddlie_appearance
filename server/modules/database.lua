@@ -1,3 +1,17 @@
+---@param table_ string
+---@param column string
+---@param ddl string
+local function addColumnIfMissing(table_, column, ddl)
+  local exists <const> = MySQL.scalar.await(
+    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?",
+    { table_, column }
+  ) or 0
+  
+  if exists == 0 then
+    MySQL.query.await(("ALTER TABLE `%s` ADD COLUMN %s"):format(table_, ddl))
+  end
+end
+
 MySQL.ready(function()
   MySQL.query.await([[
     CREATE TABLE IF NOT EXISTS `juddlie_appearance` (
@@ -65,4 +79,105 @@ MySQL.ready(function()
       KEY `faction` (`faction`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_thumbnails` (
+      `id`         VARCHAR(60) NOT NULL,
+      `identifier` VARCHAR(60) NOT NULL,
+      `kind`       VARCHAR(20) NOT NULL DEFAULT 'outfit',
+      `data`       LONGTEXT    NOT NULL,
+      `created_at` BIGINT      NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `identifier` (`identifier`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_share_codes` (
+      `code`         VARCHAR(20) NOT NULL,
+      `identifier`   VARCHAR(60) NOT NULL,
+      `kind`         VARCHAR(20) NOT NULL DEFAULT 'outfit',
+      `payload`      LONGTEXT    NOT NULL,
+      `thumbnail_id` VARCHAR(60) DEFAULT NULL,
+      `max_uses`     INT         NOT NULL DEFAULT 0,
+      `uses`         INT         NOT NULL DEFAULT 0,
+      `expires_at`   BIGINT      DEFAULT NULL,
+      `created_at`   BIGINT      NOT NULL,
+      PRIMARY KEY (`code`),
+      KEY `identifier` (`identifier`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_marketplace` (
+      `id`           VARCHAR(60)  NOT NULL,
+      `seller`       VARCHAR(60)  NOT NULL,
+      `seller_name`  VARCHAR(100) DEFAULT NULL,
+      `name`         VARCHAR(100) NOT NULL,
+      `description`  TEXT         DEFAULT NULL,
+      `category`     VARCHAR(30)  DEFAULT 'custom',
+      `tags`         TEXT         DEFAULT NULL,
+      `price`        INT          NOT NULL DEFAULT 0,
+      `data`         LONGTEXT     NOT NULL,
+      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
+      `purchases`    INT          NOT NULL DEFAULT 0,
+      `created_at`   BIGINT       NOT NULL,
+      `expires_at`   BIGINT       DEFAULT NULL,
+      `status`       VARCHAR(20)  NOT NULL DEFAULT 'active',
+      PRIMARY KEY (`id`),
+      KEY `seller` (`seller`),
+      KEY `status_created` (`status`, `created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_owned_items` (
+      `id`           INT          NOT NULL AUTO_INCREMENT,
+      `identifier`   VARCHAR(60)  NOT NULL,
+      `item_kind`    VARCHAR(20)  NOT NULL,
+      `item_key`     VARCHAR(60)  NOT NULL,
+      `acquired_at`  BIGINT       NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `identifier_item` (`identifier`, `item_kind`, `item_key`),
+      KEY `identifier` (`identifier`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_drops` (
+      `id`           VARCHAR(60)  NOT NULL,
+      `name`         VARCHAR(100) NOT NULL,
+      `description`  TEXT         DEFAULT NULL,
+      `tier`         VARCHAR(20)  NOT NULL DEFAULT 'seasonal',
+      `data`         LONGTEXT     NOT NULL,
+      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
+      `restrictions` LONGTEXT     DEFAULT NULL,
+      `starts_at`    BIGINT       DEFAULT NULL,
+      `ends_at`      BIGINT       DEFAULT NULL,
+      `claimable`    TINYINT(1)   NOT NULL DEFAULT 0,
+      `created_by`   VARCHAR(60)  DEFAULT NULL,
+      `created_at`   BIGINT       NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `tier` (`tier`),
+      KEY `window` (`starts_at`, `ends_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  MySQL.query.await([[
+    CREATE TABLE IF NOT EXISTS `juddlie_appearance_wardrobe` (
+      `id`           INT          NOT NULL AUTO_INCREMENT,
+      `identifier`   VARCHAR(60)  NOT NULL,
+      `slot`         INT          NOT NULL,
+      `name`         VARCHAR(100) NOT NULL,
+      `data`         LONGTEXT     NOT NULL,
+      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
+      `updated_at`   BIGINT       NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `identifier_slot` (`identifier`, `slot`),
+      KEY `identifier` (`identifier`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ]])
+
+  addColumnIfMissing("juddlie_appearance_outfits", "tags", "`tags` TEXT DEFAULT NULL")
+  addColumnIfMissing("juddlie_appearance_outfits", "thumbnail_id", "`thumbnail_id` VARCHAR(60) DEFAULT NULL")
 end)
