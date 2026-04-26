@@ -3,7 +3,7 @@ local config <const> = require("config")
 local camera = {}
 
 camera.handle = nil
-camera.preset = "fullBody"
+camera.preset = "full_body"
 camera.rotation = 0.0
 camera.fov = config.defaultFov
 camera.zoom = 1.0
@@ -18,15 +18,12 @@ function camera.destroy()
 end
 
 function camera.create()
-  camera.destroy()
-
   local pedCoords <const> = GetEntityCoords(cache.ped)
   local pedHeading <const> = GetEntityHeading(cache.ped)
   local headingRad <const> = math.rad(pedHeading + camera.rotation)
 
   local presetData <const> = config.cameraOffsets[camera.preset] or config.cameraOffsets.fullBody
   local offset <const> = presetData.offset
-
   local zoomedY <const> = offset.y * camera.zoom
 
   local camPos <const> = vector3(
@@ -35,12 +32,27 @@ function camera.create()
     pedCoords.z + offset.z
   )
 
-  camera.handle = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+  local transitionTime <const> = config.cameraTransitionTime or 500
+  local newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", false)
 
-  SetCamCoord(camera.handle, camPos.x, camPos.y, camPos.z)
-  PointCamAtPedBone(camera.handle, cache.ped, camera.preset == "face" and 31086 or 0, 0.0, 0.0, 0.0, true)
-  SetCamFov(camera.handle, camera.fov + 0.0)
-  RenderScriptCams(true, true, config.cameraTransitionTime or 500, true, false)
+  SetCamCoord(newCam, camPos.x, camPos.y, camPos.z)
+  PointCamAtPedBone(newCam, cache.ped, camera.preset == "face" and 31086 or 0, 0.0, 0.0, 0.0, true)
+  SetCamFov(newCam, camera.fov + 0.0)
+
+  if camera.handle then
+    local oldCam = camera.handle
+    camera.handle = newCam
+    RenderScriptCams(true, false, 0, true, false)
+    SetCamActiveWithInterp(newCam, oldCam, transitionTime, 1, 1)
+    CreateThread(function()
+      Wait(transitionTime)
+      DestroyCam(oldCam, false)
+    end)
+  else
+    SetCamActive(newCam, true)
+    RenderScriptCams(true, true, transitionTime, true, false)
+    camera.handle = newCam
+  end
 end
 
 ---@param preset string
@@ -67,7 +79,6 @@ end
 ---@param rotation number
 function camera.setRotation(rotation)
   camera.rotation = rotation
-  
   camera.create()
 end
 

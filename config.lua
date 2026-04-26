@@ -142,11 +142,11 @@ config.cameraOffsets = {
 		offset = vector3(0.0, 0.7, 0.65),
 		rotation = vector3(-5.0, 0.0, 0.0)
 	},
-	threeQuarter = {
+	three_quarter = {
 		offset = vector3(0.5, 1.2, 0.3),
 		rotation = vector3(-5.0, 0.0, 0.0)
 	},
-	fullBody = {
+	full_body = {
 		offset = vector3(0.0, 2.5, 0.2),
 		rotation = vector3(-5.0, 0.0, 0.0)
 	},
@@ -213,23 +213,10 @@ config.locations = {
 	{
 		type = "clothing_store",
 		label = "Clothing Store",
-		coords = vector3(72.3, -1399.1, 29.4),
+		coords = vector3(1693.2, 4828.11, 42.07),
 		radius = 2.0,
-		tabs = { "clothing", "props", "outfits" },
+		tabs = { "clothing", "props", "outfits"},
 		blip = {
-			sprite = 73, 
-			color = 47, 
-			scale = 0.7, 
-			label = "Clothing Store"
-		},
-	},
-	{
-		type = "clothing_store",
-		label = "Clothing Store",
-		coords = vector3(-703.8, -152.3, 37.4),
-		radius = 2.0,
-		tabs = { "clothing", "props", "outfits" },
-		blip = { 
 			sprite = 73,
 			color = 47,
 			scale = 0.7,
@@ -239,10 +226,179 @@ config.locations = {
 	{
 		type = "clothing_store",
 		label = "Clothing Store",
-		coords = vector3(-167.9, -299.0, 39.7),
+		coords = vector3(-705.5, -149.22, 37.42),
 		radius = 2.0,
 		tabs = { "clothing", "props", "outfits" },
-		blip = { 
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-1192.61, -768.4, 17.32),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(425.91, -801.03, 29.49),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-168.73, -301.41, 39.73),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(75.39, -1398.28, 29.38),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-827.39, -1075.93, 11.33),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-1445.86, -240.78, 49.82),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(9.22, 6515.74, 31.88),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(615.35, 2762.72, 42.09),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(1191.61, 2710.91, 38.22),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-3171.32, 1043.56, 20.86),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-1105.52, 2707.79, 19.11),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(-1119.24, -1440.6, 5.23),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
+			sprite = 73,
+			color = 47,
+			scale = 0.7,
+			label = "Clothing Store"
+		},
+	},
+	{
+		type = "clothing_store",
+		label = "Clothing Store",
+		coords = vector3(124.82, -224.36, 54.56),
+		radius = 2.0,
+		tabs = { "clothing", "props", "outfits" },
+		blip = {
 			sprite = 73,
 			color = 47,
 			scale = 0.7,
@@ -252,7 +408,7 @@ config.locations = {
 	{
 		type = "barber",
 		label = "Barber Shop",
-		coords = vector3(-814.3, -183.8, 37.6),
+		coords = vector3(-814.22, -183.7, 37.57),
 		radius = 1.5,
 		tabs = { "hair", "face", "colors" },
 		blip = {
@@ -265,7 +421,7 @@ config.locations = {
 	{
 		type = "barber",
 		label = "Barber Shop",
-		coords = vector3(136.8, -1708.4, 29.3),
+		coords = vector3(136.78, -1708.4, 29.29),
 		radius = 1.5,
 		tabs = { "hair", "face", "colors" },
 		blip = {
@@ -278,10 +434,62 @@ config.locations = {
 	{
 		type = "barber",
 		label = "Barber Shop",
-		coords = vector3(-1282.6, -1116.8, 6.99),
+		coords = vector3(-1282.57, -1116.84, 6.99),
 		radius = 1.5,
 		tabs = { "hair", "face", "colors" },
-		blip = { 
+		blip = {
+			sprite = 71,
+			color = 0,
+			scale = 0.7,
+			label = "Barber Shop"
+		},
+	},
+	{
+		type = "barber",
+		label = "Barber Shop",
+		coords = vector3(1931.41, 3729.73, 32.84),
+		radius = 1.5,
+		tabs = { "hair", "face", "colors" },
+		blip = {
+			sprite = 71,
+			color = 0,
+			scale = 0.7,
+			label = "Barber Shop"
+		},
+	},
+	{
+		type = "barber",
+		label = "Barber Shop",
+		coords = vector3(1212.8, -472.9, 65.2),
+		radius = 1.5,
+		tabs = { "hair", "face", "colors" },
+		blip = {
+			sprite = 71,
+			color = 0,
+			scale = 0.7,
+			label = "Barber Shop"
+		},
+	},
+	{
+		type = "barber",
+		label = "Barber Shop",
+		coords = vector3(-32.9, -152.3, 56.1),
+		radius = 1.5,
+		tabs = { "hair", "face", "colors" },
+		blip = {
+			sprite = 71,
+			color = 0,
+			scale = 0.7,
+			label = "Barber Shop"
+		},
+	},
+	{
+		type = "barber",
+		label = "Barber Shop",
+		coords = vector3(-278.1, 6228.5, 30.7),
+		radius = 1.5,
+		tabs = { "hair", "face", "colors" },
+		blip = {
 			sprite = 71,
 			color = 0,
 			scale = 0.7,
@@ -291,10 +499,10 @@ config.locations = {
 	{
 		type = "tattoo",
 		label = "Tattoo Parlor",
-		coords = vector3(1322.6, -1651.9, 52.3),
+		coords = vector3(1322.6, -1651.9, 51.2),
 		radius = 1.5,
 		tabs = { "tattoos" },
-		blip = { 
+		blip = {
 			sprite = 75,
 			color = 1,
 			scale = 0.7,
@@ -304,10 +512,62 @@ config.locations = {
 	{
 		type = "tattoo",
 		label = "Tattoo Parlor",
-		coords = vector3(-1153.7, -1425.7, 4.95),
+		coords = vector3(-1154.01, -1425.31, 4.95),
 		radius = 1.5,
 		tabs = { "tattoos" },
-		blip = { 
+		blip = {
+			sprite = 75,
+			color = 1,
+			scale = 0.7,
+			label = "Tattoo Parlor"
+		},
+	},
+	{
+		type = "tattoo",
+		label = "Tattoo Parlor",
+		coords = vector3(322.62, 180.34, 103.59),
+		radius = 1.5,
+		tabs = { "tattoos" },
+		blip = {
+			sprite = 75,
+			color = 1,
+			scale = 0.7,
+			label = "Tattoo Parlor"
+		},
+	},
+	{
+		type = "tattoo",
+		label = "Tattoo Parlor",
+		coords = vector3(-3169.52, 1074.86, 20.83),
+		radius = 1.5,
+		tabs = { "tattoos" },
+		blip = {
+			sprite = 75,
+			color = 1,
+			scale = 0.7,
+			label = "Tattoo Parlor"
+		},
+	},
+	{
+		type = "tattoo",
+		label = "Tattoo Parlor",
+		coords = vector3(1864.1, 3747.91, 33.03),
+		radius = 1.5,
+		tabs = { "tattoos" },
+		blip = {
+			sprite = 75,
+			color = 1,
+			scale = 0.7,
+			label = "Tattoo Parlor"
+		},
+	},
+	{
+		type = "tattoo",
+		label = "Tattoo Parlor",
+		coords = vector3(-294.24, 6200.12, 31.49),
+		radius = 1.5,
+		tabs = { "tattoos" },
+		blip = {
 			sprite = 75,
 			color = 1,
 			scale = 0.7,
@@ -317,14 +577,14 @@ config.locations = {
 	{
 		type = "surgeon",
 		label = "Plastic Surgeon",
-		coords = vector3(316.8, -584.2, 43.3),
+		coords = vector3(298.78, -572.81, 43.26),
 		radius = 1.5,
 		tabs = { "face", "colors" },
-		blip = { 
-			sprite = 102, 
-			color = 2, 
-			scale = 0.7, 
-			label = "Plastic Surgeon" 
+		blip = {
+			sprite = 102,
+			color = 2,
+			scale = 0.7,
+			label = "Plastic Surgeon"
 		},
 	},
 }
