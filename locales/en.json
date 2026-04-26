@@ -3,7 +3,7 @@
     "sidebar": {
       "face": "Face",
       "hair": "Hair",
-      "clothing": "Clothing",
+      "clothing": "Appearance",
       "props": "Props",
       "tattoos": "Tattoos",
       "colors": "Colors",
@@ -55,7 +55,7 @@
       "opacity": "Opacity"
     },
     "clothing": {
-      "title": "Clothing",
+      "title": "Appearance",
       "layers": "Layers",
       "drawable": "Drawable",
       "texture": "Texture",
