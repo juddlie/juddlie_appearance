@@ -154,6 +154,12 @@ nui.handleMessage("appearance:setHair", function(data)
   ped.setHair(data)
 end)
 
+nui.handleMessage("appearance:setHairColor", function(data)
+  if type(data) ~= "table" or type(data.color) ~= "number" or type(data.highlight) ~= "number" then return end
+
+  ped.setHairColor(data.color, data.highlight)
+end)
+
 nui.handleMessage("appearance:setOverlay", function(data)
   if type(data) ~= "table" or type(data.index) ~= "number" then return end
 

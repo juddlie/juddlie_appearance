@@ -307,8 +307,12 @@ function ped.setHair(data)
   else
     SetPedComponentVariation(cache.ped, 2, data.style, 0, 0)
   end
+end
 
-  SetPedHairColor(cache.ped, data.color, data.highlight)
+---@param color number
+---@param highlight number
+function ped.setHairColor(color, highlight)
+  SetPedHairColor(cache.ped, color, highlight)
 end
 
 ---@param data table
