@@ -341,8 +341,16 @@ end)
 nui.handleMessage("appearance:toggleCompare", function(data)
   if type(data) ~= "table" then return end
 
-  if data.enabled and menu.originalAppearance then
-    ped.applyAppearance(cache.ped, menu.originalAppearance)
+  if data.enabled then
+    if menu.originalAppearance then
+      menu.pendingAppearance = ped.getAppearance(cache.ped)
+      ped.applyAppearance(cache.ped, menu.originalAppearance)
+    end
+  else
+    if menu.pendingAppearance then
+      ped.applyAppearance(cache.ped, menu.pendingAppearance)
+      menu.pendingAppearance = nil
+    end
   end
 end)
 
