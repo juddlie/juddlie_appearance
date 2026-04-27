@@ -5,7 +5,7 @@ local config = {}
 
 -- enables debug logging and the /appearance command for testing
 -- set to false in production
-config.debug = false
+config.debug = true
 
 -- which framework to use for player data (jobs, gangs, identifiers)
 -- "esx" = es_extended
@@ -13,13 +13,13 @@ config.debug = false
 -- "ox" = ox_core (overextended framework, uses stateId + groups)
 -- "custom" = standalone (no framework, uses license identifier only)
 ---@type "esx" | "qbx" | "ox" | "custom"
-config.framework = "esx"
+config.framework = "custom"
 
 -- which target resource handles interaction at locations
 -- "ox" = ox_target
 -- "qb" = qb-target
 ---@type "ox" | "qb"
-config.interaction = "ox"
+config.interaction = "qb"
 
 -- how players interact at locations
 -- "point"  = proximity-based, shows a textui prompt and the player presses e (ox only)

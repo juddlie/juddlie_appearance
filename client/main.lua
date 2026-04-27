@@ -27,6 +27,7 @@ local drops <const> = require("client.modules.drops")
 local wardrobe <const> = require("client.modules.wardrobe")
 
 local initialSpawn = true
+local committedTattoos = {}
 
 local function initAppearance()
   logger.debug("Fetching appearance from server")
@@ -100,6 +101,7 @@ end)
 
 nui.handleMessage("appearance:exit", function()
   logger.debug("NUI exit requested")
+  committedTattoos = {}
   menu.close(false)
 end)
 
@@ -124,6 +126,7 @@ nui.handleMessage("appearance:revert", function()
   if not menu.originalAppearance then return end
 
   logger.debug("Reverting appearance")
+  committedTattoos = {}
   if menu.originalAppearance.model then
     ped.applyModel(menu.originalAppearance.model)
   end
@@ -212,25 +215,67 @@ nui.handleMessage("appearance:browseTattoos", function(data)
   nui.sendMessage("tattooList", { zone = data.zone, tattoos = available })
 end)
 
+
 nui.handleMessage("appearance:addTattoo", function(data)
   if type(data) ~= "table" or type(data.collection) ~= "string" or type(data.overlay) ~= "string" then return end
 
+  committedTattoos[#committedTattoos + 1] = { collection = data.collection, overlay = data.overlay }
+
+  ClearPedDecorations(cache.ped)
+  for _, t in ipairs(committedTattoos) do
+    AddPedDecorationFromHashes(cache.ped, joaat(t.collection), joaat(t.overlay))
+  end
+end)
+
+nui.handleMessage("appearance:previewTattoo", function(data)
+  if type(data) ~= "table" or type(data.collection) ~= "string" or type(data.overlay) ~= "string" then return end
+
+  ClearPedDecorations(cache.ped)
+  for _, t in ipairs(committedTattoos) do
+    AddPedDecorationFromHashes(cache.ped, joaat(t.collection), joaat(t.overlay))
+  end
   AddPedDecorationFromHashes(cache.ped, joaat(data.collection), joaat(data.overlay))
+end)
+
+nui.handleMessage("appearance:clearPreview", function()
+  ClearPedDecorations(cache.ped)
+  for _, t in ipairs(committedTattoos) do
+    AddPedDecorationFromHashes(cache.ped, joaat(t.collection), joaat(t.overlay))
+  end
 end)
 
 nui.handleMessage("appearance:reapplyTattoos", function(data)
   if type(data) ~= "table" then return end
 
-  ClearPedDecorations(cache.ped)
+  committedTattoos = {}
   for _, t in ipairs(data) do
     if t.collection and t.overlay then
-      AddPedDecorationFromHashes(cache.ped, joaat(t.collection), joaat(t.overlay))
+      committedTattoos[#committedTattoos + 1] = { collection = t.collection, overlay = t.overlay }
     end
+  end
+
+  ClearPedDecorations(cache.ped)
+  for _, t in ipairs(committedTattoos) do
+    AddPedDecorationFromHashes(cache.ped, joaat(t.collection), joaat(t.overlay))
   end
 end)
 
 nui.handleMessage("appearance:clearTattoos", function()
+  committedTattoos = {}
   ClearPedDecorations(cache.ped)
+end)
+
+nui.handleMessage("appearance:keyPress", function(data)
+  if type(data) ~= "table" or type(data.key) ~= "string" or type(data.pressed) ~= "boolean" then return end
+
+  camera.setKeyState(data.key, data.pressed)
+end)
+
+nui.handleMessage("appearance:adjustFov", function(data)
+  if type(data) ~= "table" or type(data.delta) ~= "number" then return end
+
+  local newFov = camera.fov + data.delta * 5
+  camera.setFov(math.max(30, math.min(120, newFov)))
 end)
 
 nui.handleMessage("appearance:savePreset", function(data)
