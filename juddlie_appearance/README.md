@@ -1,0 +1,1326 @@
+# juddlie_appearance
+
+A fully-featured character appearance menu for FiveM. Supports ESX, QBX, OX Core, and standalone frameworks with ox_target or qb-target interaction.
+
+---
+
+## Dependencies
+
+These resources **must** be installed and started before `juddlie_appearance`:
+
+| Resource | Required | Purpose |
+|----------|----------|---------|
+| [ox_lib](https://github.com/CommunityOx/ox_lib) | Yes | UI notifications, points, utilities |
+| [oxmysql](https://github.com/CommunityOx/oxmysql) | Yes | Database queries |
+| [es_extended](https://github.com/esx-framework/esx_core) | If using ESX | ESX framework bridge |
+| [qbx_core](https://github.com/Qbox-project/qbx_core) | If using QBX | QBX framework bridge |
+| [ox_core](https://github.com/CommunityOx/ox_core) | If using OX | OX Core framework bridge |
+| [ox_inventory](https://github.com/CommunityOx/ox_inventory) | If using OX | Money checks/removal (used by OX bridge) |
+| [ox_target](https://github.com/CommunityOx/ox_target) | If using ox interaction | Target zones |
+| [qb-target](https://github.com/qbcore-framework/qb-target) | If using qb interaction | Target zones |
+
+---
+
+## Installation
+
+1. Place the `juddlie_appearance` folder into your server's `resources` directory.
+2. Add `ensure juddlie_appearance` to your `server.cfg` (**after** your framework and the dependencies above).
+3. Open `config.lua` and set your framework + interaction method (see below).
+4. Restart your server — the database tables are created automatically on first start.
+
+> **Database tables created automatically:**
+> - `juddlie_appearance` — player skins
+> - `juddlie_appearance_presets` — saved presets
+> - `juddlie_appearance_outfits` — saved outfits
+> - `juddlie_appearance_job_outfits` — job outfit persistence
+> - `juddlie_appearance_faction_uniforms` — faction work uniforms
+> - `juddlie_appearance_share_codes` — outfit share codes
+> - `juddlie_appearance_marketplace` — player-to-player outfit listings
+> - `juddlie_appearance_owned_items` — per-item purchase records
+> - `juddlie_appearance_drops` — outfit drops / event rewards
+> - `juddlie_appearance_wardrobe` — wardrobe slot saves
+
+---
+
+## Configuration
+
+Everything is configured in **`config.lua`**. Below is a walkthrough of every section.
+
+### Framework
+
+```lua
+config.framework = "esx"
+```
+
+| Value | Framework |
+|-------|-----------|
+| `"esx"` | ESX / es_extended |
+| `"qbx"` | QBX / qbx_core |
+| `"ox"` | OX Core / ox_core |
+| `"custom"` | Standalone — no framework, uses license identifier only |
+
+### Interaction Method
+
+```lua
+config.interaction = "ox"
+config.interactionType = "point"
+```
+
+**`config.interaction`** — which target resource to use:
+
+| Value | Description |
+|-------|-------------|
+| `"ox"` | Use ox_target |
+| `"qb"` | Use qb-target |
+
+**`config.interactionType`** — how players interact at locations:
+
+| Value | Description |
+|-------|-------------|
+| `"point"` | Proximity-based — shows a TextUI prompt and the player presses **E** when nearby (ox only) |
+| `"target"` | Target-based — player aims with the target eye and clicks the option |
+
+> **Note:** `"point"` mode is only available with `config.interaction = "ox"`. If you use `"qb"`, set `interactionType` to `"target"`.
+
+### Identifier Type
+
+```lua
+config.licenseType = "license"
+```
+
+Only used when `config.framework = "custom"`. Determines which FiveM identifier is used to save player data.
+
+| Value | Identifier |
+|-------|------------|
+| `"license"` | Rockstar license |
+| `"license2"` | Rockstar license (alt) |
+| `"fivem"` | FiveM account ID |
+| `"discord"` | Discord ID |
+
+When using ESX, QBX, or OX Core, the identifier comes from the framework automatically — this setting is ignored.
+
+### General Settings
+
+```lua
+config.debug = true                          -- enables /appearance command for testing
+config.locale = "en"                         -- language (see Localization section)
+config.accentColor = "blue"                  -- UI accent color (name, hex, or rgb)
+config.defaultFov = 50                       -- camera field of view
+config.invincibleDuringCustomization = true   -- god mode while menu is open
+config.freezeDuringCustomization = true       -- freeze the player in place while menu is open
+config.hideRadar = false                     -- hide minimap while menu is open
+```
+
+### Accent Color
+
+```lua
+config.accentColor = "blue"
+```
+
+The accent color is used throughout the UI for buttons, badges, active indicators, and highlights. Accepts three formats:
+
+| Format | Example |
+|--------|---------|
+| Mantine color name | `"blue"`, `"teal"`, `"violet"`, `"cyan"`, `"green"`, `"grape"`, `"pink"`, `"red"`, `"orange"`, `"yellow"`, `"lime"`, `"indigo"` |
+| Hex code | `"#3B82F6"`, `"#ff5733"` |
+| RGB value | `"rgb(59, 130, 246)"` |
+
+When a hex or RGB value is provided, a full 10-shade palette is generated automatically to match Mantine's color system.
+
+### Head Blend Defaults
+
+```lua
+-- default head blend mix values when creating a new freemode ped (range: 0.0 to 1.0)
+config.defaultShapeMix = 0.5
+config.defaultSkinMix = 0.5
+```
+
+### Timeouts & Animation
+
+```lua
+config.modelLoadTimeout = 5000      -- timeout (ms) for loading ped models
+config.animationLoadTimeout = 5000  -- timeout (ms) for loading animation dicts
+config.animationBlendIn = 8.0       -- animation blend in speed
+config.animationBlendOut = -8.0     -- animation blend out speed
+config.cameraTransitionTime = 500   -- camera create/destroy transition (ms)
+config.randomizerDefaultSpeed = 2   -- auto-randomizer speed in seconds
+```
+
+### Server Limits
+
+Prevent abuse with payload size limits and max saved items:
+
+```lua
+config.limits = {
+    maxPresets = 50,       -- max presets per player
+    maxOutfits = 50,       -- max outfits per player
+    maxPayloadSize = 100000, -- max JSON payload size in bytes
+}
+```
+
+### Default Blip & Radius
+
+```lua
+-- default blip settings used when a location doesn't specify its own
+config.defaultBlip = {
+    sprite = 1,
+    color = 0,
+    scale = 0.7,
+}
+
+-- default interaction radius for locations and clothing rooms (in meters)
+config.defaultLocationRadius = 2.0
+config.defaultClothingRoomRadius = 1.5
+```
+
+### Target Icons
+
+```lua
+-- icons used for ox_target / qb-target interaction zones
+config.targetIcons = {
+    location = "fas fa-tshirt",
+    clothingRoom = "fas fa-door-open",
+}
+```
+
+### Lighting Times
+
+```lua
+-- clock times set for each lighting preset (hour, minute, second)
+config.lightingTimes = {
+    studio = { 18, 0, 0 },
+    day    = { 12, 0, 0 },
+    night  = { 0, 0, 0 },
+}
+```
+
+### Ped Models
+
+Models available in the ped model selector page:
+
+```lua
+config.pedModels = {
+    { value = "mp_m_freemode_01", label = "Freemode Male" },
+    { value = "mp_f_freemode_01", label = "Freemode Female" },
+}
+```
+
+### Disabled Components / Props
+
+Use this if you have a clothing-as-items system and want to prevent players from changing certain components through the appearance menu.
+
+```lua
+config.disabledComponents = {}   -- e.g., { 9 } to disable body armor
+config.disabledProps = {}        -- e.g., { 6, 7 } to disable watch and bracelet
+```
+
+**Component IDs reference:**
+
+| ID | Component |
+|----|-----------|
+| 0 | Head |
+| 1 | Beard / Mask |
+| 2 | Hair |
+| 3 | Upper Body / Torso |
+| 4 | Legs / Pants |
+| 5 | Bags / Parachute |
+| 6 | Shoes |
+| 7 | Accessories |
+| 8 | Undershirt |
+| 9 | Body Armor |
+| 10 | Decals / Badges |
+| 11 | Jacket / Outer |
+
+**Prop IDs reference:**
+
+| ID | Prop |
+|----|------|
+| 0 | Hats |
+| 1 | Glasses |
+| 2 | Ears |
+| 6 | Watches |
+| 7 | Bracelets |
+
+---
+
+## Locations
+
+Locations are the zones where the appearance menu can be opened. Each location gets a map blip and an interaction point/target.
+
+```lua
+config.locations = {
+    {
+        type = "clothing_store",     -- type label (for your reference only)
+        label = "Clothing Store",    -- name shown to the player
+        coords = vector3(72.3, -1399.1, 29.4),  -- world position
+        radius = 2.0,               -- interaction radius (in meters)
+        tabs = { "clothing", "props", "outfits" },  -- which menu tabs are available here
+        blip = {
+            sprite = 73,            -- blip icon (see https://docs.fivem.net/docs/game-references/blips/)
+            color = 47,             -- blip color
+            scale = 0.7,            -- blip size
+            label = "Clothing Store" -- text on the map
+        },
+    },
+}
+```
+
+### Available Tab Names
+
+| Tab Name | What It Opens |
+|----------|---------------|
+| `"clothing"` | Shirts, pants, shoes, etc. |
+| `"props"` | Hats, glasses, watches, etc. |
+| `"outfits"` | Saved outfits |
+| `"hair"` | Hair style and color |
+| `"face"` | Face shape / features |
+| `"colors"` | Eye color, makeup, overlays |
+| `"tattoos"` | Tattoo parlor |
+| `"presets"` | Saved presets (full appearance) |
+| `"animations"` | Pose / animation browser |
+| `"randomizer"` | Randomize appearance |
+| `"camera"` | Camera controls |
+
+### Location Types (Examples)
+
+You can use any combination of tabs to create different shop types:
+
+| Store Type | Suggested Tabs |
+|------------|----------------|
+| Clothing Store | `{ "clothing", "props", "outfits" }` |
+| Barber Shop | `{ "hair", "face", "colors" }` |
+| Tattoo Parlor | `{ "tattoos" }` |
+| Plastic Surgeon | `{ "face", "colors" }` |
+| Full Customization | All tabs |
+
+---
+
+## Job / Gang Clothing Rooms
+
+Clothing rooms are restricted locations that only specific jobs or gangs can access. They work the same as regular locations but with access control.
+
+```lua
+config.clothingRooms = {
+    {
+        label = "LSPD Locker Room",
+        coords = vector3(461.8, -1000.4, 30.7),
+        radius = 1.5,
+        job = "police",          -- required job name (must match your framework)
+        -- gang = "ballas",      -- OR use gang instead of job (not both)
+        minRank = 0,             -- minimum job/gang grade (0 = all ranks)
+        tabs = { "clothing", "props", "outfits" },
+        blip = { sprite = 366, color = 29, scale = 0.6, label = "LSPD Locker Room" },
+    },
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | string | Name shown to the player |
+| `coords` | vector3 | World position |
+| `radius` | number | Interaction radius in meters |
+| `job` | string | Required job name — player must have this job |
+| `gang` | string | Required gang name (use one or the other, not both) |
+| `minRank` | number | Minimum grade/rank required. `0` means any rank |
+| `tabs` | table | Which menu tabs are available |
+| `blip` | table | Optional — map blip config (same fields as locations) |
+
+> **Tip:** If `minRank` is set to `2`, only players with grade 2 or higher can access the room.
+
+---
+
+## Blacklist / Whitelist
+
+Block (or exclusively allow) specific clothing drawables and props based on job, gang, identifier, or ACE permissions.
+
+```lua
+config.blacklist = {
+    enabled = false,              -- set to true to activate
+    mode = "blacklist",           -- "blacklist" or "whitelist"
+
+    clothing = {
+        {
+            component = 11,           -- component ID (see table above)
+            drawables = { 55, 56 },   -- drawable IDs to restrict
+            jobs = { "police" },      -- only police are affected
+            invert = true,            -- invert = block everyone EXCEPT police
+        },
+    },
+
+    props = {
+        {
+            prop = 0,                 -- prop ID
+            drawables = { 120 },      -- drawable IDs to restrict
+            aces = { "appearance.vip" }, -- only players with this ACE
+            invert = true,            -- block everyone EXCEPT those with the ACE
+        },
+    },
+}
+```
+
+### How Rules Work
+
+Each rule in `clothing` or `props` can use any combination of these filters:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `component` / `prop` | number | Which component or prop this rule applies to |
+| `drawables` | table | List of drawable IDs to restrict |
+| `jobs` | table | Job names that match this rule |
+| `gangs` | table | Gang names that match this rule |
+| `identifiers` | table | Specific player identifiers |
+| `aces` | table | ACE permission strings (e.g., `"appearance.vip"`) |
+| `invert` | boolean | Flip the logic (see below) |
+
+### Understanding `invert`
+
+| `invert` | Behavior |
+|----------|----------|
+| `false` (default) | The drawable is blocked **for matching players** (e.g., police can't wear it) |
+| `true` | The drawable is blocked **for everyone EXCEPT matching players** (e.g., only police can wear it) |
+
+### Granting ACE Permissions
+
+Add ACE permissions in your `server.cfg`:
+
+```cfg
+add_ace identifier.license:abc123 appearance.vip allow
+add_ace group.admin appearance.vip allow
+```
+
+---
+
+## Outfit Categories
+
+Customize the categories players can organize their outfits into:
+
+```lua
+config.outfitCategories = {
+    { value = "casual", label = "Casual" },
+    { value = "work", label = "Work" },
+    { value = "formal", label = "Formal" },
+    { value = "custom", label = "Custom" },
+}
+```
+
+Add or remove categories as needed. The `value` is stored in the database, the `label` is what players see.
+
+---
+
+## Camera Settings
+
+### Presets
+
+```lua
+config.cameraPresets = {
+    { value = "face", label = "Face" },
+    { value = "three_quarter", label = "3/4" },
+    { value = "full_body", label = "Full Body" },
+}
+```
+
+### Camera Offsets
+
+Control where each camera preset is positioned relative to the player:
+
+```lua
+config.cameraOffsets = {
+    face = {
+        offset = vector3(0.0, 0.7, 0.65),      -- x, y, z offset from ped
+        rotation = vector3(-5.0, 0.0, 0.0)      -- pitch, roll, yaw
+    },
+    threeQuarter = {
+        offset = vector3(0.5, 1.2, 0.3),
+        rotation = vector3(-5.0, 0.0, 0.0)
+    },
+    fullBody = {
+        offset = vector3(0.0, 2.5, 0.2),
+        rotation = vector3(-5.0, 0.0, 0.0)
+    },
+}
+```
+
+### Defaults and Ranges
+
+```lua
+config.cameraDefaults = {
+    preset = "full_body",   -- starting camera angle
+    lighting = "studio",    -- starting lighting
+    fov = 50,
+    zoom = 1,
+    rotation = 0,
+}
+
+config.cameraRanges = {
+    fov = { min = 20, max = 90, step = 1 },
+    zoom = { min = 0.5, max = 3, step = 0.1 },
+    rotation = { min = -180, max = 180, step = 1 },
+}
+```
+
+### Lighting Presets
+
+```lua
+config.lightingPresets = {
+    { value = "studio", label = "Studio" },
+    { value = "day", label = "Day" },
+    { value = "night", label = "Night" },
+}
+```
+
+---
+
+## Ped Menu
+
+A separate command to change your ped model (useful for admin/testing):
+
+```lua
+config.pedMenu = {
+    enabled = true,
+    command = "pedmenu",           -- chat command to open it
+    acePermission = false,         -- false = everyone can use it
+                                   -- "admin.pedmenu" = only players with this ACE
+}
+```
+
+To restrict it, set `acePermission` to an ACE string and grant it in your `server.cfg`:
+
+```cfg
+add_ace group.admin admin.pedmenu allow
+```
+
+---
+
+## Commands
+
+```lua
+config.commands = {
+    reloadSkin = "reloadskin",   -- reloads your saved skin from the database
+}
+```
+
+| Command | Description |
+|---------|-------------|
+| `/reloadskin` | Re-applies your saved appearance from the database |
+| `/appearance` | Opens the full menu (only available when `config.debug = true`) |
+| `/pedmenu` | Opens the ped model selector (when `config.pedMenu.enabled = true`) |
+| `/uniforms` | Opens the faction uniform menu (when `config.factionUniforms.enabled = true`) |
+| `/saveuniform` | Boss-only shortcut to save the current outfit as a faction uniform |
+
+---
+
+## illenium-appearance Exports (Compatibility Layer)
+
+juddlie_appearance fully re-implements all illenium-appearance client exports. Any resource that calls `exports['illenium-appearance']` will work out of the box — no code changes needed.
+
+> **Note:** Data formats are translated automatically. illenium-appearance uses different key names for face features and a flat overlay format — the compatibility bridge handles the conversion in both directions.
+
+### Getters
+
+#### `getPedModel(ped)`
+
+Returns the model name string for the given ped.
+
+```lua
+local model = exports['illenium-appearance']:getPedModel(PlayerPedId())
+-- "mp_m_freemode_01"
+```
+
+#### `getPedComponents(ped)`
+
+Returns an array of component tables.
+
+```lua
+local components = exports['illenium-appearance']:getPedComponents(PlayerPedId())
+--[[
+{
+    { component_id = 0, drawable = 0, texture = 0 },
+    { component_id = 1, drawable = 0, texture = 0 },
+    ...
+}
+]]
+```
+
+#### `getPedProps(ped)`
+
+Returns an array of prop tables.
+
+```lua
+local props = exports['illenium-appearance']:getPedProps(PlayerPedId())
+--[[
+{
+    { prop_id = 0, drawable = -1, texture = 0 },
+    { prop_id = 1, drawable = -1, texture = 0 },
+    ...
+}
+]]
+```
+
+#### `getPedHeadBlend(ped)`
+
+Returns the ped's head blend (heritage) data.
+
+```lua
+local headBlend = exports['illenium-appearance']:getPedHeadBlend(PlayerPedId())
+--[[
+{
+    shapeFirst = 0,     -- mother face shape
+    shapeSecond = 0,    -- father face shape
+    shapeThird = 0,     -- third parent
+    skinFirst = 0,      -- mother skin tone
+    skinSecond = 0,     -- father skin tone
+    skinThird = 0,      -- third parent skin
+    shapeMix = 0.5,     -- face shape mix (0.0 - 1.0)
+    skinMix = 0.5,      -- skin tone mix (0.0 - 1.0)
+    thirdMix = 0.0      -- third parent mix (0.0 - 1.0)
+}
+]]
+```
+
+#### `getPedFaceFeatures(ped)`
+
+Returns a table of face feature values (20 features, each -1.0 to 1.0).
+
+```lua
+local features = exports['illenium-appearance']:getPedFaceFeatures(PlayerPedId())
+--[[
+{
+    noseWidth = 0.0,
+    nosePeakHigh = 0.0,
+    nosePeakSize = 0.0,
+    noseBoneHigh = 0.0,
+    nosePeakLowering = 0.0,
+    noseBoneTwist = 0.0,
+    eyeBrownHigh = 0.0,
+    eyeBrownForward = 0.0,
+    cheeksBoneHigh = 0.0,
+    cheeksBoneWidth = 0.0,
+    cheeksWidth = 0.0,
+    eyesOpening = 0.0,
+    lipsThickness = 0.0,
+    jawBoneWidth = 0.0,
+    jawBoneBackSize = 0.0,
+    chinBoneLowering = 0.0,
+    chinBoneLenght = 0.0,
+    chinBoneSize = 0.0,
+    chinHole = 0.0,
+    neckThickness = 0.0
+}
+]]
+```
+
+#### `getPedHeadOverlays(ped)`
+
+Returns a table of head overlay (makeup/facial feature) data.
+
+```lua
+local overlays = exports['illenium-appearance']:getPedHeadOverlays(PlayerPedId())
+--[[
+{
+    blemishes       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    beard           = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    eyebrows        = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    ageing          = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    makeUp          = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    blush           = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    complexion      = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    sunDamage       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    lipstick        = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    moleAndFreckles = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    chestHair       = { style = 0, opacity = 0.0, color = 0, secondColor = 0 },
+    bodyBlemishes   = { style = 0, opacity = 0.0, color = 0, secondColor = 0 }
+}
+]]
+```
+
+#### `getPedHair(ped)`
+
+Returns the ped's hair data.
+
+```lua
+local hair = exports['illenium-appearance']:getPedHair(PlayerPedId())
+--[[
+{
+    style = 0,        -- hair drawable ID
+    color = 0,        -- primary hair color
+    highlight = 0,    -- highlight color
+    texture = 0       -- hair texture
+}
+]]
+```
+
+#### `getPedAppearance(ped)`
+
+Returns the complete appearance table combining all of the above.
+
+```lua
+local appearance = exports['illenium-appearance']:getPedAppearance(PlayerPedId())
+--[[
+{
+    model = "mp_m_freemode_01",
+    headBlend = { ... },        -- see getPedHeadBlend
+    faceFeatures = { ... },     -- see getPedFaceFeatures
+    headOverlays = { ... },     -- see getPedHeadOverlays
+    components = { ... },       -- see getPedComponents
+    props = { ... },            -- see getPedProps
+    hair = { ... },             -- see getPedHair
+    tattoos = { ... },          -- see setPedTattoos
+    eyeColor = 0                -- eye color index
+}
+]]
+```
+
+### Setters
+
+#### `setPlayerModel(model)`
+
+Loads and sets the player's ped model. Accepts a model name string or hash.
+
+```lua
+exports['illenium-appearance']:setPlayerModel("mp_f_freemode_01")
+```
+
+#### `setPedHeadBlend(ped, headBlend)`
+
+Applies head blend (heritage) data. Only works on freemode peds.
+
+```lua
+exports['illenium-appearance']:setPedHeadBlend(PlayerPedId(), {
+    shapeFirst = 0, shapeSecond = 5, shapeThird = 0,
+    skinFirst = 0, skinSecond = 5, skinThird = 0,
+    shapeMix = 0.5, skinMix = 0.5, thirdMix = 0.0
+})
+```
+
+#### `setPedFaceFeatures(ped, faceFeatures)`
+
+Applies face feature values. Each value ranges from -1.0 to 1.0.
+
+```lua
+exports['illenium-appearance']:setPedFaceFeatures(PlayerPedId(), {
+    noseWidth = 0.3,
+    jawBoneWidth = -0.5,
+    -- ... any of the 20 face feature keys
+})
+```
+
+#### `setPedHeadOverlays(ped, headOverlays)`
+
+Applies head overlay data (beard, makeup, blemishes, etc.).
+
+```lua
+exports['illenium-appearance']:setPedHeadOverlays(PlayerPedId(), {
+    beard = { style = 1, opacity = 1.0, color = 0, secondColor = 0 },
+    eyebrows = { style = 3, opacity = 1.0, color = 0, secondColor = 0 },
+    -- ... any of the 12 overlay keys
+})
+```
+
+#### `setPedHair(ped, hair, tattoos?)`
+
+Applies hair style and color. Optionally pass tattoos to reapply decorations (needed because hair decorations/fades are tied to the tattoo system).
+
+```lua
+exports['illenium-appearance']:setPedHair(PlayerPedId(), {
+    style = 5,
+    color = 0,
+    highlight = 0,
+    texture = 0
+})
+```
+
+#### `setPedEyeColor(ped, eyeColor)`
+
+Sets the ped's eye color by index.
+
+```lua
+exports['illenium-appearance']:setPedEyeColor(PlayerPedId(), 3) -- Ocean Blue
+```
+
+#### `setPedComponent(ped, component)`
+
+Sets a single clothing component. Skips head (0) and hair (2) on freemode peds.
+
+```lua
+exports['illenium-appearance']:setPedComponent(PlayerPedId(), {
+    component_id = 11,  -- jacket
+    drawable = 5,
+    texture = 0
+})
+```
+
+#### `setPedComponents(ped, components)`
+
+Sets multiple clothing components at once.
+
+```lua
+exports['illenium-appearance']:setPedComponents(PlayerPedId(), {
+    { component_id = 3, drawable = 1, texture = 0 },   -- torso
+    { component_id = 4, drawable = 10, texture = 0 },   -- legs
+    { component_id = 6, drawable = 5, texture = 0 },    -- shoes
+    { component_id = 11, drawable = 2, texture = 0 },   -- jacket
+})
+```
+
+#### `setPedProp(ped, prop)`
+
+Sets a single prop. Use `drawable = -1` to remove the prop.
+
+```lua
+exports['illenium-appearance']:setPedProp(PlayerPedId(), {
+    prop_id = 0,    -- hat
+    drawable = 5,
+    texture = 0
+})
+
+-- Remove a prop
+exports['illenium-appearance']:setPedProp(PlayerPedId(), {
+    prop_id = 0,
+    drawable = -1,
+    texture = 0
+})
+```
+
+#### `setPedProps(ped, props)`
+
+Sets multiple props at once.
+
+```lua
+exports['illenium-appearance']:setPedProps(PlayerPedId(), {
+    { prop_id = 0, drawable = 5, texture = 0 },   -- hat
+    { prop_id = 1, drawable = 3, texture = 0 },   -- glasses
+})
+```
+
+#### `setPedTattoos(ped, tattoos)`
+
+Applies tattoo decorations. Tattoos are organized by body zone.
+
+```lua
+exports['illenium-appearance']:setPedTattoos(PlayerPedId(), {
+    ZONE_TORSO = {
+        { collection = "mpairraces_overlays", hashMale = "MP_Airraces_Tattoo_000_M", hashFemale = "MP_Airraces_Tattoo_000_F", name = "tattoo_name", zone = "ZONE_TORSO", opacity = 1.0 },
+    },
+    ZONE_LEFT_ARM = {},
+    -- ...
+})
+```
+
+#### `setPlayerAppearance(appearance)`
+
+Applies a full appearance table to the local player — sets the model first, then applies all appearance data.
+
+```lua
+exports['illenium-appearance']:setPlayerAppearance({
+    model = "mp_m_freemode_01",
+    headBlend = { ... },
+    faceFeatures = { ... },
+    headOverlays = { ... },
+    components = { ... },
+    props = { ... },
+    hair = { ... },
+    tattoos = { ... },
+    eyeColor = 0
+})
+```
+
+#### `setPedAppearance(ped, appearance)`
+
+Applies appearance data to any ped (without changing the model). Same structure as `setPlayerAppearance` but targets a specific ped entity.
+
+```lua
+exports['illenium-appearance']:setPedAppearance(somePed, appearanceData)
+```
+
+### Customization UI
+
+#### `startPlayerCustomization(callback, config)`
+
+Opens the illenium-appearance NUI customization menu with a camera. When the player saves or exits, the callback fires with the appearance data (or `nil` if cancelled).
+
+```lua
+exports['illenium-appearance']:startPlayerCustomization(function(appearance)
+    if appearance then
+        -- Player saved — appearance contains the full appearance table
+        TriggerServerEvent("saveAppearance", appearance)
+    else
+        -- Player cancelled
+    end
+end, {
+    -- config options (passed to the NUI)
+})
+```
+
+### Quick Reference
+
+| Export | Type | Parameters | Returns |
+|--------|------|------------|---------|
+| `getPedModel` | getter | `ped` | `string` — model name |
+| `getPedComponents` | getter | `ped` | `table` — array of `{component_id, drawable, texture}` |
+| `getPedProps` | getter | `ped` | `table` — array of `{prop_id, drawable, texture}` |
+| `getPedHeadBlend` | getter | `ped` | `table` — `{shapeFirst, shapeSecond, shapeThird, skinFirst, skinSecond, skinThird, shapeMix, skinMix, thirdMix}` |
+| `getPedFaceFeatures` | getter | `ped` | `table` — 20 face feature keys → float |
+| `getPedHeadOverlays` | getter | `ped` | `table` — 12 overlay keys → `{style, opacity, color, secondColor}` |
+| `getPedHair` | getter | `ped` | `table` — `{style, color, highlight, texture}` |
+| `getPedAppearance` | getter | `ped` | `table` — full appearance (all above combined) |
+| `setPlayerModel` | setter | `model` | `ped` handle |
+| `setPedHeadBlend` | setter | `ped, headBlend` | — |
+| `setPedFaceFeatures` | setter | `ped, faceFeatures` | — |
+| `setPedHeadOverlays` | setter | `ped, headOverlays` | — |
+| `setPedHair` | setter | `ped, hair, tattoos?` | — |
+| `setPedEyeColor` | setter | `ped, eyeColor` | — |
+| `setPedComponent` | setter | `ped, component` | — |
+| `setPedComponents` | setter | `ped, components` | — |
+| `setPedProp` | setter | `ped, prop` | — |
+| `setPedProps` | setter | `ped, props` | — |
+| `setPedTattoos` | setter | `ped, tattoos` | — |
+| `setPlayerAppearance` | setter | `appearance` | — |
+| `setPedAppearance` | setter | `ped, appearance` | — |
+| `startPlayerCustomization` | UI | `callback, config` | — |
+
+---
+
+## Custom Framework Bridge
+
+If you set `config.framework = "custom"`, the resource runs without ESX, QBX, or OX Core. The custom bridge uses FiveM native identifiers.
+
+To add your own framework support, edit the files in:
+- `bridge/framework/custom/client.lua`
+- `bridge/framework/custom/server.lua`
+
+Each bridge must return a table with these functions:
+
+### Client Bridge
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `bridge.onPlayerLoaded(handler)` | `handler: function` | — | Called when the player session is ready. Invoke `handler()` once the player is fully loaded. |
+| `bridge.getPlayerJob()` | — | `string?, number?` | Returns the player's job name and grade. Return `nil, nil` if not applicable. |
+| `bridge.getPlayerGang()` | — | `string?` | Returns the player's gang name. Return `nil` if not applicable. |
+
+**ESX implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- listens for esx:playerLoaded event
+bridge.getPlayerJob()            -- returns ESX.GetPlayerData().job.name, .grade
+bridge.getPlayerGang()           -- returns nil (ESX has no gang system)
+```
+
+**QBX implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- listens for QBCore:Client:OnPlayerLoaded event
+bridge.getPlayerJob()            -- returns player.job.name, player.job.grade.level
+bridge.getPlayerGang()           -- returns player.gang.name
+```
+
+**OX Core implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- listens for ox:setActiveCharacter event; opens the menu if character is new
+bridge.getPlayerJob()            -- returns player.getGroupByType("job") name and grade
+bridge.getPlayerGang()           -- returns player.getGroupByType("gang") name
+```
+
+**Custom implementation:**
+```lua
+bridge.onPlayerLoaded(handler)   -- polls NetworkIsSessionActive() every 500ms, then calls handler
+bridge.getPlayerJob()            -- returns nil, nil (stub — implement your own)
+bridge.getPlayerGang()           -- returns nil (stub — implement your own)
+```
+
+### Server Bridge
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `bridge.getIdentifier(src)` | `src: number` | `string?` | Returns the player's unique identifier string. |
+| `bridge.getPlayerData(src)` | `src: number` | `table` | Returns `{ identifier, job, jobGrade, gang }`. |
+| `bridge.hasMoney(src, moneyType, amount)` | `src: number, moneyType: string, amount: number` | `boolean` | Checks if the player has enough money of the given type. |
+| `bridge.removeMoney(src, moneyType, amount)` | `src: number, moneyType: string, amount: number` | `boolean` | Removes the specified amount of money from the player. |
+
+**ESX implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns xPlayer.identifier
+bridge.getPlayerData(src)                  -- returns { identifier, job, jobGrade, gang = nil }
+bridge.hasMoney(src, moneyType, amount)    -- checks xPlayer.getAccount() ("cash" maps to "money")
+bridge.removeMoney(src, moneyType, amount) -- calls xPlayer.removeAccountMoney()
+```
+
+**QBX implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns player.PlayerData.citizenid
+bridge.getPlayerData(src)                  -- returns { identifier, job, jobGrade, gang }
+bridge.hasMoney(src, moneyType, amount)    -- checks player.PlayerData.money[moneyType]
+bridge.removeMoney(src, moneyType, amount) -- calls player.Functions.RemoveMoney()
+```
+
+**OX Core implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns oxPlayer.stateId
+bridge.getPlayerData(src)                  -- returns { identifier = stateId, job, jobGrade, gang } via getGroupByType
+bridge.hasMoney(src, moneyType, amount)    -- checks ox_inventory item count (moneyType is the item name)
+bridge.removeMoney(src, moneyType, amount) -- removes item via ox_inventory
+```
+
+**Custom implementation:**
+```lua
+bridge.getIdentifier(src)                  -- returns GetPlayerIdentifierByType(src, config.licenseType) with prefix stripped
+bridge.getPlayerData(src)                  -- returns { identifier, job = nil, jobGrade = 0, gang = nil }
+bridge.hasMoney(src, moneyType, amount)    -- returns true (stub — implement your own)
+bridge.removeMoney(src, moneyType, amount) -- returns true (stub — implement your own)
+```
+
+---
+
+## Troubleshooting
+
+### Menu won't open
+- Make sure you're standing inside a location's radius
+- Check that the `tabs` array on the location isn't empty
+- With `config.debug = true`, try `/appearance` to test without a location
+
+### "Failed to load framework bridge" error
+- Make sure `config.framework` matches your installed framework (`"esx"`, `"qbx"`, `"ox"`, or `"custom"`)
+- Ensure your framework resource is started **before** `juddlie_appearance`
+
+### "Failed to load interaction bridge" error
+- Make sure `config.interaction` matches your installed target resource (`"ox"` or `"qb"`)
+- Ensure `ox_target` or `qb-target` is started before this resource
+
+### Blips show but interaction doesn't work
+- Check `config.interactionType` — if set to `"point"`, you need `config.interaction = "ox"`
+- If using qb-target, set `config.interactionType = "target"`
+
+### Clothing rooms say "You don't have access"
+- The `job` or `gang` value must match your framework exactly (case-sensitive)
+- Check `minRank` — the player's grade must be >= this value
+
+### Blacklist not working
+- Set `config.blacklist.enabled = true`
+- Make sure `component` / `prop` and `drawables` IDs are correct
+- Test with a simple rule first, then add complexity
+
+### Database tables not created
+- Make sure `oxmysql` is started and connected before this resource
+- Check your server console for SQL errors
+
+---
+
+## Outfit Wheel (Quick Swap)
+
+Quickly swap between saved outfits using a keybind — no need to open the full appearance menu.
+
+```lua
+config.outfitWheel = {
+    enabled = true,
+    key = "F7",               -- default keybind (players can rebind it in their FiveM keybind settings)
+    command = "+outfitwheel",  -- internal command name
+    favoriteIcon = "star",     -- icon for favorite outfits in the context menu
+    defaultIcon = "shirt",     -- icon for regular outfits in the context menu
+    categoryColors = {         -- color mapping for outfit categories
+        casual = "blue",
+        work = "orange",
+        formal = "purple",
+        custom = "gray",
+    },
+}
+```
+
+When pressed, opens an ox_lib context menu listing all saved outfits. Favorites (⭐) appear at the top. The applied outfit is automatically saved to the database.
+
+---
+
+## Admin Appearance Panel
+
+Staff members can edit another player's appearance remotely using a command.
+
+```lua
+config.admin = {
+    enabled = true,
+    command = "setappearance",        -- /setappearance [player id]
+    acePermission = "admin.appearance", -- ACE permission required
+}
+```
+
+**Usage:** `/setappearance 5` — opens the appearance menu with player 5's current skin. Changes are saved to that player's database entry and applied to their ped in real-time.
+
+**Grant permission in server.cfg:**
+```cfg
+add_ace group.admin admin.appearance allow
+```
+
+---
+
+## Migration from illenium-appearance
+
+One-command migration tool to import all player skins and outfits from illenium-appearance.
+
+```lua
+config.migration = {
+    enabled = true,
+    command = "migrateappearance",
+    acePermission = false,  -- console-only by default
+}
+```
+
+**Usage:** Run `migrateappearance` from the server console. The tool will:
+
+1. Auto-detect whether you're migrating from QB (`citizenid` column) or ESX (`identifier` column)
+2. Convert all skin data from illenium's flat format to juddlie's structured format
+3. Migrate outfits from the `player_outfits` table (including share codes from `player_outfit_codes`)
+4. **Skip** any players who already have data in juddlie_appearance (safe to re-run)
+5. Print a summary of how many skins and outfits were migrated
+
+> **Note:** `management_outfits` (global job/gang uniforms) are not migrated. juddlie_appearance uses per-player job outfits instead — see the Job Outfit Persistence section below.
+
+> **Important:** Back up your database before running the migration. The tool only inserts new data — it never overwrites existing juddlie_appearance records.
+
+---
+
+## Localization (i18n)
+
+The resource supports multiple languages. Locale files are stored as JSON in the `locales/` folder.
+
+```lua
+config.locale = "en"  -- change to "es", "fr", "de", "pt", etc.
+```
+
+### Included Languages
+
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `es` | Spanish |
+| `fr` | French |
+| `de` | German |
+| `pt` | Portuguese |
+
+### Adding a New Language
+
+1. Copy `locales/en.json` to `locales/xx.json` (where `xx` is your language code)
+2. Translate all strings in the JSON file
+3. Set `config.locale = "xx"` in `config.lua`
+
+---
+
+## Clothing Search
+
+The clothing tab includes a built-in search bar that filters components by name, component ID, or drawable number. This makes it much faster to find specific clothing items when working with hundreds of drawables.
+
+---
+
+## Job Outfit Persistence
+
+When players use job clothing rooms, their outfit is automatically saved per job. On reconnect, the job outfit is restored — players no longer lose their work clothes after disconnecting.
+
+---
+
+## Faction Uniforms (Boss-Managed Work Outfits)
+
+Faction leaders (job bosses or gang bosses) can create a shared catalog of work uniforms that every member of the faction can equip on demand. Uniforms are stored per faction and gated by minimum grade so you can have entry-level outfits, supervisor outfits, and command outfits side-by-side.
+
+```lua
+config.factionUniforms = {
+    enabled = true,
+    command = "uniforms",                   -- /uniforms — opens the uniform menu
+    saveCurrentAsCommand = "saveuniform",   -- /saveuniform — boss shortcut to save current outfit
+    maxPerFaction = 25,                     -- max uniforms saved per faction
+    defaultBossGrade = 4,                   -- minimum grade required to manage uniforms
+    bossGrades = {                          -- per-faction overrides for the boss grade
+        -- police = 4,
+        -- ambulance = 4,
+        -- mechanic = 3,
+    },
+    acePermission = "appearance.uniforms",  -- ACE permission that also grants management
+                                            -- (set to false to disable)
+    includeAccessories = true,              -- save props (hat, glasses, watch, etc.) with uniforms
+}
+```
+
+### How It Works
+
+- The player's faction is resolved automatically: **gang takes priority over job**. If neither is set (or value is `""` / `"none"`), the menu shows an empty state.
+- A player is treated as a **boss** (and may manage uniforms) when **either**:
+  - their job/gang grade is `>=` the configured boss grade for that faction (`bossGrades[faction]` if set, otherwise `defaultBossGrade`), **or**
+  - they hold the configured ACE permission.
+- Each uniform has a **minimum grade**. Members only see uniforms whose `min_grade` is `<=` their current grade.
+- Uniforms are stored in the `juddlie_appearance_faction_uniforms` table, scoped by `(faction, kind)` where `kind` is `"job"` or `"gang"`. Saving an existing `uniform_id` performs an upsert.
+
+### Commands
+
+| Command | Who | Description |
+|---------|-----|-------------|
+| `/uniforms` | All faction members | Opens the uniform menu. Members can equip; bosses can also save / overwrite / delete. |
+| `/saveuniform` | Bosses only | Shortcut that captures the outfit you're currently wearing and prompts for a name + minimum grade. |
+
+### Grant the Boss ACE Permission
+
+```cfg
+add_ace group.admin appearance.uniforms allow
+add_ace identifier.license:abc123 appearance.uniforms allow
+```
+
+### Notes
+
+- The uniform menu uses the locale strings under `ui.uniforms.*` and `notify.uniform_*` in `locales/en.json`. Other locale files fall back to English automatically — translate only if desired.
+- Equipping a uniform applies the saved clothing (and props if `includeAccessories = true`) to the player's ped and persists the change so it survives reconnect.
+
+### Server Export
+
+```lua
+-- Returns true if the source player is a boss of their current faction.
+local isBoss = exports.juddlie_appearance:isFactionBoss(source)
+```
+
+---
+
+## Share Codes
+
+Players can generate a text code for any saved outfit and share it with others. The recipient enters the code to import the outfit into their own collection.
+
+```lua
+config.share = {
+    enabled = true,
+    codeLength = 10,           -- character length of generated codes
+    maxPayloadBytes = 100000,  -- 100 KiB hard cap on outfit payload
+    rateLimitGen = 5,          -- max codes generated per player per window
+    rateLimitImport = 20,      -- max imports per player per window
+    rateLimitWindowMs = 60000, -- rate-limit window in milliseconds
+    defaultMaxUses = 0,        -- 0 = unlimited uses
+    defaultTtlSeconds = 0,     -- 0 = code never expires
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `codeLength` | number | Length of generated share codes |
+| `maxPayloadBytes` | number | Maximum outfit data size that can be shared |
+| `rateLimitGen` | number | Max codes a player can generate per window |
+| `rateLimitImport` | number | Max codes a player can import per window |
+| `rateLimitWindowMs` | number | Duration of the rate-limit window in milliseconds |
+| `defaultMaxUses` | number | How many times a code can be used (`0` = unlimited) |
+| `defaultTtlSeconds` | number | Time before a code expires in seconds (`0` = no expiry) |
+
+Share codes are stored in the `juddlie_appearance_share_codes` table and can be revoked by the player who generated them.
+
+---
+
+## Marketplace
+
+Players can list outfits for sale on a shared server marketplace. Other players can browse, preview outfits on their own ped, and purchase them. Purchased outfits are added to the buyer's personal collection.
+
+```lua
+config.marketplace = {
+    enabled = true,
+    maxListingsPerSeller = 5,
+    minPrice = 1,
+    maxPrice = 1000000,
+    defaultTtlHours = 168,    -- 7 days; 0 = no expiry
+    moneyType = "cash",       -- "cash" | "bank" | "money" (passed to your framework bridge)
+    tax = 0.10,               -- fraction of sale price kept by the server (0..1)
+    singleUse = false,        -- if true, listing is removed after first sale
+    rateLimitList = 5,
+    rateLimitBuy = 10,
+    rateLimitWindowMs = 60000,
+    maxPayloadBytes = 100000,
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `maxListingsPerSeller` | number | How many active listings one player can have at once |
+| `minPrice` / `maxPrice` | number | Price floor and ceiling enforced server-side |
+| `defaultTtlHours` | number | Auto-expiry for listings in hours; `0` = never expire |
+| `moneyType` | string | The money type name passed to your framework bridge (`"cash"`, `"bank"`, `"money"`) |
+| `tax` | number | Fraction taken by the server on each sale (e.g. `0.10` = 10%). Acts as a money sink |
+| `singleUse` | boolean | If `true`, a listing is removed after it sells once |
+| `rateLimitList` / `rateLimitBuy` | number | Max actions per player per rate-limit window |
+
+Listings are stored in the `juddlie_appearance_marketplace` table.
+
+---
+
+## Outfit Drops
+
+Time-limited or access-restricted outfits that players can claim or preview. Drops can be defined statically in config or managed at runtime via the database.
+
+```lua
+config.drops = {
+    enabled = true,
+    static = {
+        {
+            id = "halloween_2024",
+            name = "Pumpkin Lord",
+            description = "Limited Halloween 2024 set",
+            tier = "seasonal",
+            startsAt = 1729728000000,  -- millisecond epoch
+            endsAt   = 1730937600000,
+            claimable = true,           -- false = preview-only, player can't keep it
+            restrictions = {
+                aces = { "appearance.vip" },  -- optional; omit to allow everyone
+                jobs = { "police" },           -- OR require a specific job
+            },
+            data = { clothing = { ... }, props = { ... } },
+        },
+    },
+}
+```
+
+### Drop Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the drop |
+| `name` | string | Display name shown in the Drops panel |
+| `description` | string? | Optional description |
+| `tier` | string | `"seasonal"`, `"vip"`, `"event"`, or `"job"` |
+| `startsAt` / `endsAt` | number? | Millisecond epoch timestamps. `nil` = no time limit |
+| `claimable` | boolean | `true` = player keeps the outfit permanently; `false` = preview-only |
+| `restrictions` | table? | `{ aces, jobs, gangs, identifiers }` — all optional; omit entirely to allow everyone |
+| `data` | table | The outfit data (same format as saved outfits) |
+
+Runtime-managed drops (created by scripts or admin tools) are stored in the `juddlie_appearance_drops` table.
+
+---
+
+## Wardrobe Slots
+
+Quick-save slots that store a complete look (clothing + props). Players save their current outfit to a numbered slot and load it in one click from the outfit wheel — no need to open the full appearance menu.
+
+```lua
+config.wardrobe = {
+    enabled = true,
+    maxSlots = 4,  -- number of save slots per player
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `maxSlots` | number | How many save slots each player has |
+
+Wardrobe slots are shown alongside saved outfits in the outfit wheel. Slots persist across sessions in the `juddlie_appearance_wardrobe` table.
+
+---
+
+## Per-item Pricing
+
+Charge players once for specific drawables or props on first wear, instead of (or in addition to) the flat location price. Subsequent wears of an owned item are free.
+
+```lua
+config.itemPrices = {
+    enabled = false,       -- opt in per server
+    moneyType = "cash",
+    items = {
+        ["component_11_15"]   = 250,  -- jacket drawable 15 costs $250 (any texture)
+        ["prop_0_5_2"]        = 50,   -- hat drawable 5, texture 2 costs $50
+    },
+}
+```
+
+### Key Format
+
+| Format | Targets |
+|--------|----------|
+| `component_<id>_<drawable>` | Any texture of that component drawable |
+| `component_<id>_<drawable>_<texture>` | Exact texture of that drawable |
+| `prop_<id>_<drawable>` | Any texture of that prop drawable |
+| `prop_<id>_<drawable>_<texture>` | Exact texture of that prop drawable |
+
+The most specific matching key wins (texture-specific beats drawable-level). Ownership records are stored in the `juddlie_appearance_owned_items` table.
