@@ -107,7 +107,17 @@
     }
   });
 
+  function isScrollable(el) {
+    while (el) {
+      var style = window.getComputedStyle(el);
+      if (style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto' || style.overflow === 'scroll') return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
   document.addEventListener("wheel", function(e) {
+    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || isScrollable(e.target)) return;
     e.preventDefault();
     var delta = e.deltaY > 0 ? 1 : -1;
     post("appearance:adjustFov", { delta: delta });
