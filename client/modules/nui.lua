@@ -53,9 +53,17 @@ nui.handleMessage("ready", function()
     lightingPresets = config.lightingPresets,
     cameraDefaults = config.cameraDefaults,
     cameraRanges = config.cameraRanges,
+    randomizerDefaultSpeed = config.randomizerDefaultSpeed,
+    randomizerSpeedRange = config.randomizerSpeedRange,
+    eyeColorMax = config.eyeColorMax,
     animations = config.animations,
     overlayLabels = config.overlayLabels,
+    overlayGroups = config.overlayGroups,
+    headBlendRanges = config.headBlendRanges,
+    faceFeatureLabels = config.faceFeatureLabels,
     componentLabels = config.componentLabels,
+    clothingComponentGroups = config.clothingComponentGroups,
+    accessoryComponentIds = config.accessoryComponentIds,
     propLabels = config.propLabels,
     propIds = config.propIds,
     tattooZones = config.tattooZones,
@@ -72,6 +80,10 @@ nui.handleMessage("ready", function()
     disabledProps = config.disabledProps or {},
     accentColor = config.accentColor or "blue",
     prices = config.prices or {},
+    outfitCategoryColors = config.outfitWheel and config.outfitWheel.categoryColors or {},
+    marketplace = config.marketplace or {},
+    share = config.share or {},
+    dropTierColors = config.drops and config.drops.tierColors or {},
   })
 end)
 

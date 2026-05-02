@@ -9,6 +9,13 @@ data.componentLabels = {
 	["9"] = "Armor", ["10"] = "Decals", ["11"] = "Tops",
 }
 
+data.clothingComponentGroups = {
+	managedByDedicatedTabs = { 0, 2 },
+	layerOrder = { 3, 4, 6, 8, 11 },
+}
+
+data.accessoryComponentIds = { 1, 5, 7, 9, 10 }
+
 data.propLabels = {
 	["0"] = "Hat", ["1"] = "Glasses", ["2"] = "Ears", ["6"] = "Watch", ["7"] = "Bracelet",
 }
@@ -19,12 +26,41 @@ data.overlayLabels = {
 	"Chest Hair", "Body Blemishes", "Add Body Blemishes",
 }
 
+data.overlayGroups = {
+	hair = { 1, 2, 10 },
+	colorable = { 1, 2, 4, 5, 8, 10 },
+	makeup = { 4, 5, 8 },
+}
+
 data.faceFeatures = {
 	"noseWidth", "nosePeakHeight", "nosePeakLength", "noseBoneHeight",
 	"nosePeakLowering", "noseBoneTwist", "eyebrowHeight", "eyebrowDepth",
 	"cheekboneHeight", "cheekboneWidth", "cheekWidth", "eyeOpening",
 	"lipThickness", "jawBoneWidth", "jawBoneLength", "chinBoneHeight",
 	"chinBoneLength", "chinBoneWidth", "chinHole", "neckThickness",
+}
+
+data.faceFeatureLabels = {
+	noseWidth = "Nose Width",
+	nosePeakHeight = "Nose Peak Height",
+	nosePeakLength = "Nose Peak Length",
+	noseBoneHeight = "Nose Bone Height",
+	nosePeakLowering = "Nose Peak Lowering",
+	noseBoneTwist = "Nose Bone Twist",
+	eyebrowHeight = "Eyebrow Height",
+	eyebrowDepth = "Eyebrow Depth",
+	cheekboneHeight = "Cheekbone Height",
+	cheekboneWidth = "Cheekbone Width",
+	cheekWidth = "Cheek Width",
+	eyeOpening = "Eye Opening",
+	lipThickness = "Lip Thickness",
+	jawBoneWidth = "Jaw Bone Width",
+	jawBoneLength = "Jaw Bone Length",
+	chinBoneHeight = "Chin Bone Height",
+	chinBoneLength = "Chin Bone Length",
+	chinBoneWidth = "Chin Bone Width",
+	chinHole = "Chin Hole",
+	neckThickness = "Neck Thickness",
 }
 
 data.faceRegions = {

@@ -14,6 +14,11 @@ for _, s in ipairs(config.walkStyles or {}) do
   walkStylesByValue[s.value] = s
 end
 
+local makeupOverlayColorTypes = {}
+for _, index in ipairs((config.overlayGroups and config.overlayGroups.makeup) or {}) do
+  makeupOverlayColorTypes[index] = true
+end
+
 ---@param n number
 ---@return number
 function ped.tofloat(n)
@@ -193,7 +198,7 @@ function ped.applyAppearance(p, data)
 
       if overlay.firstColor then
         local colorType = 1
-        if idx == 4 or idx == 5 or idx == 8 then colorType = 2 end
+        if makeupOverlayColorTypes[idx] then colorType = 2 end
 
         SetPedHeadOverlayColor(p, idx, colorType, overlay.firstColor, overlay.secondColor or 0)
       end
@@ -324,7 +329,7 @@ function ped.setOverlay(data)
 
   if data.firstColor then
     local colorType = 1
-    if data.index == 4 or data.index == 5 or data.index == 8 then colorType = 2 end
+    if makeupOverlayColorTypes[data.index] then colorType = 2 end
 
     SetPedHeadOverlayColor(cache.ped, data.index, colorType, data.firstColor, data.secondColor or 0)
   end

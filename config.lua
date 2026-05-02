@@ -65,6 +65,15 @@ config.hideRadar = false
 config.defaultShapeMix = 0.5
 config.defaultSkinMix = 0.5
 
+-- max eye color index exposed by GTA freemode peds
+config.eyeColorMax = 31
+
+config.headBlendRanges = {
+	parent = { min = 0, max = 45, step = 1 },
+	skin = { min = 0, max = 45, step = 1 },
+	mix = { min = 0, max = 1, step = 0.01 },
+}
+
 -- timeout in milliseconds for loading ped models and animation dicts
 -- if loading takes longer than this, the request is cancelled
 config.modelLoadTimeout = 5000
@@ -86,6 +95,13 @@ config.lightingTimes = {
 
 -- default auto-randomizer speed in seconds (used when player doesn't specify)
 config.randomizerDefaultSpeed = 2
+
+-- randomizer speed slider bounds shown in the UI
+config.randomizerSpeedRange = {
+	min = 0.5,
+	max = 5.0,
+	step = 0.5,
+}
 
 -- server-side limits to prevent abuse
 -- max number of presets and outfits a player can save
@@ -791,6 +807,8 @@ config.marketplace = {
 	maxListingsPerSeller = 5,
 	minPrice = 1,
 	maxPrice = 1000000,
+	defaultPrice = 100,
+	priceStep = 50,
 	defaultTtlHours = 168,    -- 7 days; 0 = no expiry
 	moneyType = "cash",       -- "cash" | "bank" | "money" (passed to bridge)
 	tax = 0.10,               -- 0..1 fraction taken by the server (sink)
@@ -820,6 +838,12 @@ config.itemPrices = {
 -- Static drops live here; runtime-managed drops live in juddlie_appearance_drops.
 config.drops = {
 	enabled = true,
+	tierColors = {
+		seasonal = "orange",
+		vip = "violet",
+		event = "pink",
+		job = "cyan",
+	},
 	-- Static drops example:
 	-- static = {
 	--   {
@@ -852,9 +876,13 @@ config.tattooZones = tattooData.zones
 config.componentIds = sharedData.componentIds
 config.propIds = sharedData.propIds
 config.componentLabels = sharedData.componentLabels
+config.clothingComponentGroups = sharedData.clothingComponentGroups
+config.accessoryComponentIds = sharedData.accessoryComponentIds
 config.propLabels = sharedData.propLabels
 config.overlayLabels = sharedData.overlayLabels
+config.overlayGroups = sharedData.overlayGroups
 config.faceFeatures = sharedData.faceFeatures
+config.faceFeatureLabels = sharedData.faceFeatureLabels
 config.faceRegions = sharedData.faceRegions
 config.animations = sharedData.animations
 config.quickSlots = sharedData.quickSlots
