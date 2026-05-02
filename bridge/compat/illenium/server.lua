@@ -2,6 +2,8 @@ local cache <const> = require("server.modules.cache")
 local bridge <const> = require("bridge").get("framework")
 local logger <const> = require("shared.logger")
 local config <const> = require("config")
+local locale <const> = require("shared.locale")
+locale.init()
 
 local illeniumHeadOverlays <const> = {
 	"blemishes", "beard", "eyebrows", "ageing", "makeUp",
@@ -313,7 +315,7 @@ RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
 	end
 
 	bridge.removeMoney(source, "cash", price)
-	logger.info("illenium compat: charged player", source, "$" .. price, "for", shopType)
+	logger.info("illenium compat: charged player", source, locale.t("ui.common.currency_symbol") .. price, "for", shopType)
 end)
 
 RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)
@@ -369,7 +371,7 @@ RegisterNetEvent("illenium-appearance:server:chargeCustomer", function(shopType)
 	end
 
 	bridge.removeMoney(source, "cash", price)
-	logger.info("illenium compat: charged player", source, "$" .. price, "for", shopType)
+	logger.info("illenium compat: charged player", source, locale.t("ui.common.currency_symbol") .. price, "for", shopType)
 end)
 
 RegisterNetEvent("illenium-appearance:server:syncUniform", function(uniform)

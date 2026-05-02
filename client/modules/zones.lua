@@ -53,7 +53,7 @@ local function openAtLocation(location)
   if location.type and config.prices and config.prices[location.type] and config.prices[location.type] > 0 then
     local hasMoney, price = lib.callback.await("juddlie_appearance:server:hasMoney", false, location.type)
     if not hasMoney then
-      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.not_enough_money", price), type = "error" })
+      lib.notify({ title = locale.t("ui.sidebar.appearance"), description = locale.t("notify.not_enough_money", locale.t("ui.common.currency_symbol"), price), type = "error" })
       return
     end
   end
