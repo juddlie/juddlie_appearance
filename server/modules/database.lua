@@ -81,24 +81,11 @@ MySQL.ready(function()
   ]])
 
   MySQL.query.await([[
-    CREATE TABLE IF NOT EXISTS `juddlie_appearance_thumbnails` (
-      `id`         VARCHAR(60) NOT NULL,
-      `identifier` VARCHAR(60) NOT NULL,
-      `kind`       VARCHAR(20) NOT NULL DEFAULT 'outfit',
-      `data`       LONGTEXT    NOT NULL,
-      `created_at` BIGINT      NOT NULL,
-      PRIMARY KEY (`id`),
-      KEY `identifier` (`identifier`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  ]])
-
-  MySQL.query.await([[
     CREATE TABLE IF NOT EXISTS `juddlie_appearance_share_codes` (
       `code`         VARCHAR(20) NOT NULL,
       `identifier`   VARCHAR(60) NOT NULL,
       `kind`         VARCHAR(20) NOT NULL DEFAULT 'outfit',
       `payload`      LONGTEXT    NOT NULL,
-      `thumbnail_id` VARCHAR(60) DEFAULT NULL,
       `max_uses`     INT         NOT NULL DEFAULT 0,
       `uses`         INT         NOT NULL DEFAULT 0,
       `expires_at`   BIGINT      DEFAULT NULL,
@@ -119,7 +106,6 @@ MySQL.ready(function()
       `tags`         TEXT         DEFAULT NULL,
       `price`        INT          NOT NULL DEFAULT 0,
       `data`         LONGTEXT     NOT NULL,
-      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
       `purchases`    INT          NOT NULL DEFAULT 0,
       `created_at`   BIGINT       NOT NULL,
       `expires_at`   BIGINT       DEFAULT NULL,
@@ -150,7 +136,6 @@ MySQL.ready(function()
       `description`  TEXT         DEFAULT NULL,
       `tier`         VARCHAR(20)  NOT NULL DEFAULT 'seasonal',
       `data`         LONGTEXT     NOT NULL,
-      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
       `restrictions` LONGTEXT     DEFAULT NULL,
       `starts_at`    BIGINT       DEFAULT NULL,
       `ends_at`      BIGINT       DEFAULT NULL,
@@ -170,7 +155,6 @@ MySQL.ready(function()
       `slot`         INT          NOT NULL,
       `name`         VARCHAR(100) NOT NULL,
       `data`         LONGTEXT     NOT NULL,
-      `thumbnail_id` VARCHAR(60)  DEFAULT NULL,
       `updated_at`   BIGINT       NOT NULL,
       PRIMARY KEY (`id`),
       UNIQUE KEY `identifier_slot` (`identifier`, `slot`),
@@ -179,5 +163,4 @@ MySQL.ready(function()
   ]])
 
   addColumnIfMissing("juddlie_appearance_outfits", "tags", "`tags` TEXT DEFAULT NULL")
-  addColumnIfMissing("juddlie_appearance_outfits", "thumbnail_id", "`thumbnail_id` VARCHAR(60) DEFAULT NULL")
 end)

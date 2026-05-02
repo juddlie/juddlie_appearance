@@ -65,7 +65,6 @@ local function normalizeDbRow(row)
     description = row.description,
     tier = row.tier,
     data = json.decode(row.data),
-    thumbnailId = row.thumbnail_id,
     restrictions = row.restrictions and json.decode(row.restrictions) or nil,
     startsAt = row.starts_at,
     endsAt = row.ends_at,
@@ -86,7 +85,7 @@ function drops.listForPlayer(src, playerData)
       local normalized <const> = {
         id = d.id, name = d.name, description = d.description,
         tier = d.tier or "seasonal",
-        data = d.data, thumbnailId = d.thumbnailId,
+        data = d.data,
         restrictions = d.restrictions,
         startsAt = d.startsAt, endsAt = d.endsAt,
         claimable = d.claimable == true,
@@ -133,7 +132,6 @@ function drops.claim(src, identifier, dropId, playerData)
         favorite = false,
         createdAt = os.time() * 1000,
         tags = { "drop", d.tier or "seasonal" },
-        thumbnailId = d.thumbnailId,
       })
       logger.info("Drop claimed:", dropId, "by:", identifier)
       return true, nil, d.data
@@ -158,14 +156,13 @@ function drops.upsert(identifier, drop)
   MySQL.insert(
     [[
       INSERT INTO juddlie_appearance_drops
-        (id, name, description, tier, data, thumbnail_id, restrictions, starts_at, ends_at, claimable, created_by, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, name, description, tier, data, restrictions, starts_at, ends_at, claimable, created_by, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         name = VALUES(name),
         description = VALUES(description),
         tier = VALUES(tier),
         data = VALUES(data),
-        thumbnail_id = VALUES(thumbnail_id),
         restrictions = VALUES(restrictions),
         starts_at = VALUES(starts_at),
         ends_at = VALUES(ends_at),
@@ -177,7 +174,6 @@ function drops.upsert(identifier, drop)
       (drop.description or ""):sub(1, 500),
       drop.tier or "seasonal",
       json.encode(drop.data),
-      drop.thumbnailId,
       drop.restrictions and json.encode(drop.restrictions) or nil,
       drop.startsAt,
       drop.endsAt,
