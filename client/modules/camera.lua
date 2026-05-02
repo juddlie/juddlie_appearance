@@ -22,7 +22,7 @@ function camera.create()
   local pedHeading <const> = GetEntityHeading(cache.ped)
   local headingRad <const> = math.rad(pedHeading + camera.rotation)
 
-  local presetData <const> = config.cameraOffsets[camera.preset] or config.cameraOffsets.fullBody
+  local presetData <const> = config.cameraOffsets[camera.preset] or config.cameraOffsets.full_body
   local offset <const> = presetData.offset
   local zoomedY <const> = offset.y * camera.zoom
 
@@ -32,11 +32,18 @@ function camera.create()
     pedCoords.z + offset.z
   )
 
+  local lookZ = pedCoords.z
+  if camera.preset == "face" then
+    lookZ = pedCoords.z + 0.65
+  else
+    lookZ = pedCoords.z + (offset.z or 0.2)
+  end
+
   local transitionTime <const> = config.cameraTransitionTime or 500
   local newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", false)
 
   SetCamCoord(newCam, camPos.x, camPos.y, camPos.z)
-  PointCamAtPedBone(newCam, cache.ped, camera.preset == "face" and 31086 or 0, 0.0, 0.0, 0.0, true)
+  PointCamAtCoord(newCam, pedCoords.x, pedCoords.y, lookZ)
   SetCamFov(newCam, camera.fov + 0.0)
 
   if camera.handle then
