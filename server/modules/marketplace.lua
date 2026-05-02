@@ -102,8 +102,9 @@ function marketplace.unlist(identifier, listingId)
 end
 
 ---@param query? { search?:string, category?:string, sort?:string, limit?:number, offset?:number }
+---@param viewerIdentifier? string
 ---@return table[]
-function marketplace.browse(query)
+function marketplace.browse(query, viewerIdentifier)
   if not config.marketplace.enabled then return {} end
   query = query or {}
 
@@ -145,6 +146,7 @@ function marketplace.browse(query)
 
   for _, r in ipairs(rows) do
     r.tags = r.tags and json.decode(r.tags) or {}
+    r.isMine = viewerIdentifier ~= nil and r.seller == viewerIdentifier
     r.sellerName = r.seller_name; r.seller_name = nil
   end
   
@@ -233,7 +235,6 @@ function marketplace.buy(src, identifier, listingId)
     favorite = false,
     createdAt = os.time() * 1000,
     tags = { "marketplace" },
-    thumbnailId = listing.thumbnail_id,
   })
 
   logger.info("Marketplace sale:", listingId, "buyer:", identifier, "seller:", listing.seller, "price:", price, "payout:", payout)

@@ -42,8 +42,12 @@ function marketplace.list(payload)
 end
 
 ---@param listingId string
-function marketplace.unlist(listingId)
-  TriggerServerEvent("juddlie_appearance:server:unlistMarketplace", listingId)
+---@param cb? fun(ok:boolean)
+function marketplace.unlist(listingId, cb)
+  CreateThread(function()
+    local ok <const> = lib.callback.await("juddlie_appearance:server:unlistMarketplaceListing", false, listingId)
+    if cb then cb(ok == true) end
+  end)
 end
 
 ---@param query? table

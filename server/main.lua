@@ -324,7 +324,7 @@ RegisterNetEvent("juddlie_appearance:server:chargeCustomer", function(shopType)
   end
 
   bridge.removeMoney(source, "cash", price)
-  logger.info("Charged player", source, "$" .. price, "for:", shopType)
+  logger.info("Charged player", source, locale.t("ui.common.currency_symbol") .. price, "for:", shopType)
 end)
 
 ---@param code string
@@ -354,10 +354,17 @@ end)
 ---@param listingId string
 RegisterNetEvent("juddlie_appearance:server:unlistMarketplace", function(listingId)
   local source <const> = source
+  if not source then return end
+
   local identifier <const> = bridge.getIdentifier(source)
   if not identifier then return end
 
-  marketplace.unlist(identifier, listingId)
+  local ok <const> = marketplace.unlist(identifier, listingId)
+  if ok then
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_unlisted"), type = "success" })
+  else
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_not_found"), type = "error" })
+  end
 end)
 
 ---@param payload table
@@ -565,11 +572,32 @@ lib.callback.register("juddlie_appearance:server:importShareCode", function(sour
   return true, nil, outfitId
 end)
 
----@param _ number
+---@param source number
 ---@param query? table
 ---@return table[]
-lib.callback.register("juddlie_appearance:server:browseMarketplace", function(_, query)
-  return marketplace.browse(query or {})
+lib.callback.register("juddlie_appearance:server:browseMarketplace", function(source, query)
+  local identifier <const> = bridge.getIdentifier(source)
+  return marketplace.browse(query or {}, identifier)
+end)
+
+---@param source number
+---@param listingId string
+---@return boolean
+lib.callback.register("juddlie_appearance:server:unlistMarketplaceListing", function(source, listingId)
+  local source <const> = source
+  if not source then return false end
+
+  local identifier <const> = bridge.getIdentifier(source)
+  if not identifier then return false end
+
+  local ok <const> = marketplace.unlist(identifier, listingId)
+  if ok then
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_unlisted"), type = "success" })
+  else
+    lib.notify(source, { title = locale.t("ui.marketplace.title"), description = locale.t("notify.market_not_found"), type = "error" })
+  end
+
+  return ok
 end)
 
 ---@param _ number
@@ -611,7 +639,7 @@ lib.callback.register("juddlie_appearance:server:checkAndChargeItems", function(
 
   local ok, owed = store.checkAndCharge(source, identifier, appearance)
   if ok and owed > 0 then
-    lib.notify(source, { title = locale.t("ui.store.title"), description = locale.t("notify.items_charged", owed), type = "info" })
+    lib.notify(source, { title = locale.t("ui.store.title"), description = locale.t("notify.items_charged", locale.t("ui.common.currency_symbol"), owed), type = "info" })
   elseif not ok then
     lib.notify(source, { title = locale.t("ui.store.title"), description = locale.t("notify.items_no_money"), type = "error" })
   end

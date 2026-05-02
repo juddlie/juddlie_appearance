@@ -474,7 +474,9 @@ end)
 nui.handleMessage("appearance:unlistMarketplace", function(payload)
   if type(payload) ~= "table" or type(payload.id) ~= "string" then return end
 
-  marketplace.unlist(payload.id)
+  marketplace.unlist(payload.id, function(ok)
+    nui.sendMessage("marketplaceUnlistResult", { ok = ok, id = payload.id })
+  end)
 end)
 
 nui.handleMessage("appearance:previewMarketplace", function(payload)
