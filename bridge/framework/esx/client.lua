@@ -102,18 +102,6 @@ end)
 AddEventHandler("esx_skin:openSaveableMenu", function(onSubmit, onCancel)
 	logger.info("ESX: openSaveableMenu triggered")
 	menu.open()
-
-	nui.handleMessage("appearance:apply:esxOverride", function(data)
-		if type(data) ~= "table" then return end
-
-		ped.applyAppearance(cache.ped, data)
-		menu.originalAppearance = ped.getAppearance(cache.ped)
-		TriggerServerEvent("juddlie_appearance:server:saveAppearance", menu.originalAppearance)
-
-		menu.close(true)
-		
-		if onSubmit then onSubmit() end
-	end)
 end)
 
 ---@param handler function
