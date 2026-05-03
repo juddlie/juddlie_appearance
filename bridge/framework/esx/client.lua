@@ -4,7 +4,6 @@ end
 
 local ped <const> = require("client.modules.ped")
 local menu <const> = require("client.modules.menu")
-local nui <const> = require("client.modules.nui")
 local logger <const> = require("shared.logger")
 
 local ESX <const> = exports["es_extended"]:getSharedObject()
@@ -106,7 +105,15 @@ end)
 
 AddEventHandler("esx_skin:playerRegistered", function()
 	logger.info("ESX: playerRegistered triggered")
-	menu.open()
+
+	local playerData <const> = ESX.GetPlayerData()
+	if not (playerData and playerData.skin) then
+		logger.debug("ESX compat: No player skin found on registration")
+		loadSkin({ model = "mp_m_freemode_01" })
+		return
+	end
+	
+	loadSkin(playerData.skin)
 end)
 
 ---@param handler function
