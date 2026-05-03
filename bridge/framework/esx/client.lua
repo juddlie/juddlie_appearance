@@ -104,6 +104,11 @@ AddEventHandler("esx_skin:openSaveableMenu", function(onSubmit, onCancel)
 	menu.open()
 end)
 
+AddEventHandler("esx_skin:playerRegistered", function()
+	logger.info("ESX: playerRegistered triggered")
+	menu.open()
+end)
+
 ---@param handler function
 function bridge.onPlayerLoaded(handler)
 	RegisterNetEvent("esx:playerLoaded", handler)
