@@ -1,5 +1,2 @@
-*
-!.gitignore
-!build/
-!build/**
+node_modules/
 
