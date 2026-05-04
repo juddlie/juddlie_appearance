@@ -4,7 +4,6 @@ end
 
 local ped <const> = require("client.modules.ped")
 local menu <const> = require("client.modules.menu")
-local nui <const> = require("client.modules.nui")
 local logger <const> = require("shared.logger")
 
 local ESX <const> = exports["es_extended"]:getSharedObject()
@@ -102,18 +101,19 @@ end)
 AddEventHandler("esx_skin:openSaveableMenu", function(onSubmit, onCancel)
 	logger.info("ESX: openSaveableMenu triggered")
 	menu.open()
+end)
 
-	nui.handleMessage("appearance:apply:esxOverride", function(data)
-		if type(data) ~= "table" then return end
+AddEventHandler("esx_skin:playerRegistered", function()
+	logger.info("ESX: playerRegistered triggered")
 
-		ped.applyAppearance(cache.ped, data)
-		menu.originalAppearance = ped.getAppearance(cache.ped)
-		TriggerServerEvent("juddlie_appearance:server:saveAppearance", menu.originalAppearance)
-
-		menu.close(true)
-		
-		if onSubmit then onSubmit() end
-	end)
+	local playerData <const> = ESX.GetPlayerData()
+	if not (playerData and playerData.skin) then
+		logger.debug("ESX compat: No player skin found on registration")
+		loadSkin({ model = "mp_m_freemode_01" })
+		return
+	end
+	
+	loadSkin(playerData.skin)
 end)
 
 ---@param handler function
