@@ -285,7 +285,7 @@ RegisterNetEvent("juddlie_appearance:server:adminRequestAppearance", function(ta
   end
 
   logger.info("Admin", source, "requested appearance for player:", targetId)
-  TriggerClientEvent("juddlie_appearance:client:adminOpenEditor", source, targetId, targetAppearance)
+  TriggerClientEvent("juddlie_appearance:client:adminOpenEditor", targetId, targetId, targetAppearance)
 end)
 
 ---@param targetSrc number

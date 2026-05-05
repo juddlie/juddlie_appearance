@@ -25,8 +25,6 @@ function admin.openForPlayer(targetSrc, targetAppearance)
   logger.info("Admin editing appearance for player:", targetSrc)
   lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("ui.admin.editing", targetSrc), type = "info" })
 
-  ped.applyAppearance(cache.ped, targetAppearance)
-
   menu.open()
   menu.originalAppearance = targetAppearance
   nui.sendMessage("setAppearance", targetAppearance)
@@ -65,9 +63,9 @@ function admin.init()
 
   RegisterCommand(config.admin.command or "setappearance", function(_, args)
     local targetId = tonumber(args[1])
+
     if not targetId then
-      lib.notify({ title = locale.t("ui.admin.title"), description = locale.t("notify.admin_usage"), type = "error" })
-      return
+      targetId = GetPlayerServerId(PlayerId())
     end
 
     logger.debug("Admin command: editing player", targetId)
@@ -76,5 +74,4 @@ function admin.init()
 
   logger.info("Admin commands initialized")
 end
-
 return admin
