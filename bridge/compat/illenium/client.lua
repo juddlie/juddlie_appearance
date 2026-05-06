@@ -270,9 +270,11 @@ end
 RegisterNetEvent("illenium-appearance:client:openClothingShop", function(isPedMenu)
   logger.debug("illenium compat: openClothingShop, isPedMenu:", isPedMenu)
   if isPedMenu then
+    menu.setPedMenuActive(true)
     menu.allowedTabs = nil
     menu.open()
   else
+    menu.setPedMenuActive(false)
     menu.allowedTabs = { "clothing", "props", "outfits" }
     menu.open()
     nui.sendMessage("setAllowedTabs", { tabs = { "clothing", "props", "outfits" } })
@@ -282,9 +284,11 @@ end)
 RegisterNetEvent("illenium-appearance:client:openClothingShopMenu", function(isPedMenu)
   logger.debug("illenium compat: openClothingShopMenu, isPedMenu:", isPedMenu)
   if isPedMenu then
+    menu.setPedMenuActive(true)
     menu.allowedTabs = nil
     menu.open()
   else
+    menu.setPedMenuActive(false)
     menu.allowedTabs = { "clothing", "props", "outfits" }
     menu.open()
     nui.sendMessage("setAllowedTabs", { tabs = { "clothing", "props", "outfits" } })

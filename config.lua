@@ -700,10 +700,17 @@ config.clothingRooms = {
 -- acePermission = false means everyone can use it
 --                 set to an ace string like "admin.pedmenu" to restrict access
 --                 then grant it in server.cfg: add_ace group.admin admin.pedmenu allow
+-- models = false uses config.pedModels
+--          set to a table to override the ped list only for /pedmenu
 config.pedMenu = {
 	enabled = true,
 	command = "pedmenu",
 	acePermission = false,
+	models = false,
+	-- models = {
+	-- 	{ value = "mp_m_freemode_01", label = "Freemode Male" },
+	-- 	{ value = "mp_f_freemode_01", label = "Freemode Female" },
+	-- },
 }
 
 -- reloadskin = reloads the player's saved appearance from the database

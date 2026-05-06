@@ -209,6 +209,8 @@ config.pedModels = {
 }
 ```
 
+The `/pedmenu` command can use its own model list without changing the global Ped page. Leave `config.pedMenu.models = false` to reuse `config.pedModels`, or set it to a table to override the list only while `/pedmenu` is open.
+
 ### Disabled Components / Props
 
 Use this if you have a clothing-as-items system and want to prevent players from changing certain components through the appearance menu.
@@ -484,6 +486,12 @@ config.pedMenu = {
     command = "pedmenu",           -- chat command to open it
     acePermission = false,         -- false = everyone can use it
                                    -- "admin.pedmenu" = only players with this ACE
+    models = false,                -- false = use config.pedModels
+                                   -- table = override only the /pedmenu list
+    -- models = {
+    --     { value = "mp_m_freemode_01", label = "Freemode Male" },
+    --     { value = "mp_f_freemode_01", label = "Freemode Female" },
+    -- },
 }
 ```
 

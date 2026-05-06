@@ -12,6 +12,7 @@ menu.active = false
 menu.originalAppearance = nil
 menu.allowedTabs = nil
 menu.shopType = nil
+menu.pedMenuActive = false
 
 local defaultTabs <const> = {
   "ped", "face", "hair", "clothing", "props", "tattoos", "colors", "walkstyle", "accessories",
@@ -47,6 +48,12 @@ function menu.setAllowedTabs(tabs)
   return menu.allowedTabs
 end
 
+---@param active boolean
+function menu.setPedMenuActive(active)
+  menu.pedMenuActive = active == true
+  nui.sendMessage("setPedMenuActive", { active = menu.pedMenuActive })
+end
+
 function menu.open()
   if menu.active then return end
 
@@ -54,6 +61,7 @@ function menu.open()
   if allowedTabs and #allowedTabs == 0 then
     logger.warn("No available appearance tabs after compatibility filtering")
     menu.allowedTabs = nil
+    menu.setPedMenuActive(false)
     return
   end
 
@@ -73,6 +81,7 @@ function menu.open()
   nui.sendMessage("setAppearance", menu.originalAppearance)
   nui.sendMessage("setMaxValues", ped.getMaxValues(cache.ped))
   nui.sendMessage("setShopType", { shopType = menu.shopType })
+  nui.sendMessage("setPedMenuActive", { active = menu.pedMenuActive == true })
   if menu.allowedTabs then
     nui.sendMessage("setAllowedTabs", { tabs = menu.allowedTabs })
   end
@@ -98,6 +107,7 @@ function menu.close(save)
   menu.active = false
   menu.allowedTabs = nil
   menu.shopType = nil
+  menu.setPedMenuActive(false)
   camera.destroy()
 
   if config.freezeDuringCustomization ~= false then FreezeEntityPosition(cache.ped, false) end

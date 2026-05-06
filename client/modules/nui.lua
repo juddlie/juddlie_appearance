@@ -27,6 +27,15 @@ local function getRandomizerCategories()
   return categories
 end
 
+---@return table?
+local function getPedMenuPedModels()
+  if not config.pedMenu or type(config.pedMenu.models) ~= "table" then
+    return nil
+  end
+
+  return config.pedMenu.models
+end
+
 ---@return boolean
 function nui.isVisible()
   return nui.visible
@@ -89,6 +98,8 @@ nui.handleMessage("ready", function()
     walkStyles = config.walkStyles or {},
     walkStyleCategories = config.walkStyleCategories or {},
     pedModels = config.pedModels,
+    pedMenuPedModels = getPedMenuPedModels(),
+    pedMenuActive = false,
     outfitCategories = config.outfitCategories,
     locale = config.locale or "en",
     localeStrings = localeModule and localeModule.getAll() or {},

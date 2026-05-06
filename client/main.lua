@@ -28,6 +28,23 @@ local wardrobe <const> = require("client.modules.wardrobe")
 
 local initialSpawn = true
 
+---@param model string
+---@return boolean
+local function isPedMenuModelAllowed(model)
+  if not menu.pedMenuActive then return true end
+
+  local pedMenuModels <const> = config.pedMenu and config.pedMenu.models
+  if type(pedMenuModels) ~= "table" then return true end
+
+  for _, pedModel in ipairs(pedMenuModels) do
+    if type(pedModel) == "table" and pedModel.value == model then
+      return true
+    end
+  end
+
+  return false
+end
+
 local function initAppearance()
   logger.debug("Fetching appearance from server")
 
@@ -64,6 +81,11 @@ end)
 
 nui.handleMessage("appearance:setModel", function(data)
   if type(data) ~= "table" or type(data.model) ~= "string" then return end
+
+  if not isPedMenuModelAllowed(data.model) then
+    logger.warn("Ped model is not allowed in pedmenu: " .. data.model)
+    return
+  end
 
   local modelHash <const> = joaat(data.model)
   if not IsModelInCdimage(modelHash) then
@@ -577,12 +599,14 @@ end)
 
 if config.debug then
   RegisterCommand("appearance", function()
+    menu.setPedMenuActive(false)
     menu.open()
   end, false)
 end
 
 if config.pedMenu and config.pedMenu.enabled then
   RegisterCommand(config.pedMenu.command or "pedmenu", function()
+    menu.setPedMenuActive(true)
     menu.setAllowedTabs({ "ped" })
     menu.open()
   end, false)
@@ -600,6 +624,8 @@ end, false)
 
 ---@param options? { tabs?: string[] }
 exports("open", function(options)
+  menu.setPedMenuActive(false)
+
   if type(options) == "table" and options.tabs then
     menu.setAllowedTabs(options.tabs)
     menu.open()
