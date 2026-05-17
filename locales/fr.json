@@ -48,6 +48,72 @@
       "save": "Sauvegarder",
       "import": "Importer"
     },
+    "locations": {
+      "open_appearance": "Ouvrir l'apparence",
+      "locker_room": "Vestiaire",
+      "clothing_store": "Magasin de Vêtements",
+      "barber": "Coiffeur",
+      "tattoo": "Salon de Tatouage",
+      "surgeon": "Chirurgien Esthétique"
+    },
+    "components": {
+      "0": "Tête",
+      "1": "Masque",
+      "2": "Cheveux",
+      "3": "Haut du Corps",
+      "4": "Bas du Corps",
+      "5": "Sacs",
+      "6": "Chaussures",
+      "7": "Accessoires",
+      "8": "Sous-vêtement",
+      "9": "Gilet Pare-balles",
+      "10": "Décalcomanies",
+      "11": "Hauts"
+    },
+    "prop_labels": {
+      "0": "Chapeau",
+      "1": "Lunettes",
+      "2": "Oreilles",
+      "6": "Montre",
+      "7": "Bracelet"
+    },
+    "overlays": {
+      "blemishes": "Imperfections",
+      "facial_hair": "Barbe",
+      "eyebrows": "Sourcils",
+      "ageing": "Vieillissement",
+      "makeup": "Maquillage",
+      "blush": "Blush",
+      "complexion": "Teint",
+      "sun_damage": "Dommages du Soleil",
+      "lipstick": "Rouge à Lèvres",
+      "moles_freckles": "Grains de Beauté/Taches de Rousseur",
+      "chest_hair": "Poils de Poitrine",
+      "body_blemishes": "Imperfections du Corps",
+      "add_body_blemishes": "Ajouter des Imperfections du Corps"
+    },
+    "face_features": {
+      "noseWidth": "Largeur du Nez",
+      "nosePeakHeight": "Hauteur de la Pointe du Nez",
+      "nosePeakLength": "Longueur de la Pointe du Nez",
+      "noseBoneHeight": "Hauteur de l'Arête du Nez",
+      "nosePeakLowering": "Abaissement de la Pointe du Nez",
+      "noseBoneTwist": "Torsion de l'Arête du Nez",
+      "eyebrowHeight": "Hauteur des Sourcils",
+      "eyebrowDepth": "Profondeur des Sourcils",
+      "cheekboneHeight": "Hauteur des Pommettes",
+      "cheekboneWidth": "Largeur des Pommettes",
+      "cheekWidth": "Largeur des Joues",
+      "eyeOpening": "Ouverture des Yeux",
+      "lipThickness": "Épaisseur des Lèvres",
+      "jawBoneWidth": "Largeur de la Mâchoire",
+      "jawBoneLength": "Longueur de la Mâchoire",
+      "chinBoneHeight": "Hauteur du Menton",
+      "chinBoneLength": "Longueur du Menton",
+      "chinBoneWidth": "Largeur du Menton",
+      "chinHole": "Fossette du Menton",
+      "neckThickness": "Épaisseur du Cou"
+    },
     "face": {
       "title": "Traits du Visage",
       "heritage": "Héritage",
@@ -238,7 +304,12 @@
       "cycle_until_liked": "Cycler Jusqu'à Satisfaction",
       "speed_seconds": "Vitesse (secondes)",
       "stop": "Arrêter",
-      "start_cycling": "Démarrer le Cycle"
+      "start_cycling": "Démarrer le Cycle",
+      "category_face": "Visage",
+      "category_hair": "Cheveux",
+      "category_clothing": "Vêtements",
+      "category_props": "Accessoires",
+      "category_tattoos": "Tatouages"
     },
     "animations": {
       "title": "Animations",
@@ -248,7 +319,12 @@
       "walk": "Marcher",
       "run": "Courir",
       "crouch": "S'accroupir",
-      "sit": "S'asseoir"
+      "sit": "S'asseoir",
+      "idle_desc": "Rester immobile",
+      "walk_desc": "Marcher vers l'avant",
+      "run_desc": "Courir vers l'avant",
+      "crouch_desc": "Position accroupie",
+      "sit_desc": "Assis au sol"
     },
     "walkstyle": {
       "title": "Style de Marche",
@@ -262,6 +338,37 @@
       "category_impaired": "Altéré",
       "category_professional": "Professionnel",
       "category_special": "Spécial"
+    },
+    "walkstyles": {
+      "default": "Par Défaut",
+      "brave": "Courageux",
+      "confident": "Confiant",
+      "hurry": "Pressé",
+      "business": "Affaires",
+      "tough_guy": "Dur à Cuire",
+      "gangster": "Gangster",
+      "posh": "Chic",
+      "sexy": "Sexy",
+      "heels": "Talons",
+      "arrogant": "Arrogant",
+      "sad": "Triste",
+      "intimidation": "Intimidant",
+      "drunk": "Ivre",
+      "injured": "Blessé",
+      "hipster": "Hipster",
+      "hobo": "Vagabond",
+      "money": "Argent",
+      "quick": "Rapide",
+      "fat": "Lourd",
+      "swagger": "Frimeur",
+      "muscle": "Musclé",
+      "femme": "Féminin",
+      "cop": "Policier",
+      "alien": "Alien",
+      "maneater": "Séductrice",
+      "chichi": "Chichi",
+      "sassy": "Effronté",
+      "depressed": "Déprimé"
     },
     "accessories": {
       "title": "Accessoires",
@@ -279,8 +386,15 @@
       "name_placeholder": "Mes Accessoires",
       "saves": "Sauvegardes : %s"
     },
+    "quick_slots": {
+      "hat": "Chapeau",
+      "glasses": "Lunettes",
+      "top": "Haut",
+      "shoes": "Chaussures"
+    },
     "history": {
       "title": "Historique",
+      "apply_changes": "Appliquer les changements",
       "undo": "Annuler",
       "redo": "Refaire",
       "snapshots": "Instantanés",
@@ -442,7 +556,14 @@
       "title": "Modèle de Ped",
       "search_placeholder": "Rechercher des modèles...",
       "models": "Modèles",
-      "no_models": "Aucun modèle trouvé."
+      "no_models": "Aucun modèle trouvé.",
+      "assigned_only": "Assigné"
+    },
+    "peds": {
+      "mp_m_freemode_01": "Freemode Homme",
+      "mp_f_freemode_01": "Freemode Femme",
+      "a_c_shepherd": "K9 Berger Allemand",
+      "a_c_rottweiler": "K9 Rottweiler"
     }
   },
   "notify": {
@@ -460,6 +581,14 @@
     "admin_player_not_found": "Joueur non trouvé",
     "admin_load_failed": "Impossible de charger l'apparence du joueur cible",
     "admin_usage": "Utilisation: /setappearance [id du joueur]",
+    "ped_assignment_usage": "Utilisation: /%s [id du joueur] [modèle]",
+    "ped_clear_usage": "Utilisation: /%s [id du joueur]",
+    "ped_invalid_model": "Le modèle de ped '%s' n'est pas configuré pour l'assignation",
+    "ped_assigned": "Joueur %s assigné au ped %s",
+    "ped_cleared": "Assignation de ped supprimée pour le joueur %s",
+    "ped_assignment_received": "Le ped %s vous a été assigné",
+    "ped_assignment_cleared": "Votre restriction de ped assigné a été retirée",
+    "ped_restricted": "Vous ne pouvez utiliser que votre modèle de ped assigné",
     "not_enough_money": "Vous avez besoin de %s%d pour utiliser ce magasin",
     "uniform_saved": "Uniforme sauvegardé pour la faction",
     "uniform_deleted": "Uniforme supprimé",

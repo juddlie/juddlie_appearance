@@ -48,6 +48,72 @@
       "save": "Zapisz",
       "import": "Import"
     },
+    "locations": {
+      "open_appearance": "Otwórz wygląd",
+      "locker_room": "Szatnia",
+      "clothing_store": "Sklep odzieżowy",
+      "barber": "Fryzjer",
+      "tattoo": "Salon tatuażu",
+      "surgeon": "Chirurg plastyczny"
+    },
+    "components": {
+      "0": "Głowa",
+      "1": "Maska",
+      "2": "Włosy",
+      "3": "Górna część ciała",
+      "4": "Dolna część ciała",
+      "5": "Torby",
+      "6": "Buty",
+      "7": "Akcesoria",
+      "8": "Podkoszulka",
+      "9": "Kamizelka",
+      "10": "Naklejki",
+      "11": "Góra"
+    },
+    "prop_labels": {
+      "0": "Kapelusz",
+      "1": "Okulary",
+      "2": "Uszy",
+      "6": "Zegarek",
+      "7": "Bransoleta"
+    },
+    "overlays": {
+      "blemishes": "Wypryski",
+      "facial_hair": "Zarost",
+      "eyebrows": "Brwi",
+      "ageing": "Starzenie",
+      "makeup": "Makijaż",
+      "blush": "Rumieniec",
+      "complexion": "Cera",
+      "sun_damage": "Uszkodzenia słoneczne",
+      "lipstick": "Szminka",
+      "moles_freckles": "Pieprzyki/Piegi",
+      "chest_hair": "Włosy na klatce piersiowej",
+      "body_blemishes": "Niedoskonałości ciała",
+      "add_body_blemishes": "Dodaj niedoskonałości ciała"
+    },
+    "face_features": {
+      "noseWidth": "Szerokość nosa",
+      "nosePeakHeight": "Wysokość czubka nosa",
+      "nosePeakLength": "Długość czubka nosa",
+      "noseBoneHeight": "Wysokość grzbietu nosa",
+      "nosePeakLowering": "Obniżenie czubka nosa",
+      "noseBoneTwist": "Skręt grzbietu nosa",
+      "eyebrowHeight": "Wysokość brwi",
+      "eyebrowDepth": "Głębokość brwi",
+      "cheekboneHeight": "Wysokość kości policzkowych",
+      "cheekboneWidth": "Szerokość kości policzkowych",
+      "cheekWidth": "Szerokość policzków",
+      "eyeOpening": "Otwarcie oczu",
+      "lipThickness": "Grubość ust",
+      "jawBoneWidth": "Szerokość szczęki",
+      "jawBoneLength": "Długość szczęki",
+      "chinBoneHeight": "Wysokość podbródka",
+      "chinBoneLength": "Długość podbródka",
+      "chinBoneWidth": "Szerokość podbródka",
+      "chinHole": "Dołek w podbródku",
+      "neckThickness": "Grubość szyi"
+    },
     "face": {
       "title": "Twarz",
       "heritage": "Dziedzictwo",
@@ -238,7 +304,12 @@
       "cycle_until_liked": "Cykluj Aż Ci Się Spodoba",
       "speed_seconds": "Szybkość (sekundy)",
       "stop": "Zatrzymaj",
-      "start_cycling": "Rozpocznij Cyklowanie"
+      "start_cycling": "Rozpocznij Cyklowanie",
+      "category_face": "Twarz",
+      "category_hair": "Włosy",
+      "category_clothing": "Ubrania",
+      "category_props": "Dodatki",
+      "category_tattoos": "Tatuaże"
     },
     "animations": {
       "title": "Animacje",
@@ -248,7 +319,12 @@
       "walk": "Chód",
       "run": "Bieg",
       "crouch": "Kucanie",
-      "sit": "Siedzenie"
+      "sit": "Siedzenie",
+      "idle_desc": "Stanie w miejscu",
+      "walk_desc": "Chodzenie do przodu",
+      "run_desc": "Bieg do przodu",
+      "crouch_desc": "Pozycja kucająca",
+      "sit_desc": "Siedzenie na ziemi"
     },
     "walkstyle": {
       "title": "Styl Chodzenia",
@@ -262,6 +338,37 @@
       "category_impaired": "Upośledzony",
       "category_professional": "Profesjonalny",
       "category_special": "Specjalny"
+    },
+    "walkstyles": {
+      "default": "Domyślny",
+      "brave": "Odważny",
+      "confident": "Pewny siebie",
+      "hurry": "Pośpieszny",
+      "business": "Biznesowy",
+      "tough_guy": "Twardziel",
+      "gangster": "Gangster",
+      "posh": "Elegancki",
+      "sexy": "Seksowny",
+      "heels": "Obcasy",
+      "arrogant": "Arogancki",
+      "sad": "Smutny",
+      "intimidation": "Zastraszający",
+      "drunk": "Pijany",
+      "injured": "Ranny",
+      "hipster": "Hipster",
+      "hobo": "Bezdomny",
+      "money": "Pieniądze",
+      "quick": "Szybki",
+      "fat": "Ciężki",
+      "swagger": "Swagger",
+      "muscle": "Muskularny",
+      "femme": "Kobiecy",
+      "cop": "Policjant",
+      "alien": "Obcy",
+      "maneater": "Uwodzicielka",
+      "chichi": "Chichi",
+      "sassy": "Zadziorny",
+      "depressed": "Przygnębiony"
     },
     "accessories": {
       "title": "Akcesoria",
@@ -279,8 +386,15 @@
       "name_placeholder": "Moje Akcesoria",
       "saves": "Zapisy: %s"
     },
+    "quick_slots": {
+      "hat": "Kapelusz",
+      "glasses": "Okulary",
+      "top": "Góra",
+      "shoes": "Buty"
+    },
     "history": {
       "title": "Historia",
+      "apply_changes": "Zastosuj zmiany",
       "undo": "Cofnij",
       "redo": "Ponów",
       "snapshots": "Migawki",
@@ -442,7 +556,14 @@
       "title": "Model Postaci",
       "search_placeholder": "Szukaj modeli...",
       "models": "Modele",
-      "no_models": "Nie znaleziono modeli."
+      "no_models": "Nie znaleziono modeli.",
+      "assigned_only": "Przypisany"
+    },
+    "peds": {
+      "mp_m_freemode_01": "Freemode Mężczyzna",
+      "mp_f_freemode_01": "Freemode Kobieta",
+      "a_c_shepherd": "K9 Owczarek",
+      "a_c_rottweiler": "K9 Rottweiler"
     }
   },
   "notify": {
@@ -460,6 +581,14 @@
     "admin_player_not_found": "Gracz nie znaleziony",
     "admin_load_failed": "Nie można załadować wyglądu docelowego gracza",
     "admin_usage": "Użycie: /setappearance [player id]",
+    "ped_assignment_usage": "Użycie: /%s [id gracza] [model]",
+    "ped_clear_usage": "Użycie: /%s [id gracza]",
+    "ped_invalid_model": "Model peda '%s' nie jest skonfigurowany do przypisania",
+    "ped_assigned": "Przypisano gracza %s do peda %s",
+    "ped_cleared": "Usunięto przypisanie peda dla gracza %s",
+    "ped_assignment_received": "Przypisano ci peda %s",
+    "ped_assignment_cleared": "Usunięto twoje ograniczenie przypisanego peda",
+    "ped_restricted": "Możesz używać tylko przypisanego modelu peda",
     "not_enough_money": "Potrzebujesz %s%d, aby korzystać z tego sklepu",
     "uniform_saved": "Mundur zapisany dla frakcji",
     "uniform_deleted": "Mundur usunięty",

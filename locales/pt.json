@@ -48,6 +48,72 @@
       "save": "Salvar",
       "import": "Importar"
     },
+    "locations": {
+      "open_appearance": "Abrir Aparência",
+      "locker_room": "Vestiário",
+      "clothing_store": "Loja de Roupas",
+      "barber": "Barbearia",
+      "tattoo": "Estúdio de Tatuagem",
+      "surgeon": "Cirurgião Plástico"
+    },
+    "components": {
+      "0": "Cabeça",
+      "1": "Máscara",
+      "2": "Cabelo",
+      "3": "Parte Superior",
+      "4": "Parte Inferior",
+      "5": "Bolsas",
+      "6": "Sapatos",
+      "7": "Acessórios",
+      "8": "Camiseta",
+      "9": "Colete",
+      "10": "Adesivos",
+      "11": "Jaquetas"
+    },
+    "prop_labels": {
+      "0": "Chapéu",
+      "1": "Óculos",
+      "2": "Orelhas",
+      "6": "Relógio",
+      "7": "Pulseira"
+    },
+    "overlays": {
+      "blemishes": "Manchas",
+      "facial_hair": "Barba",
+      "eyebrows": "Sobrancelhas",
+      "ageing": "Envelhecimento",
+      "makeup": "Maquiagem",
+      "blush": "Blush",
+      "complexion": "Pele",
+      "sun_damage": "Danos Solares",
+      "lipstick": "Batom",
+      "moles_freckles": "Pintas/Sardas",
+      "chest_hair": "Pelos do Peito",
+      "body_blemishes": "Manchas Corporais",
+      "add_body_blemishes": "Adicionar Manchas Corporais"
+    },
+    "face_features": {
+      "noseWidth": "Largura do Nariz",
+      "nosePeakHeight": "Altura da Ponta do Nariz",
+      "nosePeakLength": "Comprimento da Ponta do Nariz",
+      "noseBoneHeight": "Altura do Osso Nasal",
+      "nosePeakLowering": "Abaixamento da Ponta do Nariz",
+      "noseBoneTwist": "Torção do Osso Nasal",
+      "eyebrowHeight": "Altura das Sobrancelhas",
+      "eyebrowDepth": "Profundidade das Sobrancelhas",
+      "cheekboneHeight": "Altura das Maçãs do Rosto",
+      "cheekboneWidth": "Largura das Maçãs do Rosto",
+      "cheekWidth": "Largura das Bochechas",
+      "eyeOpening": "Abertura dos Olhos",
+      "lipThickness": "Espessura dos Lábios",
+      "jawBoneWidth": "Largura da Mandíbula",
+      "jawBoneLength": "Comprimento da Mandíbula",
+      "chinBoneHeight": "Altura do Queixo",
+      "chinBoneLength": "Comprimento do Queixo",
+      "chinBoneWidth": "Largura do Queixo",
+      "chinHole": "Covinha do Queixo",
+      "neckThickness": "Espessura do Pescoço"
+    },
     "face": {
       "title": "Traços Faciais",
       "heritage": "Herança",
@@ -238,7 +304,12 @@
       "cycle_until_liked": "Ciclar Até Gostar",
       "speed_seconds": "Velocidade (segundos)",
       "stop": "Parar",
-      "start_cycling": "Iniciar Ciclo"
+      "start_cycling": "Iniciar Ciclo",
+      "category_face": "Rosto",
+      "category_hair": "Cabelo",
+      "category_clothing": "Roupas",
+      "category_props": "Acessórios",
+      "category_tattoos": "Tatuagens"
     },
     "animations": {
       "title": "Animações",
@@ -248,7 +319,12 @@
       "walk": "Andar",
       "run": "Correr",
       "crouch": "Agachar",
-      "sit": "Sentar"
+      "sit": "Sentar",
+      "idle_desc": "Ficar parado",
+      "walk_desc": "Andando para frente",
+      "run_desc": "Correndo para frente",
+      "crouch_desc": "Posição agachada",
+      "sit_desc": "Sentado no chão"
     },
     "walkstyle": {
       "title": "Estilo de Andar",
@@ -262,6 +338,37 @@
       "category_impaired": "Prejudicado",
       "category_professional": "Profissional",
       "category_special": "Especial"
+    },
+    "walkstyles": {
+      "default": "Padrão",
+      "brave": "Corajoso",
+      "confident": "Confiante",
+      "hurry": "Apressado",
+      "business": "Negócios",
+      "tough_guy": "Durão",
+      "gangster": "Gangster",
+      "posh": "Elegante",
+      "sexy": "Sexy",
+      "heels": "Saltos",
+      "arrogant": "Arrogante",
+      "sad": "Triste",
+      "intimidation": "Intimidador",
+      "drunk": "Bêbado",
+      "injured": "Ferido",
+      "hipster": "Hipster",
+      "hobo": "Mendigo",
+      "money": "Dinheiro",
+      "quick": "Rápido",
+      "fat": "Pesado",
+      "swagger": "Swagger",
+      "muscle": "Musculoso",
+      "femme": "Feminino",
+      "cop": "Policial",
+      "alien": "Alienígena",
+      "maneater": "Sedutora",
+      "chichi": "Chichi",
+      "sassy": "Atrevido",
+      "depressed": "Deprimido"
     },
     "accessories": {
       "title": "Acessórios",
@@ -279,8 +386,15 @@
       "name_placeholder": "Meus Acessórios",
       "saves": "Salvos: %s"
     },
+    "quick_slots": {
+      "hat": "Chapéu",
+      "glasses": "Óculos",
+      "top": "Parte Superior",
+      "shoes": "Sapatos"
+    },
     "history": {
       "title": "Histórico",
+      "apply_changes": "Aplicar alterações",
       "undo": "Desfazer",
       "redo": "Refazer",
       "snapshots": "Instantâneos",
@@ -442,7 +556,14 @@
       "title": "Modelo de Ped",
       "search_placeholder": "Pesquisar modelos...",
       "models": "Modelos",
-      "no_models": "Nenhum modelo encontrado."
+      "no_models": "Nenhum modelo encontrado.",
+      "assigned_only": "Atribuído"
+    },
+    "peds": {
+      "mp_m_freemode_01": "Freemode Masculino",
+      "mp_f_freemode_01": "Freemode Feminino",
+      "a_c_shepherd": "K9 Pastor Alemão",
+      "a_c_rottweiler": "K9 Rottweiler"
     }
   },
   "notify": {
@@ -460,6 +581,14 @@
     "admin_player_not_found": "Jogador não encontrado",
     "admin_load_failed": "Não foi possível carregar a aparência do jogador alvo",
     "admin_usage": "Uso: /setappearance [id do jogador]",
+    "ped_assignment_usage": "Uso: /%s [id do jogador] [modelo]",
+    "ped_clear_usage": "Uso: /%s [id do jogador]",
+    "ped_invalid_model": "O modelo de ped '%s' não está configurado para atribuição",
+    "ped_assigned": "Jogador %s atribuído ao ped %s",
+    "ped_cleared": "Atribuição de ped removida para o jogador %s",
+    "ped_assignment_received": "Você recebeu o ped %s",
+    "ped_assignment_cleared": "Sua restrição de ped atribuído foi removida",
+    "ped_restricted": "Você só pode usar seu modelo de ped atribuído",
     "not_enough_money": "Você precisa de %s%d para usar esta loja",
     "uniform_saved": "Uniforme salvo para a facção",
     "uniform_deleted": "Uniforme removido",

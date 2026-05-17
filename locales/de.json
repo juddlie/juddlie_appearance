@@ -48,6 +48,72 @@
       "save": "Speichern",
       "import": "Importieren"
     },
+    "locations": {
+      "open_appearance": "Aussehen öffnen",
+      "locker_room": "Umkleideraum",
+      "clothing_store": "Bekleidungsgeschäft",
+      "barber": "Friseur",
+      "tattoo": "Tattoo-Studio",
+      "surgeon": "Plastischer Chirurg"
+    },
+    "components": {
+      "0": "Kopf",
+      "1": "Maske",
+      "2": "Haare",
+      "3": "Oberkörper",
+      "4": "Unterkörper",
+      "5": "Taschen",
+      "6": "Schuhe",
+      "7": "Zubehör",
+      "8": "Unterhemd",
+      "9": "Schutzweste",
+      "10": "Aufkleber",
+      "11": "Oberteile"
+    },
+    "prop_labels": {
+      "0": "Hut",
+      "1": "Brille",
+      "2": "Ohren",
+      "6": "Uhr",
+      "7": "Armband"
+    },
+    "overlays": {
+      "blemishes": "Hautunreinheiten",
+      "facial_hair": "Gesichtsbehaarung",
+      "eyebrows": "Augenbrauen",
+      "ageing": "Alterung",
+      "makeup": "Make-up",
+      "blush": "Rouge",
+      "complexion": "Teint",
+      "sun_damage": "Sonnenschäden",
+      "lipstick": "Lippenstift",
+      "moles_freckles": "Muttermale/Sommersprossen",
+      "chest_hair": "Brustbehaarung",
+      "body_blemishes": "Körpermakel",
+      "add_body_blemishes": "Zusätzliche Körpermakel"
+    },
+    "face_features": {
+      "noseWidth": "Nasenbreite",
+      "nosePeakHeight": "Nasenspitzenhöhe",
+      "nosePeakLength": "Nasenspitzenlänge",
+      "noseBoneHeight": "Nasenbeinhöhe",
+      "nosePeakLowering": "Nasenspitzensenkung",
+      "noseBoneTwist": "Nasenbein-Drehung",
+      "eyebrowHeight": "Augenbrauenhöhe",
+      "eyebrowDepth": "Augenbrauentiefe",
+      "cheekboneHeight": "Wangenknochenhöhe",
+      "cheekboneWidth": "Wangenknochenbreite",
+      "cheekWidth": "Wangenbreite",
+      "eyeOpening": "Augenöffnung",
+      "lipThickness": "Lippendicke",
+      "jawBoneWidth": "Kieferbreite",
+      "jawBoneLength": "Kieferlänge",
+      "chinBoneHeight": "Kinnhöhe",
+      "chinBoneLength": "Kinnlänge",
+      "chinBoneWidth": "Kinnbreite",
+      "chinHole": "Kinngrübchen",
+      "neckThickness": "Halsdicke"
+    },
     "face": {
       "title": "Gesichtszüge",
       "heritage": "Abstammung",
@@ -238,7 +304,12 @@
       "cycle_until_liked": "Durchlaufen bis es gefällt",
       "speed_seconds": "Geschwindigkeit (Sekunden)",
       "stop": "Stoppen",
-      "start_cycling": "Durchlauf starten"
+      "start_cycling": "Durchlauf starten",
+      "category_face": "Gesicht",
+      "category_hair": "Haare",
+      "category_clothing": "Kleidung",
+      "category_props": "Requisiten",
+      "category_tattoos": "Tattoos"
     },
     "animations": {
       "title": "Animationen",
@@ -248,7 +319,12 @@
       "walk": "Gehen",
       "run": "Laufen",
       "crouch": "Hocken",
-      "sit": "Sitzen"
+      "sit": "Sitzen",
+      "idle_desc": "Still stehen",
+      "walk_desc": "Vorwärts gehen",
+      "run_desc": "Vorwärts laufen",
+      "crouch_desc": "Geduckte Haltung",
+      "sit_desc": "Auf dem Boden sitzen"
     },
     "walkstyle": {
       "title": "Gangstil",
@@ -262,6 +338,37 @@
       "category_impaired": "Beeinträchtigt",
       "category_professional": "Professionell",
       "category_special": "Spezial"
+    },
+    "walkstyles": {
+      "default": "Standard",
+      "brave": "Mutig",
+      "confident": "Selbstbewusst",
+      "hurry": "Eilig",
+      "business": "Geschäftlich",
+      "tough_guy": "Harter Typ",
+      "gangster": "Gangster",
+      "posh": "Vornehm",
+      "sexy": "Sexy",
+      "heels": "Absätze",
+      "arrogant": "Arrogant",
+      "sad": "Traurig",
+      "intimidation": "Einschüchternd",
+      "drunk": "Betrunken",
+      "injured": "Verletzt",
+      "hipster": "Hipster",
+      "hobo": "Obdachlos",
+      "money": "Geld",
+      "quick": "Schnell",
+      "fat": "Schwer",
+      "swagger": "Swagger",
+      "muscle": "Muskulös",
+      "femme": "Feminin",
+      "cop": "Cop",
+      "alien": "Alien",
+      "maneater": "Verführerin",
+      "chichi": "Chichi",
+      "sassy": "Frech",
+      "depressed": "Depressiv"
     },
     "accessories": {
       "title": "Zubehör",
@@ -279,8 +386,15 @@
       "name_placeholder": "Mein Zubehör",
       "saves": "Speicherungen: %s"
     },
+    "quick_slots": {
+      "hat": "Hut",
+      "glasses": "Brille",
+      "top": "Oberteil",
+      "shoes": "Schuhe"
+    },
     "history": {
       "title": "Verlauf",
+      "apply_changes": "Änderungen anwenden",
       "undo": "Rückgängig",
       "redo": "Wiederholen",
       "snapshots": "Schnappschüsse",
@@ -442,7 +556,14 @@
       "title": "Ped-Modell",
       "search_placeholder": "Modelle suchen...",
       "models": "Modelle",
-      "no_models": "Keine Modelle gefunden."
+      "no_models": "Keine Modelle gefunden.",
+      "assigned_only": "Zugewiesen"
+    },
+    "peds": {
+      "mp_m_freemode_01": "Freemode Mann",
+      "mp_f_freemode_01": "Freemode Frau",
+      "a_c_shepherd": "K9 Schäferhund",
+      "a_c_rottweiler": "K9 Rottweiler"
     }
   },
   "notify": {
@@ -460,6 +581,14 @@
     "admin_player_not_found": "Spieler nicht gefunden",
     "admin_load_failed": "Aussehen des Zielspielers konnte nicht geladen werden",
     "admin_usage": "Verwendung: /setappearance [Spieler-ID]",
+    "ped_assignment_usage": "Verwendung: /%s [Spieler-ID] [Modell]",
+    "ped_clear_usage": "Verwendung: /%s [Spieler-ID]",
+    "ped_invalid_model": "Ped-Modell '%s' ist nicht für Zuweisungen konfiguriert",
+    "ped_assigned": "Spieler %s wurde Ped %s zugewiesen",
+    "ped_cleared": "Ped-Zuweisung für Spieler %s entfernt",
+    "ped_assignment_received": "Dir wurde das Ped %s zugewiesen",
+    "ped_assignment_cleared": "Deine Ped-Einschränkung wurde entfernt",
+    "ped_restricted": "Du kannst nur dein zugewiesenes Ped-Modell verwenden",
     "not_enough_money": "Du brauchst %s%d um diesen Shop zu nutzen",
     "uniform_saved": "Uniform für die Fraktion gespeichert",
     "uniform_deleted": "Uniform entfernt",
