@@ -3,6 +3,7 @@ if GetResourceState("es_extended") ~= "started" then
 end
 
 local logger <const> = require("shared.logger")
+local migrate <const> = require("server.modules.migrate")
 
 local ESX <const> = exports["es_extended"]:getSharedObject()
 
@@ -90,6 +91,19 @@ ESX.RegisterServerCallback("esx_skin:getPlayerSkin", function(source, cb)
 		skin_male = xPlayer.job and xPlayer.job.skin_male or nil,
 		skin_female = xPlayer.job and xPlayer.job.skin_female or nil,
 	})
+end)
+
+RegisterNetEvent("esx_skin:save", function(skin)
+	local source <const> = source
+	if not source or type(skin) ~= "table" then return end
+
+	logger.debug("ESX compat: esx_skin:save for", source)
+
+	local playerCache <const> = require("server.modules.cache")
+	local converted <const> = (skin.clothing or skin.props) and skin or migrate.convertSkin(skin, skin.model)
+	if converted then
+		playerCache.setAppearance(source, converted)
+	end
 end)
 
 return bridge
